@@ -6,7 +6,6 @@
 <title>OutWay — Школьный трансфер</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://mapgl.2gis.com/api/js/v1"></script>
 <style>
 :root {
   --orange: #E8621A;
@@ -17,7 +16,6 @@
   --text-soft: #555555;
   --text-muted: #999999;
   --border: #E0DED8;
-  --border-focus: #111111;
   --success: #1E7A4A;
   --error: #C0392B;
   --radius: 10px;
@@ -26,26 +24,8 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 13px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
 
-/* HEADER */
-.header {
-  background: var(--white);
-  border-bottom: 1px solid var(--border);
-  padding: 0 24px;
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  height: 56px;
-  position: sticky;
-  top: 0;
-  z-index: 400;
-}
-.logo {
-  font-size: 15px;
-  font-weight: 700;
-  letter-spacing: 2px;
-  color: var(--text);
-  text-transform: uppercase;
-}
+.header { background: var(--white); border-bottom: 1px solid var(--border); padding: 0 24px; display: flex; align-items: center; gap: 20px; height: 56px; position: sticky; top: 0; z-index: 400; }
+.logo { font-size: 15px; font-weight: 700; letter-spacing: 2px; color: var(--text); text-transform: uppercase; }
 .logo-dot { color: var(--orange); }
 .logo-sub { font-size: 9px; color: var(--text-muted); font-weight: 400; letter-spacing: 1.5px; text-transform: uppercase; margin-top: 1px; }
 .hd { width: 1px; height: 22px; background: var(--border); }
@@ -55,13 +35,11 @@ body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--tex
 .nav-btn:hover { background: var(--bg); color: var(--text); }
 .nav-btn.active { background: var(--text); color: var(--white); }
 
-/* LAYOUT */
 .layout { display: flex; min-height: calc(100vh - 56px); }
 .sidebar { width: 380px; min-width: 340px; background: var(--white); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow-y: auto; position: sticky; top: 56px; height: calc(100vh - 56px); }
 .sidebar-section { display: none; flex-direction: column; min-height: 100%; }
 .sidebar-section.active { display: flex; }
 
-/* SCHOOL SELECTOR */
 .school-select-wrap { padding: 20px; border-bottom: 1px solid var(--border); }
 .field-label { font-size: 10px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
 .ss-btn { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 11px 14px; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 500; color: var(--text); cursor: pointer; text-align: left; display: flex; align-items: center; justify-content: space-between; transition: all .15s; }
@@ -72,7 +50,6 @@ body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--tex
 .branch-btn:hover { border-color: var(--text); color: var(--text); }
 .branch-btn.selected { background: var(--text); border-color: var(--text); color: white; }
 
-/* FORM */
 .form-wrap { padding: 20px; flex: 1; overflow-y: auto; }
 .form-section { margin-bottom: 24px; }
 .form-section-title { font-size: 10px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
@@ -82,29 +59,17 @@ body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--tex
 .form-group:last-child { margin-bottom: 0; }
 label { display: block; font-size: 11px; font-weight: 500; color: var(--text-soft); margin-bottom: 5px; letter-spacing: 0.2px; }
 label .req { color: var(--orange); }
-input[type=text], input[type=tel], select, textarea {
-  width: 100%; background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-sm);
-  padding: 10px 12px; font-family: 'Inter', sans-serif; font-size: 13px; color: var(--text);
-  transition: border-color .15s; outline: none; -webkit-appearance: none;
-}
-input:focus, select:focus, textarea:focus { border-color: var(--border-focus); }
+input[type=text], input[type=tel], select, textarea { width: 100%; background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 12px; font-family: 'Inter', sans-serif; font-size: 13px; color: var(--text); transition: border-color .15s; outline: none; -webkit-appearance: none; }
+input:focus, select:focus, textarea:focus { border-color: var(--text); }
 input::placeholder { color: var(--text-muted); }
 textarea { resize: none; height: 80px; }
-select { cursor: pointer; }
 
 /* ADDRESS */
 .addr-wrap { position: relative; margin-bottom: 12px; }
 .addr-input-inner { position: relative; }
-.addr-input-inner input { padding-left: 36px; }
-.addr-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted); pointer-events: none; font-size: 14px; }
-.addr-suggestions { position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-sm); box-shadow: 0 8px 24px rgba(0,0,0,0.08); z-index: 500; max-height: 240px; overflow-y: auto; display: none; }
-.addr-suggestions.open { display: block; }
-.sug-item { padding: 10px 14px; cursor: pointer; font-size: 13px; border-bottom: 1px solid var(--bg); transition: background .1s; }
-.sug-item:last-child { border-bottom: none; }
-.sug-item:hover { background: var(--bg); }
-.sug-main { font-weight: 500; color: var(--text); }
-.sug-sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
-.sug-empty { padding: 12px 14px; font-size: 12px; color: var(--text-muted); }
+.addr-input-inner input { padding-left: 34px; }
+.addr-icon { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: var(--text-muted); pointer-events: none; font-size: 13px; }
+#pac-input { width: 100%; }
 
 /* DISTANCE BADGE */
 .dist-badge { display: none; align-items: center; justify-content: space-between; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 14px; margin-bottom: 12px; }
@@ -120,8 +85,9 @@ select { cursor: pointer; }
 .ts-opt:hover { border-color: var(--text-soft); }
 .ts-opt.selected { border-color: var(--text); background: var(--bg); }
 .ts-opt input { display: none; }
-.ts-icon-wrap { width: 36px; height: 36px; background: var(--bg); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+.ts-icon-wrap { width: 36px; height: 36px; background: var(--bg); border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .ts-opt.selected .ts-icon-wrap { background: var(--white); }
+.ts-icon-svg { width: 20px; height: 20px; }
 .ts-info { flex: 1; }
 .ts-name { font-weight: 600; font-size: 13px; color: var(--text); }
 .ts-desc { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
@@ -137,15 +103,14 @@ select { cursor: pointer; }
 .btn-rm { background: none; border: none; cursor: pointer; color: var(--text-muted); font-size: 16px; line-height: 1; padding: 2px 4px; transition: color .15s; }
 .btn-rm:hover { color: var(--error); }
 .btn-add { width: 100%; background: none; border: 1px dashed var(--border); border-radius: var(--radius-sm); padding: 10px; font-family: 'Inter', sans-serif; font-size: 12px; color: var(--text-soft); cursor: pointer; transition: all .15s; font-weight: 500; display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 2px; }
-.btn-add:hover { border-color: var(--text-soft); color: var(--text); background: var(--bg); }
+.btn-add:hover { border-color: var(--text-soft); color: var(--text); }
 
-/* EXTRA CONTACT */
 .add-ct-toggle { background: none; border: none; font-family: 'Inter', sans-serif; font-size: 12px; color: var(--text-soft); cursor: pointer; padding: 4px 0; font-weight: 500; display: flex; align-items: center; gap: 5px; text-decoration: underline; text-underline-offset: 3px; }
 .add-ct-toggle:hover { color: var(--text); }
 .extra-ct { display: none; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); }
 .extra-ct.show { display: block; }
 
-/* PRICE SUMMARY */
+/* PRICE */
 .price-summary { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px; margin-top: 20px; display: none; }
 .ps-title { font-size: 10px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
 .price-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; font-size: 13px; color: var(--text-soft); }
@@ -156,23 +121,21 @@ select { cursor: pointer; }
 .price-total .amount { font-size: 22px; font-weight: 700; color: var(--text); letter-spacing: -0.5px; }
 .price-total .currency { font-size: 13px; font-weight: 500; color: var(--text-soft); margin-left: 3px; }
 
-/* SUBMIT */
 .btn-submit { width: 100%; background: var(--text); border: none; border-radius: var(--radius-sm); padding: 14px; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; color: white; cursor: pointer; transition: all .2s; margin-top: 16px; letter-spacing: 0.3px; }
 .btn-submit:hover { background: #333; }
-.btn-submit:disabled { background: var(--border); color: var(--text-muted); cursor: not-allowed; }
 
 /* SUCCESS */
 .success-screen { display: none; padding: 32px 20px; flex-direction: column; align-items: center; gap: 16px; }
 .success-screen.show { display: flex; }
-.s-check { width: 56px; height: 56px; background: #E8F5EC; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+.s-check { width: 56px; height: 56px; background: #E8F5EC; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 700; color: var(--success); }
 .s-title { font-size: 18px; font-weight: 700; letter-spacing: -0.3px; }
 .s-sub { font-size: 13px; color: var(--text-soft); text-align: center; line-height: 1.6; }
 .s-card { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px; }
-.s-row { display: flex; justify-content: space-between; padding: 5px 0; font-size: 13px; border-bottom: 1px solid var(--border); }
+.s-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 13px; border-bottom: 1px solid var(--border); }
 .s-row:last-child { border-bottom: none; }
 .s-row .k { color: var(--text-muted); }
 .s-row .v { font-weight: 500; color: var(--text); text-align: right; max-width: 60%; }
-.mgr-btn { display: flex; align-items: center; gap: 12px; background: var(--text); color: white; border: none; border-radius: var(--radius-sm); padding: 14px 18px; width: 100%; text-decoration: none; transition: background .15s; cursor: pointer; font-family: 'Inter', sans-serif; }
+.mgr-btn { display: flex; align-items: center; gap: 12px; background: var(--text); color: white; border: none; border-radius: var(--radius-sm); padding: 14px 18px; width: 100%; text-decoration: none; transition: background .15s; }
 .mgr-btn:hover { background: #333; }
 .mgr-ph { font-size: 15px; font-weight: 700; letter-spacing: 0.5px; }
 .mgr-lbl { font-size: 10px; opacity: 0.6; letter-spacing: 0.5px; text-transform: uppercase; }
@@ -186,13 +149,11 @@ select { cursor: pointer; }
 .faq-hd { padding: 16px 20px; border-bottom: 1px solid var(--border); font-size: 10px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
 .faq-cat { border-bottom: 1px solid var(--border); }
 .faq-cat-btn { width: 100%; background: none; border: none; padding: 14px 20px; text-align: left; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; color: var(--text); display: flex; align-items: center; justify-content: space-between; transition: background .1s; }
-.faq-cat-btn:hover { background: var(--bg); }
-.faq-cat-btn.open { background: var(--bg); }
+.faq-cat-btn:hover, .faq-cat-btn.open { background: var(--bg); }
 .faq-questions { display: none; }
 .faq-questions.open { display: block; }
 .faq-q-btn { width: 100%; background: none; border: none; border-top: 1px solid var(--border); padding: 12px 20px 12px 36px; text-align: left; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 500; color: var(--text-soft); display: flex; align-items: center; justify-content: space-between; gap: 8px; transition: all .1s; line-height: 1.5; }
-.faq-q-btn:hover { background: var(--bg); color: var(--text); }
-.faq-q-btn.open { color: var(--text); background: var(--bg); }
+.faq-q-btn:hover, .faq-q-btn.open { background: var(--bg); color: var(--text); }
 .faq-answer { display: none; padding: 12px 20px 14px 36px; font-size: 12px; color: var(--text-soft); line-height: 1.8; background: #FAFAF8; border-top: 1px solid var(--border); }
 .faq-answer.open { display: block; }
 
@@ -201,39 +162,35 @@ select { cursor: pointer; }
 .modal-overlay.show { display: flex; }
 .modal { background: var(--white); border-radius: var(--radius); width: 460px; max-width: 95vw; max-height: 78vh; display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0,0,0,0.15); overflow: hidden; }
 .modal-hd { padding: 18px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
-.modal-title { font-size: 14px; font-weight: 700; letter-spacing: -0.2px; }
-.modal-close { background: none; border: none; cursor: pointer; font-size: 18px; color: var(--text-muted); width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 4px; transition: background .1s; }
+.modal-title { font-size: 14px; font-weight: 700; }
+.modal-close { background: none; border: none; cursor: pointer; font-size: 18px; color: var(--text-muted); width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 4px; }
 .modal-close:hover { background: var(--bg); }
 .modal-search { padding: 12px 20px; border-bottom: 1px solid var(--border); }
 .modal-search input { background: var(--bg); }
 .modal-list { overflow-y: auto; flex: 1; }
 .school-item { padding: 14px 20px; border-bottom: 1px solid var(--bg); cursor: pointer; transition: background .1s; display: flex; align-items: center; gap: 14px; }
 .school-item:hover { background: var(--bg); }
-.s-dot { width: 8px; height: 8px; background: var(--border); border-radius: 50%; flex-shrink: 0; }
+.s-dot { width: 8px; height: 8px; background: var(--border); border-radius: 50%; flex-shrink: 0; transition: background .1s; }
 .school-item:hover .s-dot { background: var(--orange); }
-.s-info { flex: 1; }
 .s-name { font-weight: 600; font-size: 13px; color: var(--text); }
 .s-addr { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
 .s-price { font-size: 12px; font-weight: 600; color: var(--text-soft); white-space: nowrap; }
 
-/* LOADING */
 .loading-overlay { display: none; position: fixed; inset: 0; background: rgba(245,244,240,0.9); z-index: 999; align-items: center; justify-content: center; flex-direction: column; gap: 14px; backdrop-filter: blur(4px); }
 .loading-overlay.show { display: flex; }
 .spin { width: 32px; height: 32px; border: 2px solid var(--border); border-top-color: var(--text); border-radius: 50%; animation: spin .7s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
-.loading-text { font-size: 12px; color: var(--text-soft); letter-spacing: 0.3px; }
+.loading-text { font-size: 12px; color: var(--text-soft); }
 
-/* TOAST */
-.toast { position: fixed; bottom: 20px; right: 20px; background: var(--text); color: white; border-radius: var(--radius-sm); padding: 11px 16px; font-size: 12px; font-weight: 500; z-index: 9999; transform: translateY(50px); opacity: 0; transition: all .25s; max-width: 280px; letter-spacing: 0.2px; }
+.toast { position: fixed; bottom: 20px; right: 20px; background: var(--text); color: white; border-radius: var(--radius-sm); padding: 11px 16px; font-size: 12px; font-weight: 500; z-index: 9999; transform: translateY(50px); opacity: 0; transition: all .25s; max-width: 280px; }
 .toast.show { transform: translateY(0); opacity: 1; }
 .toast.error { background: var(--error); }
 .toast.success { background: var(--success); }
 
-/* ACCESS DENIED */
 .access-denied { display: none; flex-direction: column; align-items: center; justify-content: center; height: 100vh; gap: 16px; text-align: center; padding: 40px; }
 .access-denied.show { display: flex; }
 .access-denied h2 { font-size: 20px; font-weight: 700; }
-.access-denied p { color: var(--text-soft); font-size: 14px; }
+.access-denied p { color: var(--text-soft); font-size: 14px; line-height: 1.6; }
 
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
@@ -248,41 +205,34 @@ select { cursor: pointer; }
 </head>
 <body>
 
-<!-- ACCESS DENIED -->
 <div class="access-denied" id="accessDenied">
-  <div style="font-size:32px">🔒</div>
+  <div style="font-size:40px">🔒</div>
   <h2>Доступ закрыт</h2>
   <p>Эта страница доступна только по персональной ссылке.<br>Обратитесь к менеджеру OutWay.</p>
 </div>
 
-<!-- MAIN APP -->
 <div id="app" style="display:none">
 
 <header class="header">
   <div>
-    <div class="logo">OUT<span class="logo-dot">·</span>WAY</div>
+    <div class="logo">OUTWAY</div>
     <div class="logo-sub">Организатор школьного трансфера</div>
   </div>
   <div class="hd"></div>
-  <div class="school-badge" id="headerBadge">
-    <span id="headerSchoolName"></span>
-  </div>
+  <div class="school-badge" id="headerBadge"><span id="headerSchoolName"></span></div>
   <div class="header-right">
     <button class="nav-btn active" onclick="showSection('form')">Заявка</button>
     <button class="nav-btn" onclick="showSection('faq')">Вопросы</button>
   </div>
 </header>
 
-<!-- SCHOOL MODAL -->
 <div class="modal-overlay" id="schoolModal">
   <div class="modal">
     <div class="modal-hd">
       <div class="modal-title">Выберите школу</div>
       <button class="modal-close" onclick="closeSchoolModal()">✕</button>
     </div>
-    <div class="modal-search">
-      <input type="text" id="schoolSearch" placeholder="Поиск..." oninput="filterSchools(this.value)">
-    </div>
+    <div class="modal-search"><input type="text" id="schoolSearch" placeholder="Поиск..." oninput="filterSchools(this.value)"></div>
     <div class="modal-list" id="schoolList"></div>
   </div>
 </div>
@@ -296,7 +246,6 @@ select { cursor: pointer; }
 <div class="layout">
   <div class="sidebar">
 
-    <!-- FORM -->
     <div class="sidebar-section active" id="sectionForm">
       <div class="school-select-wrap">
         <div class="field-label">Школа</div>
@@ -309,16 +258,13 @@ select { cursor: pointer; }
 
       <div class="form-wrap" id="formWrap" style="display:none">
 
-        <!-- 1. ADDRESS -->
         <div class="form-section">
           <div class="form-section-title"><span class="step-num">1</span> Адрес ребёнка</div>
           <div class="addr-wrap">
             <div class="addr-input-inner">
               <span class="addr-icon">⌕</span>
-              <input type="text" id="addressInput" placeholder="Начните вводить адрес..." autocomplete="off"
-                oninput="onAddrInput(this.value)" onblur="setTimeout(closeAddrSug,180)">
+              <input id="pac-input" type="text" placeholder="Начните вводить адрес в Бишкеке...">
             </div>
-            <div class="addr-suggestions" id="addrSug"></div>
           </div>
           <div class="dist-badge" id="distBadge">
             <div class="dist-left">
@@ -329,26 +275,20 @@ select { cursor: pointer; }
           </div>
         </div>
 
-        <!-- 2. TRANSPORT -->
         <div class="form-section">
           <div class="form-section-title"><span class="step-num">2</span> Тип транспорта</div>
           <div class="ts-options" id="tsOptions"></div>
         </div>
 
-        <!-- 3. CHILDREN -->
         <div class="form-section">
           <div class="form-section-title"><span class="step-num">3</span> Дети</div>
           <div id="childrenList"></div>
           <button class="btn-add" onclick="addChild()">+ Добавить ребёнка</button>
         </div>
 
-        <!-- 4. PARENT -->
         <div class="form-section">
           <div class="form-section-title"><span class="step-num">4</span> Законный представитель</div>
-          <div class="form-group">
-            <label>ФИО <span class="req">*</span></label>
-            <input type="text" id="parentName" placeholder="Иванова Айгерим Асановна">
-          </div>
+          <div class="form-group"><label>ФИО <span class="req">*</span></label><input type="text" id="parentName" placeholder="Иванова Айгерим Асановна"></div>
           <div class="form-row">
             <div class="form-group">
               <label>Родство <span class="req">*</span></label>
@@ -359,35 +299,19 @@ select { cursor: pointer; }
             </div>
           </div>
           <div class="form-row">
-            <div class="form-group">
-              <label>Телефон 1 <span class="req">*</span></label>
-              <input type="tel" id="parentPhone1" placeholder="+996 700 000 000">
-            </div>
-            <div class="form-group">
-              <label>Телефон 2</label>
-              <input type="tel" id="parentPhone2" placeholder="+996 700 000 000">
-            </div>
+            <div class="form-group"><label>Телефон 1 <span class="req">*</span></label><input type="tel" id="parentPhone1" placeholder="+996 700 000 000"></div>
+            <div class="form-group"><label>Телефон 2</label><input type="tel" id="parentPhone2" placeholder="+996 700 000 000"></div>
           </div>
-          <div class="form-group">
-            <label>Telegram <span class="req">*</span></label>
-            <input type="tel" id="parentTelegram" placeholder="+996 700 000 000">
-          </div>
+          <div class="form-group"><label>Telegram <span class="req">*</span></label><input type="tel" id="parentTelegram" placeholder="+996 700 000 000"></div>
         </div>
 
-        <!-- 5. EXTRA CONTACT -->
         <div class="form-section">
           <div class="form-section-title"><span class="step-num">5</span> Дополнительный контакт</div>
-          <button class="add-ct-toggle" onclick="toggleExtraCt()">
-            <span id="extraCtIcon">+</span> Добавить доп. контакт
-          </button>
+          <button class="add-ct-toggle" onclick="toggleExtraCt()"><span id="extraCtIcon">+</span> Добавить доп. контакт</button>
           <div class="extra-ct" id="extraCtForm">
             <div class="form-group"><label>Имя</label><input type="text" id="extraName" placeholder="Имя"></div>
-            <div class="form-group">
-              <label>Родство</label>
-              <select id="extraRelation">
-                <option value="">Выберите</option>
-                <option>Мать</option><option>Отец</option><option>Бабушка</option><option>Дедушка</option><option>Няня</option><option>Другое</option>
-              </select>
+            <div class="form-group"><label>Родство</label>
+              <select id="extraRelation"><option value="">Выберите</option><option>Мать</option><option>Отец</option><option>Бабушка</option><option>Дедушка</option><option>Няня</option><option>Другое</option></select>
             </div>
             <div class="form-row">
               <div class="form-group"><label>Телефон 1</label><input type="tel" id="extraPhone1" placeholder="+996 700 000 000"></div>
@@ -396,13 +320,11 @@ select { cursor: pointer; }
           </div>
         </div>
 
-        <!-- 6. COMMENT -->
         <div class="form-section">
           <div class="form-section-title"><span class="step-num">6</span> Комментарий</div>
           <textarea id="comment" placeholder="Дополнительные пожелания..."></textarea>
         </div>
 
-        <!-- PRICE -->
         <div class="price-summary" id="priceSummary">
           <div class="ps-title">Итог</div>
           <div id="priceRows"></div>
@@ -417,63 +339,42 @@ select { cursor: pointer; }
         <div style="height:24px"></div>
       </div>
 
-      <!-- SUCCESS -->
       <div class="success-screen" id="successScreen">
         <div class="s-check">✓</div>
         <div class="s-title">Заявка принята</div>
-        <div class="s-sub">Менеджер свяжется с вами в течение рабочего дня для подтверждения места в трансфере</div>
+        <div class="s-sub">Менеджер свяжется с вами в течение рабочего дня для подтверждения места</div>
         <div class="s-card" id="successCard"></div>
         <a class="mgr-btn" id="mgrCallLink" href="#">
-          <div>
-            <div class="mgr-lbl">Позвонить менеджеру</div>
-            <div class="mgr-ph" id="mgrPhone">—</div>
-          </div>
-          <span style="margin-left:auto;font-size:18px">→</span>
+          <div><div class="mgr-lbl">Позвонить менеджеру</div><div class="mgr-ph" id="mgrPhone">—</div></div>
+          <span style="margin-left:auto">→</span>
         </a>
         <button class="btn-submit" onclick="location.reload()" style="background:var(--bg);color:var(--text);border:1px solid var(--border);margin-top:0">Новая заявка</button>
       </div>
     </div>
 
-    <!-- FAQ -->
     <div class="sidebar-section" id="sectionFaq">
       <div class="faq-hd">Часто задаваемые вопросы</div>
-      <div class="faq-sidebar">
-        <div id="faqCategories"></div>
-      </div>
+      <div class="faq-sidebar"><div id="faqCategories"></div></div>
     </div>
 
   </div>
 
-  <div class="map-area">
-    <div id="map"></div>
-  </div>
+  <div class="map-area"><div id="map"></div></div>
+</div>
 </div>
 
-</div><!-- /app -->
-
 <script>
-// ── CONFIG ──────────────────────────────────────────────────
-const DGIS_KEY = '79a2eaa2-bd14-4644-acff-17122d100174';
+const GOOGLE_KEY = 'AIzaSyCgh5hCCGGDGfPY2Ph9gBB6yKZa4HQ3bDg';
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzWJwT3kDO1HL8MILw7ZKy5SocFZn8nOixscMer9O2g2jkc3c4r-5quo4_f3TEIFC4c/exec';
 
-// ── SECRET KEYS per school ───────────────────────────────────
 const SCHOOL_KEYS = {
-  'kings':   { key: 'KNG2026',  id: 'kings'   },
-  'light':   { key: 'LGT2026',  id: 'light'   },
-  'aes':     { key: 'AES2026',  id: 'aes'     },
-  'kas':     { key: 'KAS2026',  id: 'kas'     },
-  'tensay':  { key: 'TNS2026',  id: 'tensay'  },
-  'erudit':  { key: 'ERD2026',  id: 'erudit'  },
-  'indigo':  { key: 'IND2026',  id: 'indigo'  },
-  'genius':  { key: 'GNS2026',  id: 'genius'  },
-  'epsilon': { key: 'EPS2026',  id: 'epsilon' },
-  'nova':    { key: 'NOV2026',  id: 'nova'    },
-  'bilim':   { key: 'BLM2026',  id: 'bilim'   },
-  'edison':  { key: 'EDS2026',  id: 'edison'  },
-  'admin':   { key: 'ADMIN2026', id: null      },
+  kings:   'KNG2026', light:  'LGT2026', aes:    'AES2026',
+  kas:     'KAS2026', tensay: 'TNS2026', erudit: 'ERD2026',
+  indigo:  'IND2026', genius: 'GNS2026', epsilon:'EPS2026',
+  nova:    'NOV2026', bilim:  'BLM2026', edison: 'EDS2026',
+  admin:   'ADMIN2026'
 };
 
-// ── SCHOOLS ─────────────────────────────────────────────────
 const SCHOOLS = [
   { id:'edison',  name:'Эдисон',                   lat:42.829238, lng:74.630159, addr:'ул. Сухэ-Батора, 7А/1',            manager:'996999260894', p1:6500,p2:7000,p3:0,    branches:null },
   { id:'erudit',  name:'Эрудит-ISIT',               lat:42.818826, lng:74.636966, addr:'ул. Саякбая Каралаева, 21/1',      manager:'996550242924', p1:6000,p2:6500,p3:0,    branches:null },
@@ -487,10 +388,10 @@ const SCHOOLS = [
   { id:'kings',   name:'Kings International School',lat:42.870399, lng:74.508924, addr:'ул. Барпы Алыкулова, 3А',         manager:'996999260894', p1:5000,p2:5500,p3:6000, branches:null },
   { id:'indigo',  name:'Индиго',                    lat:42.844550, lng:74.630410, addr:'ул. Кара-Дарыя',                  manager:'996555242924', p1:5500,p2:6000,p3:6500,
     branches:[
-      { id:'indigo_kids',  name:'Индиго Kids',           lat:42.844550, lng:74.630410, addr:'Бишкек, ул. Кара-Дарыя' },
-      { id:'indigo_prime', name:'Indigo Prime Academy',   lat:42.825887, lng:74.619915, addr:'7-й микрорайон, 16/9' },
-      { id:'indigo_west',  name:'Indigo West',            lat:42.871562, lng:74.582797, addr:'Московская ул., 191А' },
-      { id:'indigo_girls', name:'Asylkech Girls School',  lat:42.844254, lng:74.630409, addr:'ул. Кара-Дарыя, 16/2' },
+      { id:'indigo_kids',  name:'Индиго Kids',          lat:42.844550, lng:74.630410, addr:'Бишкек, ул. Кара-Дарыя' },
+      { id:'indigo_prime', name:'Indigo Prime Academy',  lat:42.825887, lng:74.619915, addr:'7-й микрорайон, 16/9' },
+      { id:'indigo_west',  name:'Indigo West',           lat:42.871562, lng:74.582797, addr:'Московская ул., 191А' },
+      { id:'indigo_girls', name:'Asylkech Girls School', lat:42.844254, lng:74.630409, addr:'ул. Кара-Дарыя, 16/2' },
     ]},
   { id:'genius',  name:'Гениум',                    lat:42.866027, lng:74.593115, addr:'ул. Чуйкова, 132А',               manager:'996555242924', p1:5500,p2:6000,p3:6500,
     branches:[
@@ -499,141 +400,127 @@ const SCHOOLS = [
     ]},
 ];
 
-// ── ACCESS CONTROL ───────────────────────────────────────────
-let allowedSchoolId = null;
-let isAdmin = false;
+let allowedSchoolId = null, isAdmin = false;
+const S = { school:null, branch:null, schoolLat:null, schoolLng:null, homeLat:null, homeLng:null, homeText:'', distKm:null, zone:null, zonePrice:null, tsType:'bus', children:[{name:'',grade:''}], extraOpen:false };
+let gmap, homeMarker, schoolMarker, directionsRenderer, autocomplete;
 
 function checkAccess() {
-  const params = new URLSearchParams(window.location.search);
-  const school = params.get('school');
-  const key = params.get('key');
-
-  if (!school || !key) { showAccessDenied(); return; }
-
-  const entry = SCHOOL_KEYS[school];
-  if (!entry || entry.key !== key) { showAccessDenied(); return; }
-
-  if (school === 'admin') {
-    isAdmin = true;
-    allowedSchoolId = null;
-  } else {
-    allowedSchoolId = entry.id;
-  }
-
+  const p = new URLSearchParams(window.location.search);
+  const school = p.get('school'), key = p.get('key');
+  if (!school || !key || SCHOOL_KEYS[school] !== key) { document.getElementById('accessDenied').classList.add('show'); return; }
+  if (school === 'admin') { isAdmin = true; allowedSchoolId = null; }
+  else { allowedSchoolId = school; }
   document.getElementById('app').style.display = 'block';
-  initApp();
 }
 
-function showAccessDenied() {
-  document.getElementById('accessDenied').classList.add('show');
-}
-
-// ── STATE ────────────────────────────────────────────────────
-const S = {
-  school:null, branch:null,
-  schoolLat:null, schoolLng:null,
-  homeLat:null, homeLng:null, homeText:'',
-  distKm:null, zone:null, zonePrice:null,
-  tsType:'bus',
-  children:[{name:'',grade:''}],
-  extraOpen:false,
-};
-
-// ── MAP (2GIS MapGL) ─────────────────────────────────────────
-let map2gis, homeMarker, schoolMarker, routeLine;
-
-function initMap() {
-  map2gis = new mapgl.Map('map', {
-    center: [74.59, 42.87],
+function initGoogleMap() {
+  gmap = new google.maps.Map(document.getElementById('map'), {
+    center: { lat: 42.87, lng: 74.59 },
     zoom: 12,
-    key: DGIS_KEY,
-    lang: 'ru'
+    mapTypeControl: false,
+    streetViewControl: false,
+    fullscreenControl: false,
+    styles: [
+      { featureType: 'poi', stylers: [{ visibility: 'off' }] },
+      { featureType: 'transit', stylers: [{ visibility: 'off' }] },
+    ]
   });
+
+  autocomplete = new google.maps.places.Autocomplete(
+    document.getElementById('pac-input'),
+    { componentRestrictions: { country: 'kg' }, fields: ['geometry', 'name', 'formatted_address'], language: 'ru' }
+  );
+
+  autocomplete.addListener('place_changed', () => {
+    const place = autocomplete.getPlace();
+    if (!place.geometry) return;
+    const lat = place.geometry.location.lat();
+    const lng = place.geometry.location.lng();
+    S.homeLat = lat; S.homeLng = lng;
+    S.homeText = place.formatted_address || place.name;
+    if (S.schoolLat) { calcDist(lat, lng); setHomeMarker(lat, lng); }
+  });
+
+  directionsRenderer = new google.maps.DirectionsRenderer({
+    suppressMarkers: true,
+    polylineOptions: { strokeColor: '#E8621A', strokeWeight: 4, strokeOpacity: 0.8 }
+  });
+  directionsRenderer.setMap(gmap);
+
+  renderFaq();
+
+  if (!isAdmin && allowedSchoolId) {
+    const s = SCHOOLS.find(x => x.id === allowedSchoolId);
+    if (s) {
+      document.getElementById('selectedSchoolLabel').textContent = s.name;
+      document.getElementById('headerBadge').style.display = 'flex';
+      document.getElementById('headerSchoolName').textContent = s.name;
+      document.getElementById('schoolSelectBtn').style.pointerEvents = 'none';
+      document.getElementById('schoolSelectBtn').style.opacity = '0.75';
+      S.school = s;
+      if (s.branches) {
+        const bp = document.getElementById('branchPicker');
+        bp.innerHTML = s.branches.map(b => `<button class="branch-btn" onclick="selectBranch('${s.id}','${b.id}')" id="bb_${b.id}">${b.name}</button>`).join('');
+        bp.classList.add('show');
+        selectBranch(s.id, s.branches[0].id);
+      } else {
+        S.schoolLat = s.lat; S.schoolLng = s.lng;
+        setSchoolMarker(s.lat, s.lng, s.name);
+        gmap.setCenter({ lat: s.lat, lng: s.lng }); gmap.setZoom(14);
+        showForm();
+      }
+    }
+  }
 }
 
 function setSchoolMarker(lat, lng, name) {
-  if (schoolMarker) schoolMarker.destroy();
-  schoolMarker = new mapgl.Marker(map2gis, {
-    coordinates: [lng, lat],
-    label: { text: '🏫 ' + name, relativeAnchor: [0.5, 2] }
+  if (schoolMarker) schoolMarker.setMap(null);
+  schoolMarker = new google.maps.Marker({
+    position: { lat, lng }, map: gmap,
+    title: name,
+    icon: { url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36"><circle cx="18" cy="18" r="18" fill="#111111"/><text x="18" y="23" text-anchor="middle" font-size="16" font-family="Inter,sans-serif">🏫</text></svg>`), scaledSize: new google.maps.Size(36, 36) }
   });
+  new google.maps.InfoWindow({ content: `<div style="font-family:Inter,sans-serif;font-size:12px;font-weight:600;padding:2px 4px">${name}</div>` }).open(gmap, schoolMarker);
 }
 
 function setHomeMarker(lat, lng) {
-  if (homeMarker) homeMarker.destroy();
-  homeMarker = new mapgl.Marker(map2gis, {
-    coordinates: [lng, lat],
-    label: { text: '🏠 Дом', relativeAnchor: [0.5, 2] }
+  if (homeMarker) homeMarker.setMap(null);
+  homeMarker = new google.maps.Marker({
+    position: { lat, lng }, map: gmap,
+    icon: { url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36"><circle cx="18" cy="18" r="18" fill="#E8621A"/><text x="18" y="23" text-anchor="middle" font-size="16" font-family="Inter,sans-serif">🏠</text></svg>`), scaledSize: new google.maps.Size(36, 36) }
   });
-  fetchRoute(lat, lng, S.schoolLat, S.schoolLng);
+  drawRoute(lat, lng, S.schoolLat, S.schoolLng);
 }
 
-async function fetchRoute(lat1, lng1, lat2, lng2) {
+function drawRoute(lat1, lng1, lat2, lng2) {
   if (!lat2) return;
-  if (routeLine) { routeLine.destroy(); routeLine = null; }
-  try {
-    const url = `https://router.project-osrm.org/route/v1/driving/${lng1},${lat1};${lng2},${lat2}?overview=full&geometries=geojson`;
-    const r = await fetch(url);
-    const d = await r.json();
-    if (d.routes && d.routes[0]) {
-      const coords = d.routes[0].geometry.coordinates;
-      routeLine = new mapgl.Polyline(map2gis, {
-        coordinates: coords,
-        width: 4,
-        color: '#E8621A',
-        opacity: 0.8
-      });
-      // fit bounds
-      const lngs = coords.map(c => c[0]);
-      const lats = coords.map(c => c[1]);
-      map2gis.fitBounds({
-        northEast: [Math.max(...lngs) + 0.01, Math.max(...lats) + 0.01],
-        southWest: [Math.min(...lngs) - 0.01, Math.min(...lats) - 0.01]
-      });
-    }
-  } catch(e) {
-    // fallback line
-    if (routeLine) { routeLine.destroy(); routeLine = null; }
-    routeLine = new mapgl.Polyline(map2gis, {
-      coordinates: [[lng1,lat1],[lng2,lat2]],
-      width: 3,
-      color: '#E8621A',
-      opacity: 0.6
-    });
-  }
-}
-
-// ── SCHOOL MODAL ─────────────────────────────────────────────
-function getAvailableSchools() {
-  if (isAdmin) return SCHOOLS;
-  return SCHOOLS.filter(s => s.id === allowedSchoolId);
+  const svc = new google.maps.DirectionsService();
+  svc.route({
+    origin: { lat: lat1, lng: lng1 },
+    destination: { lat: lat2, lng: lng2 },
+    travelMode: google.maps.TravelMode.DRIVING
+  }, (result, status) => {
+    if (status === 'OK') directionsRenderer.setDirections(result);
+  });
 }
 
 function openSchoolModal() {
-  const schools = getAvailableSchools();
-  if (schools.length === 1 && !isAdmin) {
-    selectSchool(schools[0].id);
-    return;
-  }
+  const schools = isAdmin ? SCHOOLS : SCHOOLS.filter(s => s.id === allowedSchoolId);
+  if (schools.length === 1 && !isAdmin) { selectSchool(schools[0].id); return; }
   document.getElementById('schoolModal').classList.add('show');
   renderSchoolList(schools);
   setTimeout(() => document.getElementById('schoolSearch').focus(), 80);
 }
-
 function closeSchoolModal() { document.getElementById('schoolModal').classList.remove('show'); }
-
 function filterSchools(q) {
-  const f = getAvailableSchools().filter(s =>
-    s.name.toLowerCase().includes(q.toLowerCase()) || s.addr.toLowerCase().includes(q.toLowerCase())
-  );
+  const f = SCHOOLS.filter(s => s.name.toLowerCase().includes(q.toLowerCase()) || s.addr.toLowerCase().includes(q.toLowerCase()));
   renderSchoolList(f);
 }
-
 function renderSchoolList(list) {
   document.getElementById('schoolList').innerHTML = list.map(s => `
     <div class="school-item" onclick="selectSchool('${s.id}')">
       <div class="s-dot"></div>
-      <div class="s-info"><div class="s-name">${s.name}</div><div class="s-addr">${s.addr}</div></div>
+      <div><div class="s-name">${s.name}</div><div class="s-addr">${s.addr}</div></div>
       <div class="s-price">от ${s.p1.toLocaleString()} с</div>
     </div>`).join('');
 }
@@ -646,20 +533,16 @@ function selectSchool(id) {
   document.getElementById('selectedSchoolLabel').textContent = s.name;
   document.getElementById('headerBadge').style.display = 'flex';
   document.getElementById('headerSchoolName').textContent = s.name;
-
   const bp = document.getElementById('branchPicker');
   if (s.branches) {
-    bp.innerHTML = s.branches.map(b =>
-      `<button class="branch-btn" onclick="selectBranch('${s.id}','${b.id}')" id="bb_${b.id}">${b.name}</button>`
-    ).join('');
+    bp.innerHTML = s.branches.map(b => `<button class="branch-btn" onclick="selectBranch('${s.id}','${b.id}')" id="bb_${b.id}">${b.name}</button>`).join('');
     bp.classList.add('show');
     selectBranch(s.id, s.branches[0].id);
   } else {
     bp.classList.remove('show'); bp.innerHTML = '';
     S.schoolLat = s.lat; S.schoolLng = s.lng;
     setSchoolMarker(s.lat, s.lng, s.name);
-    map2gis.setCenter([s.lng, s.lat]);
-    map2gis.setZoom(14);
+    gmap.setCenter({ lat: s.lat, lng: s.lng }); gmap.setZoom(14);
     showForm();
   }
 }
@@ -671,10 +554,9 @@ function selectBranch(sid, bid) {
   document.querySelectorAll('.branch-btn').forEach(el => el.classList.remove('selected'));
   document.getElementById('bb_' + bid)?.classList.add('selected');
   setSchoolMarker(b.lat, b.lng, b.name);
-  map2gis.setCenter([b.lng, b.lat]);
-  map2gis.setZoom(14);
+  gmap.setCenter({ lat: b.lat, lng: b.lng }); gmap.setZoom(14);
   showForm();
-  if (S.homeLat) calcDist(S.homeLat, S.homeLng);
+  if (S.homeLat) { calcDist(S.homeLat, S.homeLng); setHomeMarker(S.homeLat, S.homeLng); }
 }
 
 function showForm() {
@@ -682,65 +564,8 @@ function showForm() {
   renderTs(); renderChildren(); updatePrice();
 }
 
-// ── 2GIS SUGGEST ─────────────────────────────────────────────
-let addrTimer;
-function onAddrInput(val) {
-  clearTimeout(addrTimer);
-  if (val.length < 2) { closeAddrSug(); return; }
-  const sug = document.getElementById('addrSug');
-  sug.innerHTML = `<div class="sug-empty">Поиск...</div>`;
-  sug.classList.add('open');
-  addrTimer = setTimeout(() => search2GIS(val), 350);
-}
-
-async function search2GIS(q) {
-  try {
-    const url = `https://catalog.api.2gis.com/3.0/suggests?q=${encodeURIComponent(q + ' Бишкек')}&key=${DGIS_KEY}&location=74.59,42.87&type=building,street,crossroads&fields=items.point,items.address_name,items.full_name&page_size=7&locale=ru_KG`;
-    const r = await fetch(url);
-    const d = await r.json();
-    renderAddrSug(d.result?.items || []);
-  } catch(e) { closeAddrSug(); }
-}
-
-function renderAddrSug(items) {
-  const el = document.getElementById('addrSug');
-  if (!items.length) { el.innerHTML = `<div class="sug-empty">Ничего не найдено</div>`; return; }
-  el.innerHTML = items.map(item => {
-    const main = item.name || item.address_name || '';
-    const sub = item.full_name && item.full_name !== main ? item.full_name : '';
-    const lat = item.point?.lat || 0;
-    const lng = item.point?.lon || 0;
-    return `<div class="sug-item" onmousedown="selectAddr(${lat},${lng},'${esc(item.full_name||main)}','${esc(main)}')">
-      <div class="sug-main">${main}</div>${sub ? `<div class="sug-sub">${sub}</div>` : ''}
-    </div>`;
-  }).join('');
-  el.classList.add('open');
-}
-
-function esc(s) { return (s||'').replace(/'/g,"\\'").replace(/"/g,'\\"'); }
-function closeAddrSug() { document.getElementById('addrSug').classList.remove('open'); }
-
-async function selectAddr(lat, lng, fullName, shortName) {
-  closeAddrSug();
-  if (!lat || !lng) {
-    try {
-      const r = await fetch(`https://catalog.api.2gis.com/3.0/items/geocode?q=${encodeURIComponent(fullName)}&key=${DGIS_KEY}&fields=items.point&locale=ru_KG`);
-      const d = await r.json();
-      const pt = d.result?.items?.[0]?.point;
-      if (pt) { lat = pt.lat; lng = pt.lon; }
-    } catch(e) {}
-  }
-  S.homeLat = parseFloat(lat); S.homeLng = parseFloat(lng); S.homeText = fullName;
-  document.getElementById('addressInput').value = shortName || fullName.split(',').slice(0,2).join(',');
-  if (S.schoolLat) {
-    calcDist(S.homeLat, S.homeLng);
-    setHomeMarker(S.homeLat, S.homeLng);
-  }
-}
-
-// ── DISTANCE ─────────────────────────────────────────────────
 function haversine(a,b,c,d) {
-  const R=6371, dL=(c-a)*Math.PI/180, dN=(d-b)*Math.PI/180;
+  const R=6371,dL=(c-a)*Math.PI/180,dN=(d-b)*Math.PI/180;
   const x=Math.sin(dL/2)**2+Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.sin(dN/2)**2;
   return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));
 }
@@ -760,18 +585,23 @@ function calcDist(lat, lng) {
   renderTs(); updatePrice();
 }
 
-// ── TRANSPORT ────────────────────────────────────────────────
+const TS_ICONS = {
+  bus: `<svg class="ts-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="5" width="20" height="13" rx="2"/><path d="M2 10h20"/><circle cx="7" cy="18" r="1.5"/><circle cx="17" cy="18" r="1.5"/><path d="M7 5V3M17 5V3"/></svg>`,
+  van: `<svg class="ts-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 12V8a2 2 0 012-2h10l4 4v4"/><path d="M3 12h18v4a1 1 0 01-1 1H4a1 1 0 01-1-1v-4z"/><circle cx="7" cy="17" r="1.5"/><circle cx="17" cy="17" r="1.5"/></svg>`,
+  sedan: `<svg class="ts-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12l2-5h10l2 5"/><path d="M3 12h18v5a1 1 0 01-1 1H4a1 1 0 01-1-1v-5z"/><circle cx="7" cy="17.5" r="1.5"/><circle cx="17" cy="17.5" r="1.5"/><path d="M7 7h10"/></svg>`
+};
+
 function renderTs() {
   const zp = S.zonePrice || 0;
   const opts = [
-    { id:'bus',   icon:'🚌', name:'Микроавтобус', desc:'До 20 мест', price:zp,    sub:S.zone?'Зона '+S.zone:'выберите адрес' },
-    { id:'van',   icon:'🚐', name:'Минивэн',       desc:'До 8 мест',  price:9500,  sub:'фиксированная' },
-    { id:'sedan', icon:'🚗', name:'Седан',          desc:'До 4 мест',  price:10500, sub:'фиксированная' },
+    { id:'bus',   name:'Микроавтобус', desc:'До 20 мест', price:zp,    sub:S.zone?'Зона '+S.zone:'выберите адрес' },
+    { id:'van',   name:'Минивэн',       desc:'До 8 мест',  price:9500,  sub:'фиксированная' },
+    { id:'sedan', name:'Седан',          desc:'До 4 мест',  price:10500, sub:'фиксированная' },
   ];
   document.getElementById('tsOptions').innerHTML = opts.map(o => `
     <label class="ts-opt ${S.tsType===o.id?'selected':''}" onclick="selectTs('${o.id}')">
       <input type="radio" name="ts">
-      <div class="ts-icon-wrap">${o.icon}</div>
+      <div class="ts-icon-wrap">${TS_ICONS[o.id]}</div>
       <div class="ts-info"><div class="ts-name">${o.name}</div><div class="ts-desc">${o.desc}</div></div>
       <div class="ts-price-wrap">
         <div class="ts-price">${o.price?o.price.toLocaleString()+' с':'—'}</div>
@@ -783,7 +613,6 @@ function renderTs() {
 function selectTs(t) { S.tsType=t; renderTs(); updatePrice(); }
 function getTsPrice() { return S.tsType==='bus'?S.zonePrice||0:S.tsType==='van'?9500:10500; }
 
-// ── CHILDREN ─────────────────────────────────────────────────
 function renderChildren() {
   document.getElementById('childrenList').innerHTML = S.children.map((c,i) => `
     <div class="child-card">
@@ -802,39 +631,35 @@ function renderChildren() {
 function addChild() { S.children.push({name:'',grade:''}); renderChildren(); updatePrice(); }
 function rmChild(i) { S.children.splice(i,1); renderChildren(); updatePrice(); }
 
-// ── PRICE ────────────────────────────────────────────────────
 function updatePrice() {
   const base = getTsPrice();
   const ps = document.getElementById('priceSummary');
   if (!base || !S.children.length) { ps.style.display='none'; return; }
-  ps.style.display = 'block';
-  let total = 0;
+  ps.style.display='block';
+  let total=0;
   document.getElementById('priceRows').innerHTML = S.children.map((c,i) => {
-    const p = Math.round(base*(i>0?.95:1)); total += p;
+    const p=Math.round(base*(i>0?.95:1)); total+=p;
     return `<div class="price-row"><span>${c.name||'Ребёнок '+(i+1)}${i>0?' (−5%)':''}</span><span class="val">${p.toLocaleString()} сом</span></div>`;
   }).join('');
   document.getElementById('priceTotal').textContent = total.toLocaleString();
 }
 
-// ── EXTRA CONTACT ────────────────────────────────────────────
 function toggleExtraCt() {
-  S.extraOpen = !S.extraOpen;
-  document.getElementById('extraCtForm').classList.toggle('show', S.extraOpen);
-  document.getElementById('extraCtIcon').textContent = S.extraOpen?'−':'+';
+  S.extraOpen=!S.extraOpen;
+  document.getElementById('extraCtForm').classList.toggle('show',S.extraOpen);
+  document.getElementById('extraCtIcon').textContent=S.extraOpen?'−':'+';
 }
 
-// ── SECTION SWITCH ───────────────────────────────────────────
 function showSection(sec) {
   document.querySelectorAll('.sidebar-section').forEach(s=>s.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById('sectionForm').classList.toggle('active', sec==='form');
-  document.getElementById('sectionFaq').classList.toggle('active', sec==='faq');
+  document.getElementById('sectionForm').classList.toggle('active',sec==='form');
+  document.getElementById('sectionFaq').classList.toggle('active',sec==='faq');
   document.querySelectorAll('.nav-btn').forEach(b=>{
     if((sec==='form'&&b.textContent==='Заявка')||(sec==='faq'&&b.textContent==='Вопросы')) b.classList.add('active');
   });
 }
 
-// ── SUBMIT ───────────────────────────────────────────────────
 async function submitForm() {
   if (!S.school) { toast('Выберите школу','error'); return; }
   if (!S.homeLat) { toast('Укажите адрес','error'); return; }
@@ -844,148 +669,107 @@ async function submitForm() {
   if (!v('parentPhone1')) { toast('Укажите телефон','error'); return; }
   if (!v('parentTelegram')) { toast('Укажите Telegram','error'); return; }
 
-  const base = getTsPrice();
-  const schoolName = S.branch ? S.branch.name : S.school.name;
-  const tsMap = {bus:'Микроавтобус',van:'Минивэн',sedan:'Седан'};
-  let total = 0;
-  const childStr = S.children.map((c,i)=>{const p=Math.round(base*(i>0?.95:1));total+=p;return `${c.name} (${c.grade}) — ${p} сом${i>0?' −5%':''}`;}).join(' | ');
+  const base=getTsPrice(), schoolName=S.branch?S.branch.name:S.school.name;
+  const tsMap={bus:'Микроавтобус',van:'Минивэн',sedan:'Седан'};
+  let total=0;
+  const childStr=S.children.map((c,i)=>{const p=Math.round(base*(i>0?.95:1));total+=p;return `${c.name} (${c.grade}) — ${p} сом${i>0?' −5%':''}`;}).join(' | ');
 
-  const payload = {
-    timestamp: new Date().toLocaleString('ru-RU'),
-    school: schoolName, branch: S.branch?S.branch.name:'',
-    address: S.homeText,
-    lat: S.homeLat, lng: S.homeLng,
-    schoolLat: S.schoolLat, schoolLng: S.schoolLng,
-    distanceKm: S.distKm?S.distKm.toFixed(2):'', zone: S.zone||'',
-    transport: tsMap[S.tsType], zonePrice: base,
-    children: childStr, childrenCount: S.children.length, totalPerMonth: total,
-    parentName: v('parentName'), parentRelation: v('parentRelation'),
-    parentPhone1: v('parentPhone1'), parentPhone2: v('parentPhone2'), parentTelegram: v('parentTelegram'),
-    extraName: v('extraName'), extraRelation: v('extraRelation'),
-    extraPhone1: v('extraPhone1'), extraPhone2: v('extraPhone2'),
-    comment: v('comment'), manager: S.school.manager,
+  const payload={
+    timestamp:new Date().toLocaleString('ru-RU'),
+    school:schoolName, branch:S.branch?S.branch.name:'',
+    address:S.homeText, lat:S.homeLat, lng:S.homeLng,
+    schoolLat:S.schoolLat, schoolLng:S.schoolLng,
+    distanceKm:S.distKm?S.distKm.toFixed(2):'', zone:S.zone||'',
+    transport:tsMap[S.tsType], zonePrice:base,
+    children:childStr, childrenCount:S.children.length, totalPerMonth:total,
+    parentName:v('parentName'), parentRelation:v('parentRelation'),
+    parentPhone1:v('parentPhone1'), parentPhone2:v('parentPhone2'), parentTelegram:v('parentTelegram'),
+    extraName:v('extraName'), extraRelation:v('extraRelation'),
+    extraPhone1:v('extraPhone1'), extraPhone2:v('extraPhone2'),
+    comment:v('comment'), manager:S.school.manager,
   };
 
   document.getElementById('loadingOverlay').classList.add('show');
   try {
     await fetch(APPS_SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
-    showSuccess(payload, schoolName, total);
+    showSuccess(payload,schoolName,total);
   } catch(e) { toast('Ошибка. Попробуйте ещё раз.','error'); }
   finally { document.getElementById('loadingOverlay').classList.remove('show'); }
 }
 
 function v(id) { return (document.getElementById(id)||{}).value?.trim()||''; }
 
-function showSuccess(p, schoolName, total) {
+function showSuccess(p,schoolName,total) {
   document.getElementById('formWrap').style.display='none';
-  document.getElementById('successCard').innerHTML = `
+  document.getElementById('successCard').innerHTML=`
     <div class="s-row"><span class="k">Школа</span><span class="v">${schoolName}</span></div>
     <div class="s-row"><span class="k">Адрес</span><span class="v">${p.address.split(',').slice(0,2).join(',')}</span></div>
     <div class="s-row"><span class="k">Расстояние</span><span class="v">${p.distanceKm} км · Зона ${p.zone}</span></div>
     <div class="s-row"><span class="k">Транспорт</span><span class="v">${p.transport}</span></div>
     <div class="s-row"><span class="k">Детей</span><span class="v">${p.childrenCount}</span></div>
     <div class="s-row"><span class="k">Итого / мес</span><span class="v" style="font-size:16px;font-weight:700">${total.toLocaleString()} сом</span></div>`;
-  const ph = '+' + p.manager;
-  document.getElementById('mgrPhone').textContent = ph;
-  document.getElementById('mgrCallLink').href = 'tel:' + ph;
+  const ph='+'+p.manager;
+  document.getElementById('mgrPhone').textContent=ph;
+  document.getElementById('mgrCallLink').href='tel:'+ph;
   document.getElementById('successScreen').classList.add('show');
 }
 
-// ── FAQ ──────────────────────────────────────────────────────
-const FAQ = [
+const FAQ=[
   {cat:'Цены и оплата',items:[
-    {q:'Почему цена не меняется на каникулах?',a:'Стоимость рассчитана за весь учебный год (162 рабочих дня) и равномерно распределена на 9 месяцев. Это фиксированный абонемент. Пропуски, болезни и каникулы уже учтены через резервные дни.'},
-    {q:'Что будет если опоздать с оплатой?',a:'Пеня 100 сом за каждый день просрочки начиная с 6-го числа, но не более 15% от суммы месячного долга. При просрочке 10+ дней — приостановка услуг.'},
-    {q:'Есть ли скидки?',a:'5% на второго и каждого последующего ребёнка из одной семьи. Индивидуальные условия — только по согласованию с администрацией.'},
-    {q:'Что такое депозит?',a:'При подписании оплачивается первый месяц + депозит (= 1 месячный платёж). Засчитывается за май. При расторжении по инициативе родителя — не возвращается.'},
-    {q:'Может ли цена вырасти из-за топлива?',a:'Базовая цена действует при топливе до 95 сом/л. При росте — надбавка +200 сом/мес на каждые +5 сом/л (максимум +1 200 сом). Уведомляем за 5 рабочих дней.'},
-    {q:'Можно подключиться не с 1 сентября?',a:'Да. Первый месяц оплачивается пропорционально: месячная цена ÷ рабочих дней в месяце × оставшихся рабочих дней.'},
+    {q:'Почему цена не меняется на каникулах?',a:'Стоимость рассчитана за весь учебный год (162 рабочих дня) и равномерно распределена на 9 месяцев. Пропуски, болезни и каникулы учтены через резервные дни.'},
+    {q:'Что будет если опоздать с оплатой?',a:'Пеня 100 сом за каждый день просрочки с 6-го числа, не более 15% от месячного долга. При просрочке 10+ дней — приостановка услуг.'},
+    {q:'Есть ли скидки?',a:'5% на второго и каждого последующего ребёнка из одной семьи.'},
+    {q:'Что такое депозит?',a:'При подписании: первый месяц + депозит (= 1 месячный платёж). Засчитывается за май. При расторжении по инициативе родителя — не возвращается.'},
+    {q:'Может ли цена вырасти из-за топлива?',a:'Базовая цена при топливе до 95 сом/л. При росте — +200 сом/мес на каждые +5 сом/л (макс. +1 200 сом). Уведомляем за 5 рабочих дней.'},
+    {q:'Можно подключиться не с 1 сентября?',a:'Да. Первый месяц пропорционально: месячная цена ÷ рабочих дней × оставшихся дней.'},
   ]},
   {cat:'Маршрут и остановки',items:[
-    {q:'Где будет остановка?',a:'Остановку устанавливает отдел логистики OutWay — ближайшее безопасное место, не далее 200 метров от дома.'},
-    {q:'Могу ли я выбрать остановку?',a:'Пожелания рассматриваются, но не гарантируются. Приоритет — безопасность маршрута для всей группы.'},
-    {q:'Можно следить за машиной онлайн?',a:'Да — геолокация водителя передаётся в мессенджере трансфера в реальном времени.'},
+    {q:'Где будет остановка?',a:'Устанавливает логистика OutWay — ближайшее безопасное место, не далее 200 метров от дома.'},
+    {q:'Могу выбрать остановку сам?',a:'Пожелания рассматриваются, но не гарантируются. Приоритет — безопасность всего маршрута.'},
+    {q:'Можно следить за машиной онлайн?',a:'Да — геолокация водителя в мессенджере трансфера в реальном времени.'},
     {q:'Могут поменять маршрут или водителя?',a:'Организатор гарантирует место, но не конкретного водителя или маршрут. При изменениях уведомляем за 3 рабочих дня.'},
   ]},
   {cat:'Ожидание и расписание',items:[
-    {q:'Сколько ждёт водитель утром?',a:'2 минуты — только если родитель уведомил об опоздании. Без уведомления водитель не обязан ждать.'},
-    {q:'Что если ребёнок утром не поехал?',a:'Без уведомления вечерний трансфер не производится. Родитель обязан сообщить, что ребёнок в школе.'},
-    {q:'Что если никто не забрал ребёнка вечером?',a:'Менеджер звонит родителю → школе → ребёнок доставляется в офис (ул. Аалы Токомбаева, 21/2, круглосуточно). Доп. расходы за счёт родителя.'},
+    {q:'Сколько ждёт водитель утром?',a:'2 минуты — только если родитель уведомил об опоздании. Без уведомления не ждёт.'},
+    {q:'Что если ребёнок утром не поехал?',a:'Без уведомления вечерний трансфер не производится. Родитель обязан сообщить что ребёнок в школе.'},
+    {q:'Что если никто не забрал ребёнка вечером?',a:'Менеджер звонит родителю → школе → ребёнок в офис (ул. Аалы Токомбаева, 21/2, круглосуточно). Доп. расходы за счёт родителя.'},
   ]},
   {cat:'Безопасность',items:[
-    {q:'Как передаётся ребёнок вечером?',a:'Только из рук в руки родителю или уполномоченному лицу. Оставить ребёнка без взрослого недопустимо.'},
+    {q:'Как передаётся ребёнок вечером?',a:'Только из рук в руки родителю или уполномоченному лицу.'},
     {q:'Можно разрешить ребёнку выходить самому?',a:'Да — через доп. соглашение или сообщение в мессенджере. После этого ответственность Организатора снимается.'},
-    {q:'Требования к водителю?',a:'Стаж не менее 4 лет, лицензия, ОСГОП-страхование. Данные водителя сообщаются за 1 день до первой поездки.'},
+    {q:'Требования к водителю?',a:'Стаж не менее 4 лет, лицензия, ОСГОП. Данные водителя сообщаются за 1 день до первой поездки.'},
   ]},
   {cat:'Договор и расторжение',items:[
-    {q:'Как расторгнуть договор?',a:'Уведомить за 30 дней. Депозит не возвращается. Без уведомления — штраф 2 000 сом + депозит не возвращается.'},
-    {q:'Производится ли перерасчёт?',a:'Нет. Каникулы, болезни, пропуски до 7 дней вне каникул — перерасчёт не производится. Все случаи учтены в резервных днях.'},
-    {q:'Кто такой Организатор?',a:'OutWay (ООО АйКай Груп) — Организатор школьного трансфера. Перевозку осуществляют независимые лицензированные водители.'},
+    {q:'Как расторгнуть договор?',a:'Уведомить за 30 дней. Депозит не возвращается. Без уведомления — штраф 2 000 сом.'},
+    {q:'Производится ли перерасчёт?',a:'Нет. Каникулы, болезни, пропуски до 7 дней — не считаются. Все случаи учтены в резервных днях.'},
+    {q:'Кто такой Организатор?',a:'OutWay (ООО АйКай Груп) — Организатор трансфера, не перевозчик. Перевозку осуществляют независимые лицензированные водители.'},
   ]},
 ];
 
 function renderFaq() {
-  document.getElementById('faqCategories').innerHTML = FAQ.map((cat,ci)=>`
+  document.getElementById('faqCategories').innerHTML=FAQ.map((cat,ci)=>`
     <div class="faq-cat">
       <button class="faq-cat-btn" onclick="toggleFaqCat(${ci})" id="fcb${ci}">
         <span>${cat.cat}</span><span id="fci${ci}" style="font-size:11px;color:var(--text-muted)">▾</span>
       </button>
       <div class="faq-questions" id="fq${ci}">
         ${cat.items.map((item,qi)=>`
-          <button class="faq-q-btn" onclick="toggleFaqQ(${ci},${qi})" id="fqb${ci}_${qi}">
-            <span>${item.q}</span><span style="flex-shrink:0;font-size:10px;color:var(--text-muted)">▾</span>
-          </button>
+          <button class="faq-q-btn" onclick="toggleFaqQ(${ci},${qi})"><span>${item.q}</span><span style="flex-shrink:0;font-size:10px">▾</span></button>
           <div class="faq-answer" id="fa${ci}_${qi}">${item.a}</div>
         `).join('')}
       </div>
     </div>`).join('');
 }
+function toggleFaqCat(ci){const open=document.getElementById('fq'+ci).classList.toggle('open');document.getElementById('fcb'+ci).classList.toggle('open',open);document.getElementById('fci'+ci).textContent=open?'▴':'▾';}
+function toggleFaqQ(ci,qi){document.getElementById(`fa${ci}_${qi}`).classList.toggle('open');}
 
-function toggleFaqCat(ci) {
-  const open = document.getElementById('fq'+ci).classList.toggle('open');
-  document.getElementById('fcb'+ci).classList.toggle('open',open);
-  document.getElementById('fci'+ci).textContent = open?'▴':'▾';
-}
-function toggleFaqQ(ci,qi) {
-  const open = document.getElementById(`fa${ci}_${qi}`).classList.toggle('open');
-  document.getElementById(`fqb${ci}_${qi}`).classList.toggle('open',open);
-}
+function toast(msg,type=''){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show '+type;setTimeout(()=>t.className='toast',3200);}
 
-// ── TOAST ────────────────────────────────────────────────────
-function toast(msg,type='') {
-  const t=document.getElementById('toast');
-  t.textContent=msg; t.className='toast show '+type;
-  setTimeout(()=>t.className='toast',3200);
-}
+checkAccess();
+</script>
 
-// ── INIT ─────────────────────────────────────────────────────
-function initApp() {
-  initMap();
-  renderFaq();
-
-  // Auto-select school if single
-  if (!isAdmin && allowedSchoolId) {
-    const s = SCHOOLS.find(x=>x.id===allowedSchoolId);
-    if (s) {
-      document.getElementById('selectedSchoolLabel').textContent = s.name;
-      document.getElementById('headerBadge').style.display='flex';
-      document.getElementById('headerSchoolName').textContent = s.name;
-      document.getElementById('schoolSelectBtn').style.pointerEvents='none';
-      document.getElementById('schoolSelectBtn').style.opacity='0.7';
-      if (s.branches) {
-        const bp = document.getElementById('branchPicker');
-        bp.innerHTML = s.branches.map(b=>`<button class="branch-btn" onclick="selectBranch('${s.id}','${b.id}')" id="bb_${b.id}">${b.name}</button>`).join('');
-        bp.classList.add('show');
-        S.school = s;
-        selectBranch(s.id, s.branches[0].id);
-      } else {
-        selectSchool(s.id);
-      }
-    }
-  }
-}
-
-document.addEventListener('DOMContentLoaded', checkAccess);
+<script async defer
+  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCgh5hCCGGDGfPY2Ph9gBB6yKZa4HQ3bDg&libraries=places&language=ru&region=KG&callback=initGoogleMap">
 </script>
 </body>
 </html>
