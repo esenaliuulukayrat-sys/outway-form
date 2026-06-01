@@ -443,71 +443,76 @@ function onAddrInput(val){
   if(val.length<2){closeSug();return;}
   lastQ=val;
   showLoadingS();
-  searchTimer=setTimeout(()=>doSearch(val),350);
+  searchTimer=setTimeout(()=>doSearch(val),400);
 }
 function showLoadingS(){
   const el=document.getElementById('addrSug');
   el.innerHTML=`<div class="sug-loading"><div class="sug-spin"></div>Поиск...</div>`;
   el.classList.add('open');
 }
+
+// Use built-in ymaps.suggest() - always works since JS API is loaded
 async function doSearch(q){
   if(q!==lastQ)return;
   try{
-    // Use Suggest API v1
-    const url=`https://suggest-maps.yandex.ru/v1/suggest?apikey=${YANDEX_SUGGEST_KEY}&text=${encodeURIComponent('Бишкек '+q)}&lang=ru_RU&results=7&types=geo,house&ll=74.59,42.87&spn=0.35,0.25&strict_bounds=1`;
-    const r=await fetch(url);
-    const d=await r.json();
-    const items=(d.results||[]).map(item=>({
-      main:item.title?.text||'',
-      sub:item.subtitle?.text||'Бишкек, Кыргызстан',
-      uri:item.uri||null
-    })).filter(x=>x.main&&x.main.length>0);
-    if(items.length)renderSug(items);
-    else document.getElementById('addrSug').innerHTML=`<div class="sug-loading">Ничего не найдено — попробуйте другой запрос</div>`;
+    const query='Бишкек, '+q;
+    const results=await ymaps.suggest(query,{
+      results:7,
+      boundedBy:[[42.7,74.4],[43.1,74.8]],
+      strictBounds:true
+    });
+    if(!results||!results.length){
+      document.getElementById('addrSug').innerHTML=`<div class="sug-loading">Ничего не найдено</div>`;
+      return;
+    }
+    const items=results.map(r=>({
+      main:r.displayName||r.value||'',
+      full:r.value||r.displayName||''
+    })).filter(x=>x.main);
+    renderSug(items);
   }catch(e){
     document.getElementById('addrSug').innerHTML=`<div class="sug-loading">Ошибка поиска</div>`;
   }
 }
+
 function renderSug(items){
   if(lastQ!==document.getElementById('addrSearch').value)return;
   const el=document.getElementById('addrSug');
   el.innerHTML=items.map((item,i)=>`
     <div class="sug-item" onmousedown="selectSug(${i})">
       <svg class="sug-item-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-      <div><div class="sug-main">${item.main}</div><div class="sug-sub">${item.sub}</div></div>
+      <div><div class="sug-main">${item.main.split(',')[0]}</div><div class="sug-sub">${item.main.split(',').slice(1,3).join(',').trim()||'Бишкек'}</div></div>
     </div>`).join('');
   el.classList.add('open');
   window._sugItems=items;
 }
+
 async function selectSug(i){
   const item=window._sugItems[i];if(!item)return;
   closeSug();
-  document.getElementById('addrSearch').value=item.main;
-  fillAddrFields(item.main);
-  // Geocode strictly within Bishkek bbox
-  const fullText=item.main+(item.sub&&!item.sub.includes('Бишкек')?', Бишкек':'');
-  const coords=await geocodeYandex(fullText);
-  if(coords){
-    setHome(coords[0],coords[1],fullText);
-    ymap.setCenter([coords[0],coords[1]],16);
-  } else {
-    document.getElementById('addrFields').classList.add('show');
-    toast('Уточните адрес в полях ниже','error');
-  }
-}
-async function geocodeYandex(text){
+  const shortName=item.main.split(',')[0].trim();
+  document.getElementById('addrSearch').value=shortName;
+  fillAddrFields(shortName);
+  // Use ymaps.geocode() - built-in, works on any domain
   try{
-    const url=`https://geocode-maps.yandex.ru/1.x/?apikey=${YANDEX_GEOCODER_KEY}&geocode=${encodeURIComponent('Бишкек, Кыргызстан, '+text)}&format=json&results=1&lang=ru_RU&bbox=${BBOX}&rspn=1`;
-    const r=await fetch(url);const d=await r.json();
-    const member=d.response?.GeoObjectCollection?.featureMember?.[0];
-    if(member){
-      const pos=member.GeoObject.Point.pos.split(' ');
-      const lng=parseFloat(pos[0]),lat=parseFloat(pos[1]);
-      // Validate within Bishkek bbox
-      if(lat>=42.7&&lat<=43.1&&lng>=74.4&&lng<=74.8)return[lat,lng];
+    const res=await ymaps.geocode(item.full,{
+      boundedBy:[[42.7,74.4],[43.1,74.8]],
+      strictBounds:true,
+      results:1
+    });
+    const obj=res.geoObjects.get(0);
+    if(obj){
+      const coords=obj.geometry.getCoordinates();
+      const lat=coords[0],lng=coords[1];
+      if(lat>=42.7&&lat<=43.1&&lng>=74.4&&lng<=74.8){
+        setHome(lat,lng,item.full);
+        ymap.setCenter([lat,lng],16);
+        return;
+      }
     }
   }catch(e){}
-  return null;
+  document.getElementById('addrFields').classList.add('show');
+  toast('Не удалось определить координаты — уточните адрес','error');
 }
 function fillAddrFields(text){
   document.getElementById('addrFields').classList.add('show');
