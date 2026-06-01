@@ -63,15 +63,24 @@ input:focus, select:focus, textarea:focus { border-color: var(--text); }
 input::placeholder { color: var(--text-muted); }
 textarea { resize: none; height: 72px; }
 
-/* ADDRESS FORM */
-.addr-preview { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 14px; margin-top: 10px; font-size: 12px; color: var(--text-soft); display: none; }
-.addr-preview.show { display: block; }
-.addr-preview strong { color: var(--text); font-weight: 600; }
+/* ADDRESS SEARCH */
+.addr-search-wrap { position: relative; margin-bottom: 10px; }
+.addr-search-wrap input { padding-left: 34px; }
+.addr-search-icon { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: var(--text-muted); pointer-events: none; }
+.addr-suggestions { position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-sm); box-shadow: 0 8px 24px rgba(0,0,0,0.08); z-index: 500; max-height: 220px; overflow-y: auto; display: none; }
+.addr-suggestions.open { display: block; }
+.sug-item { padding: 10px 14px; cursor: pointer; border-bottom: 1px solid var(--bg); transition: background .1s; }
+.sug-item:last-child { border-bottom: none; }
+.sug-item:hover { background: var(--bg); }
+.sug-main { font-weight: 500; font-size: 13px; color: var(--text); }
+.sug-sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+.sug-loading { padding: 12px 14px; font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 8px; }
 
-/* DISTANCE */
+.addr-hint { font-size: 11px; color: var(--text-muted); margin-bottom: 10px; display: flex; align-items: center; gap: 5px; }
+
+/* DIST BADGE */
 .dist-badge { display: none; align-items: center; justify-content: space-between; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 14px; margin-top: 10px; }
 .dist-badge.show { display: flex; }
-.dist-left { display: flex; align-items: baseline; gap: 6px; }
 .dist-val { font-size: 18px; font-weight: 700; color: var(--text); letter-spacing: -0.5px; }
 .dist-unit { font-size: 12px; color: var(--text-muted); }
 .zone-tag { font-size: 11px; font-weight: 600; color: var(--white); background: var(--text); border-radius: 4px; padding: 3px 9px; }
@@ -84,9 +93,9 @@ textarea { resize: none; height: 72px; }
 .ts-opt input { display: none; }
 .ts-icon-wrap { width: 36px; height: 36px; background: var(--bg); border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--text-soft); }
 .ts-opt.selected .ts-icon-wrap { background: var(--white); color: var(--text); }
-.ts-name { font-weight: 600; font-size: 13px; color: var(--text); }
+.ts-name { font-weight: 600; font-size: 13px; }
 .ts-desc { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
-.ts-price { font-size: 15px; font-weight: 700; color: var(--text); }
+.ts-price { font-size: 15px; font-weight: 700; }
 .ts-price-sub { font-size: 10px; color: var(--text-muted); margin-top: 1px; }
 
 /* CHILDREN */
@@ -105,7 +114,7 @@ textarea { resize: none; height: 72px; }
 
 .price-summary { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px; margin-top: 20px; display: none; }
 .ps-title { font-size: 10px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
-.price-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; font-size: 13px; color: var(--text-soft); }
+.price-row { display: flex; justify-content: space-between; padding: 5px 0; font-size: 13px; color: var(--text-soft); }
 .price-row .val { color: var(--text); font-weight: 500; }
 .price-divider { height: 1px; background: var(--border); margin: 8px 0; }
 .price-total { display: flex; justify-content: space-between; align-items: baseline; }
@@ -113,7 +122,7 @@ textarea { resize: none; height: 72px; }
 .price-total .amount { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; }
 .price-total .currency { font-size: 13px; color: var(--text-soft); margin-left: 3px; }
 
-.btn-submit { width: 100%; background: var(--text); border: none; border-radius: var(--radius-sm); padding: 14px; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; color: white; cursor: pointer; transition: all .2s; margin-top: 16px; letter-spacing: 0.3px; }
+.btn-submit { width: 100%; background: var(--text); border: none; border-radius: var(--radius-sm); padding: 14px; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; color: white; cursor: pointer; transition: all .2s; margin-top: 16px; }
 .btn-submit:hover { background: #333; }
 
 .success-screen { display: none; padding: 32px 20px; flex-direction: column; align-items: center; gap: 16px; }
@@ -131,8 +140,10 @@ textarea { resize: none; height: 72px; }
 .mgr-ph { font-size: 15px; font-weight: 700; }
 .mgr-lbl { font-size: 10px; opacity: 0.6; text-transform: uppercase; letter-spacing: 0.5px; }
 
-.map-area { flex: 1; position: sticky; top: 56px; height: calc(100vh - 56px); }
+.map-area { flex: 1; position: sticky; top: 56px; height: calc(100vh - 56px); position: relative; }
 #map { width: 100%; height: 100%; }
+.map-hint { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.75); color: white; font-size: 12px; padding: 8px 16px; border-radius: 20px; pointer-events: none; white-space: nowrap; z-index: 10; display: none; }
+.map-hint.show { display: block; }
 
 .faq-sidebar { flex: 1; overflow-y: auto; }
 .faq-hd { padding: 16px 20px; border-bottom: 1px solid var(--border); font-size: 10px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
@@ -187,7 +198,7 @@ textarea { resize: none; height: 72px; }
 @media (max-width: 768px) {
   .layout { flex-direction: column; }
   .sidebar { width: 100%; min-width: unset; height: auto; position: static; border-right: none; border-bottom: 1px solid var(--border); }
-  .map-area { height: 300px; position: static; }
+  .map-area { height: 300px; position: relative; }
 }
 </style>
 </head>
@@ -247,38 +258,18 @@ textarea { resize: none; height: 72px; }
         <!-- 1. ADDRESS -->
         <div class="form-section">
           <div class="form-section-title"><span class="step-num">1</span> Адрес ребёнка</div>
-          <div class="form-group">
-            <label>Тип <span class="req">*</span></label>
-            <select id="addrType" onchange="updateAddrPreview()">
-              <option value="">Выберите</option>
-              <option value="мкр">Микрорайон</option>
-              <option value="ул.">Улица</option>
-              <option value="ж/м">Жилмассив</option>
-              <option value="пр.">Проспект</option>
-              <option value="пер.">Переулок</option>
-            </select>
+          <div class="addr-search-wrap">
+            <svg class="addr-search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="text" id="addrInput" placeholder="Введите адрес..." autocomplete="off"
+              oninput="onAddrInput(this.value)" onblur="setTimeout(closeAddrSug,200)">
+            <div class="addr-suggestions" id="addrSug"></div>
           </div>
-          <div class="form-group">
-            <label>Название <span class="req">*</span></label>
-            <input type="text" id="addrName" placeholder="напр: 7, Горького, Джал, Аламедин-1" oninput="updateAddrPreview()">
+          <div class="addr-hint">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+            Не нашли точный адрес? Перетащите метку на карте
           </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label>Дом <span class="req">*</span></label>
-              <input type="text" id="addrHouse" placeholder="21" oninput="updateAddrPreview()">
-            </div>
-            <div class="form-group">
-              <label>Квартира</label>
-              <input type="text" id="addrFlat" placeholder="45" oninput="updateAddrPreview()">
-            </div>
-          </div>
-          <div class="form-group">
-            <label>Ориентир / подъезд</label>
-            <input type="text" id="addrLandmark" placeholder="подъезд 2, рядом с магазином..." oninput="updateAddrPreview()">
-          </div>
-          <div class="addr-preview" id="addrPreview"></div>
           <div class="dist-badge" id="distBadge">
-            <div class="dist-left">
+            <div style="display:flex;align-items:baseline;gap:6px">
               <span class="dist-val" id="distVal">—</span>
               <span class="dist-unit">км от школы</span>
             </div>
@@ -374,13 +365,17 @@ textarea { resize: none; height: 72px; }
     </div>
   </div>
 
-  <div class="map-area"><div id="map"></div></div>
+  <div class="map-area" id="mapArea">
+    <div id="map"></div>
+    <div class="map-hint" id="mapHint">Перетащите метку на точный адрес</div>
+  </div>
 </div>
 </div>
 
 <script>
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyOLDrpvMa6kUTjM_PPyJxG1EetVSX-VBl3L3fcfHJ4Y7r4pVHTrl6vApxMRK2vevb7/exec';
 const GOOGLE_KEY = 'AIzaSyCgh5hCCGGDGfPY2Ph9gBB6yKZa4HQ3bDg';
+const YANDEX_SUGGEST_KEY = '1a2e737b-d538-4a3a-b319-ebad15855d47';
 
 const SCHOOL_KEYS = {
   kings:'KNG2026', light:'LGT2026', aes:'AES2026', kas:'KAS2026',
@@ -414,118 +409,256 @@ const SCHOOLS = [
     ]},
 ];
 
-let allowedSchoolId = null, isAdmin = false;
+let allowedSchoolId=null, isAdmin=false;
 const S = {
   school:null, branch:null, schoolLat:null, schoolLng:null,
-  homeLat:null, homeLng:null, distKm:null, zone:null, zonePrice:null,
+  homeLat:null, homeLng:null, homeText:'',
+  distKm:null, zone:null, zonePrice:null,
   tsType:'bus', children:[{name:'',grade:''}], extraOpen:false
 };
-let gmap, homeMarker, schoolMarker, directionsRenderer;
+let gmap, homeMarker, schoolMarker, directionsRenderer, autocomplete;
 
 // ── ACCESS ──────────────────────────────────────────────────
-function checkAccess() {
-  const p = new URLSearchParams(window.location.search);
-  const school = p.get('school'), key = p.get('key');
-  if (!school || !key || SCHOOL_KEYS[school] !== key) {
-    document.getElementById('accessDenied').classList.add('show'); return;
-  }
-  isAdmin = school === 'admin';
-  allowedSchoolId = isAdmin ? null : school;
-  document.getElementById('app').style.display = 'block';
+function checkAccess(){
+  const p=new URLSearchParams(window.location.search);
+  const school=p.get('school'), key=p.get('key');
+  if(!school||!key||SCHOOL_KEYS[school]!==key){document.getElementById('accessDenied').classList.add('show');return;}
+  isAdmin=school==='admin';
+  allowedSchoolId=isAdmin?null:school;
+  document.getElementById('app').style.display='block';
 }
 
 // ── MAP ──────────────────────────────────────────────────────
-function initGoogleMap() {
-  gmap = new google.maps.Map(document.getElementById('map'), {
-    center: { lat:42.87, lng:74.59 }, zoom:12,
-    mapTypeControl:false, streetViewControl:false, fullscreenControl:false,
+// SVG icons — clean, professional
+function makeSchoolIcon(){
+  const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="36" height="42" viewBox="0 0 36 42">
+    <rect x="0" y="0" width="36" height="36" rx="6" fill="#111111"/>
+    <polygon points="18,0 36,36 0,36" fill="#111111" transform="translate(0,30)"/>
+    <rect x="6" y="6" width="24" height="18" rx="2" fill="none" stroke="white" stroke-width="1.5"/>
+    <rect x="14" y="14" width="8" height="10" rx="1" fill="white" opacity="0.9"/>
+    <rect x="9" y="10" width="5" height="5" rx="1" fill="white" opacity="0.7"/>
+    <rect x="22" y="10" width="5" height="5" rx="1" fill="white" opacity="0.7"/>
+    <rect x="15" y="4" width="6" height="3" rx="1" fill="white" opacity="0.6"/>
+  </svg>`;
+  return {url:'data:image/svg+xml;charset=UTF-8,'+encodeURIComponent(svg),scaledSize:new google.maps.Size(36,42),anchor:new google.maps.Point(18,42)};
+}
+
+function makeHomeIcon(dragging=false){
+  const color=dragging?'#E8621A':'#E8621A';
+  const shadow=dragging?'drop-shadow(0 4px 8px rgba(0,0,0,0.3))':'drop-shadow(0 2px 4px rgba(0,0,0,0.2))';
+  const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="36" height="42" viewBox="0 0 36 42" style="filter:${shadow}">
+    <rect x="0" y="0" width="36" height="36" rx="6" fill="${color}"/>
+    <polygon points="18,36 36,36 18,50 0,36" fill="${color}"/>
+    <polygon points="18,7 28,16 28,28 8,28 8,16" fill="none" stroke="white" stroke-width="1.5" stroke-linejoin="round"/>
+    <polygon points="18,7 8,16 28,16" fill="white" opacity="0.3"/>
+    <rect x="14" y="19" width="8" height="9" rx="1" fill="white" opacity="0.9"/>
+  </svg>`;
+  return {url:'data:image/svg+xml;charset=UTF-8,'+encodeURIComponent(svg),scaledSize:new google.maps.Size(36,42),anchor:new google.maps.Point(18,42)};
+}
+
+function initGoogleMap(){
+  gmap=new google.maps.Map(document.getElementById('map'),{
+    center:{lat:42.87,lng:74.59},zoom:12,
+    mapTypeControl:false,streetViewControl:false,fullscreenControl:false,
     styles:[
       {featureType:'poi',stylers:[{visibility:'off'}]},
       {featureType:'transit',stylers:[{visibility:'off'}]},
     ]
   });
-  directionsRenderer = new google.maps.DirectionsRenderer({
+
+  directionsRenderer=new google.maps.DirectionsRenderer({
     suppressMarkers:true,
-    polylineOptions:{ strokeColor:'#E8621A', strokeWeight:4, strokeOpacity:0.8 }
+    polylineOptions:{strokeColor:'#E8621A',strokeWeight:4,strokeOpacity:0.8}
   });
   directionsRenderer.setMap(gmap);
+
+  // Google Places autocomplete
+  autocomplete=new google.maps.places.Autocomplete(
+    document.getElementById('addrInput'),
+    {componentRestrictions:{country:'kg'},fields:['geometry','name','formatted_address'],language:'ru'}
+  );
+  autocomplete.addListener('place_changed',()=>{
+    const place=autocomplete.getPlace();
+    if(!place.geometry) return;
+    const lat=place.geometry.location.lat(), lng=place.geometry.location.lng();
+    setHomePosition(lat,lng,place.formatted_address||place.name);
+    closeAddrSug();
+  });
+
   renderFaq();
   autoSelectSchool();
 }
 
-function autoSelectSchool() {
-  if (!isAdmin && allowedSchoolId) {
-    const s = SCHOOLS.find(x => x.id === allowedSchoolId);
-    if (!s) return;
-    document.getElementById('selectedSchoolLabel').textContent = s.name;
-    document.getElementById('headerBadge').style.display = 'flex';
-    document.getElementById('headerSchoolName').textContent = s.name;
-    document.getElementById('schoolSelectBtn').style.pointerEvents = 'none';
-    document.getElementById('schoolSelectBtn').style.opacity = '0.75';
-    S.school = s;
-    if (s.branches) {
-      const bp = document.getElementById('branchPicker');
-      bp.innerHTML = s.branches.map(b => `<button class="branch-btn" onclick="selectBranch('${s.id}','${b.id}')" id="bb_${b.id}">${b.name}</button>`).join('');
+function setSchoolMarker(lat,lng,name){
+  if(schoolMarker) schoolMarker.setMap(null);
+  schoolMarker=new google.maps.Marker({position:{lat,lng},map:gmap,title:name,icon:makeSchoolIcon(),zIndex:1});
+}
+
+function setHomeMarker(lat,lng){
+  if(homeMarker) homeMarker.setMap(null);
+  homeMarker=new google.maps.Marker({
+    position:{lat,lng},map:gmap,
+    icon:makeHomeIcon(),
+    draggable:true,
+    cursor:'grab',
+    zIndex:2
+  });
+  homeMarker.addListener('dragstart',()=>{
+    homeMarker.setIcon(makeHomeIcon(true));
+    document.getElementById('mapHint').classList.add('show');
+  });
+  homeMarker.addListener('dragend',()=>{
+    homeMarker.setIcon(makeHomeIcon(false));
+    document.getElementById('mapHint').classList.remove('show');
+    const pos=homeMarker.getPosition();
+    const lat=pos.lat(), lng=pos.lng();
+    S.homeLat=lat; S.homeLng=lng;
+    reverseGeocode(lat,lng);
+    calcDist(lat,lng);
+    if(S.schoolLat) drawRoute(lat,lng,S.schoolLat,S.schoolLng);
+  });
+  if(S.schoolLat) drawRoute(lat,lng,S.schoolLat,S.schoolLng);
+}
+
+function reverseGeocode(lat,lng){
+  new google.maps.Geocoder().geocode({location:{lat,lng},language:'ru'},(results,status)=>{
+    if(status==='OK'&&results[0]){
+      S.homeText=results[0].formatted_address;
+      document.getElementById('addrInput').value=results[0].formatted_address.split(',').slice(0,2).join(',');
+    }
+  });
+}
+
+function drawRoute(lat1,lng1,lat2,lng2){
+  new google.maps.DirectionsService().route({
+    origin:{lat:lat1,lng:lng1},destination:{lat:lat2,lng:lng2},
+    travelMode:google.maps.TravelMode.DRIVING
+  },(res,status)=>{if(status==='OK') directionsRenderer.setDirections(res);});
+}
+
+function setHomePosition(lat,lng,text){
+  S.homeLat=lat; S.homeLng=lng; S.homeText=text||'';
+  setHomeMarker(lat,lng);
+  calcDist(lat,lng);
+}
+
+// ── ADDRESS SEARCH (Google + Yandex fallback) ─────────────────
+let addrTimer, lastQuery='';
+
+function onAddrInput(val){
+  // Let Google autocomplete handle dropdown natively
+  // We add Yandex as fallback via our custom suggestions
+  clearTimeout(addrTimer);
+  if(val.length<2){closeAddrSug();return;}
+  lastQuery=val;
+  addrTimer=setTimeout(()=>searchYandex(val),600);
+}
+
+async function searchYandex(q){
+  if(q!==lastQuery) return;
+  try{
+    const url=`https://suggest-maps.yandex.ru/suggest-geo?callback=&search_type=tp&v=9&lang=ru_RU&ll=74.59,42.87&spn=0.5,0.5&results=6&highlight=0&strict_bounds=0&text=${encodeURIComponent(q+' Бишкек')}`;
+    const r=await fetch(url);
+    const text=await r.text();
+    // Yandex returns JSONP-like, parse it
+    const json=JSON.parse(text.replace(/^[^(]+\(/,'').replace(/\)[^)]*$/,''));
+    if(json&&json.results&&json.results.length){
+      renderYandexSug(json.results);
+    }
+  } catch(e){
+    // Yandex suggest failed silently — Google autocomplete still works
+  }
+}
+
+function renderYandexSug(items){
+  const el=document.getElementById('addrSug');
+  // Only show if Google dropdown is not showing
+  if(!items||!items.length) return;
+  el.innerHTML=items.slice(0,5).map(item=>{
+    const title=item.title&&item.title.text||item.subtitle&&item.subtitle.text||'';
+    const sub=item.subtitle&&item.subtitle.text||'';
+    const pos=item.pos;
+    if(!title) return '';
+    return `<div class="sug-item" onmousedown="selectYandexAddr('${esc(title)}','${esc(sub)}','${pos||''}')">
+      <div class="sug-main">${title}</div>
+      ${sub&&sub!==title?`<div class="sug-sub">${sub}</div>`:''}
+    </div>`;
+  }).filter(Boolean).join('');
+  if(el.innerHTML) el.classList.add('open');
+}
+
+async function selectYandexAddr(title,sub,pos){
+  closeAddrSug();
+  const fullText=(sub&&sub!==title)?title+', '+sub:title;
+  document.getElementById('addrInput').value=title;
+  S.homeText=fullText;
+
+  if(pos){
+    const parts=pos.split(',');
+    if(parts.length>=2){
+      const lng=parseFloat(parts[0]), lat=parseFloat(parts[1]);
+      if(!isNaN(lat)&&!isNaN(lng)){
+        setHomePosition(lat,lng,fullText);
+        return;
+      }
+    }
+  }
+  // Geocode via Google if no coords
+  new google.maps.Geocoder().geocode({address:fullText+', Бишкек, Кыргызстан',language:'ru'},(results,status)=>{
+    if(status==='OK'&&results[0]){
+      const loc=results[0].geometry.location;
+      setHomePosition(loc.lat(),loc.lng(),fullText);
+    }
+  });
+}
+
+function esc(s){return(s||'').replace(/'/g,"\\'").replace(/"/g,'\\"');}
+function closeAddrSug(){document.getElementById('addrSug').classList.remove('open');}
+
+// ── SCHOOL ───────────────────────────────────────────────────
+function autoSelectSchool(){
+  if(!isAdmin&&allowedSchoolId){
+    const s=SCHOOLS.find(x=>x.id===allowedSchoolId);
+    if(!s) return;
+    document.getElementById('selectedSchoolLabel').textContent=s.name;
+    document.getElementById('headerBadge').style.display='flex';
+    document.getElementById('headerSchoolName').textContent=s.name;
+    document.getElementById('schoolSelectBtn').style.pointerEvents='none';
+    document.getElementById('schoolSelectBtn').style.opacity='0.75';
+    S.school=s;
+    if(s.branches){
+      const bp=document.getElementById('branchPicker');
+      bp.innerHTML=s.branches.map(b=>`<button class="branch-btn" onclick="selectBranch('${s.id}','${b.id}')" id="bb_${b.id}">${b.name}</button>`).join('');
       bp.classList.add('show');
-      selectBranch(s.id, s.branches[0].id);
+      selectBranch(s.id,s.branches[0].id);
     } else {
-      S.schoolLat = s.lat; S.schoolLng = s.lng;
-      setSchoolMarker(s.lat, s.lng, s.name);
+      S.schoolLat=s.lat; S.schoolLng=s.lng;
+      setSchoolMarker(s.lat,s.lng,s.name);
       gmap.setCenter({lat:s.lat,lng:s.lng}); gmap.setZoom(14);
       showForm();
     }
   }
 }
 
-function mkIcon(color, emoji) {
-  return {
-    url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(
-      `<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><circle cx="20" cy="20" r="20" fill="${color}"/><text x="20" y="26" text-anchor="middle" font-size="18">${emoji}</text></svg>`
-    ),
-    scaledSize: new google.maps.Size(40, 40)
-  };
-}
-
-function setSchoolMarker(lat, lng, name) {
-  if (schoolMarker) schoolMarker.setMap(null);
-  schoolMarker = new google.maps.Marker({ position:{lat,lng}, map:gmap, title:name, icon:mkIcon('#111111','🏫') });
-}
-
-function setHomeMarker(lat, lng) {
-  if (homeMarker) homeMarker.setMap(null);
-  homeMarker = new google.maps.Marker({ position:{lat,lng}, map:gmap, icon:mkIcon('#E8621A','🏠') });
-  if (S.schoolLat) drawRoute(lat, lng, S.schoolLat, S.schoolLng);
-}
-
-function drawRoute(lat1,lng1,lat2,lng2) {
-  new google.maps.DirectionsService().route({
-    origin:{lat:lat1,lng:lng1}, destination:{lat:lat2,lng:lng2},
-    travelMode:google.maps.TravelMode.DRIVING
-  }, (res,status) => { if(status==='OK') directionsRenderer.setDirections(res); });
-}
-
-// ── SCHOOL ───────────────────────────────────────────────────
-function openSchoolModal() {
-  const list = isAdmin ? SCHOOLS : SCHOOLS.filter(s=>s.id===allowedSchoolId);
-  if (list.length===1 && !isAdmin) { selectSchool(list[0].id); return; }
+function openSchoolModal(){
+  const list=isAdmin?SCHOOLS:SCHOOLS.filter(s=>s.id===allowedSchoolId);
+  if(list.length===1&&!isAdmin){selectSchool(list[0].id);return;}
   document.getElementById('schoolModal').classList.add('show');
   renderSchoolList(list);
   setTimeout(()=>document.getElementById('schoolSearch').focus(),80);
 }
-function closeSchoolModal() { document.getElementById('schoolModal').classList.remove('show'); }
-function filterSchools(q) {
-  renderSchoolList(SCHOOLS.filter(s=>s.name.toLowerCase().includes(q.toLowerCase())));
-}
-function renderSchoolList(list) {
-  document.getElementById('schoolList').innerHTML = list.map(s=>`
+function closeSchoolModal(){document.getElementById('schoolModal').classList.remove('show');}
+function filterSchools(q){renderSchoolList(SCHOOLS.filter(s=>s.name.toLowerCase().includes(q.toLowerCase())));}
+function renderSchoolList(list){
+  document.getElementById('schoolList').innerHTML=list.map(s=>`
     <div class="school-item" onclick="selectSchool('${s.id}')">
       <div class="s-dot"></div>
       <div><div class="s-name">${s.name}</div><div class="s-addr">${s.addr}</div></div>
       <div class="s-price">от ${s.p1.toLocaleString()} с</div>
     </div>`).join('');
 }
-function selectSchool(id) {
-  const s = SCHOOLS.find(x=>x.id===id); if(!s) return;
+function selectSchool(id){
+  const s=SCHOOLS.find(x=>x.id===id); if(!s) return;
   S.school=s; S.branch=null;
   closeSchoolModal();
   document.getElementById('selectedSchoolLabel').textContent=s.name;
@@ -544,66 +677,19 @@ function selectSchool(id) {
     showForm();
   }
 }
-function selectBranch(sid,bid) {
-  const s=SCHOOLS.find(x=>x.id===sid), b=s.branches.find(x=>x.id===bid);
+function selectBranch(sid,bid){
+  const s=SCHOOLS.find(x=>x.id===sid),b=s.branches.find(x=>x.id===bid);
   S.branch=b; S.schoolLat=b.lat; S.schoolLng=b.lng;
   document.querySelectorAll('.branch-btn').forEach(el=>el.classList.remove('selected'));
   document.getElementById('bb_'+bid)?.classList.add('selected');
   setSchoolMarker(b.lat,b.lng,b.name);
   gmap.setCenter({lat:b.lat,lng:b.lng}); gmap.setZoom(14);
   showForm();
-  if(S.homeLat) { calcDist(S.homeLat,S.homeLng); setHomeMarker(S.homeLat,S.homeLng); }
+  if(S.homeLat){calcDist(S.homeLat,S.homeLng);setHomeMarker(S.homeLat,S.homeLng);}
 }
-function showForm() {
+function showForm(){
   document.getElementById('formWrap').style.display='block';
   renderTs(); renderChildren(); updatePrice();
-}
-
-// ── ADDRESS FORM ─────────────────────────────────────────────
-let geocodeTimer;
-function updateAddrPreview() {
-  const type = v('addrType'), name = v('addrName'), house = v('addrHouse');
-  const flat = v('addrFlat'), lm = v('addrLandmark');
-  if (!type && !name) { document.getElementById('addrPreview').classList.remove('show'); return; }
-  let addr = '';
-  if (type) addr += type + ' ';
-  if (name) addr += name;
-  if (house) addr += ', д. ' + house;
-  if (flat) addr += ', кв. ' + flat;
-  if (lm) addr += ' (' + lm + ')';
-  addr = addr.trim();
-  const el = document.getElementById('addrPreview');
-  el.innerHTML = '<strong>Адрес:</strong> ' + addr + ', Бишкек';
-  el.classList.add('show');
-  if (type && name && house) {
-    clearTimeout(geocodeTimer);
-    geocodeTimer = setTimeout(() => geocodeAddress(addr), 800);
-  }
-}
-
-function geocodeAddress(addr) {
-  const fullAddr = addr + ', Бишкек, Кыргызстан';
-  const geocoder = new google.maps.Geocoder();
-  geocoder.geocode({ address: fullAddr, region: 'kg' }, (results, status) => {
-    if (status === 'OK' && results[0]) {
-      const loc = results[0].geometry.location;
-      S.homeLat = loc.lat(); S.homeLng = loc.lng();
-      calcDist(S.homeLat, S.homeLng);
-      setHomeMarker(S.homeLat, S.homeLng);
-    }
-  });
-}
-
-function getFullAddress() {
-  const type = v('addrType'), name = v('addrName'), house = v('addrHouse');
-  const flat = v('addrFlat'), lm = v('addrLandmark');
-  let addr = '';
-  if (type) addr += type + ' ';
-  if (name) addr += name;
-  if (house) addr += ', д. ' + house;
-  if (flat) addr += ', кв. ' + flat;
-  if (lm) addr += ' (' + lm + ')';
-  return addr.trim() + ', Бишкек';
 }
 
 // ── DISTANCE ─────────────────────────────────────────────────
@@ -612,9 +698,9 @@ function haversine(a,b,c,d){
   const x=Math.sin(dL/2)**2+Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.sin(dN/2)**2;
   return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));
 }
-function calcDist(lat,lng) {
-  if (!S.schoolLat) return;
-  const dist=haversine(lat,lng,S.schoolLat,S.schoolLng), eff=dist-0.3;
+function calcDist(lat,lng){
+  if(!S.schoolLat) return;
+  const dist=haversine(lat,lng,S.schoolLat,S.schoolLng),eff=dist-0.3;
   S.distKm=dist;
   const s=S.school;
   let zone,price;
@@ -628,8 +714,8 @@ function calcDist(lat,lng) {
 }
 
 // ── TRANSPORT ────────────────────────────────────────────────
-const TS_ICONS = {
-  bus:`<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="5" width="20" height="13" rx="2"/><path d="M2 10h20"/><circle cx="7" cy="18" r="1.5"/><circle cx="17" cy="18" r="1.5"/></svg>`,
+const TS_ICONS={
+  bus:`<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="5" width="20" height="13" rx="2"/><path d="M2 10h20"/><circle cx="7" cy="18" r="1.5"/><circle cx="17" cy="18" r="1.5"/><path d="M6 5V3M18 5V3"/></svg>`,
   van:`<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 11V8a2 2 0 012-2h10l4 5"/><path d="M3 11h18v5a1 1 0 01-1 1H4a1 1 0 01-1-1v-5z"/><circle cx="7" cy="17" r="1.5"/><circle cx="17" cy="17" r="1.5"/></svg>`,
   sedan:`<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 11l2-4h10l2 4"/><path d="M3 11h18v5a1 1 0 01-1 1H4a1 1 0 01-1-1v-5z"/><circle cx="7" cy="17" r="1.5"/><circle cx="17" cy="17" r="1.5"/></svg>`
 };
@@ -670,7 +756,6 @@ function renderChildren(){
 function addChild(){S.children.push({name:'',grade:''});renderChildren();updatePrice();}
 function rmChild(i){S.children.splice(i,1);renderChildren();updatePrice();}
 
-// ── PRICE ────────────────────────────────────────────────────
 function updatePrice(){
   const base=getTsPrice();
   const ps=document.getElementById('priceSummary');
@@ -702,7 +787,7 @@ function showSection(sec){
 // ── SUBMIT ───────────────────────────────────────────────────
 async function submitForm(){
   if(!S.school){toast('Выберите школу','error');return;}
-  if(!v('addrType')||!v('addrName')||!v('addrHouse')){toast('Заполните адрес полностью','error');return;}
+  if(!S.homeLat){toast('Укажите адрес или поставьте метку на карте','error');return;}
   if(!S.children.every(c=>c.name.trim()&&c.grade.trim())){toast('Заполните данные всех детей','error');return;}
   if(!v('parentName')){toast('Укажите ФИО родителя','error');return;}
   if(!v('parentRelation')){toast('Укажите родство','error');return;}
@@ -712,56 +797,49 @@ async function submitForm(){
   const base=getTsPrice();
   const schoolName=S.branch?S.branch.name:S.school.name;
   const tsMap={bus:'Микроавтобус',van:'Минивэн',sedan:'Седан'};
-  const fullAddr=getFullAddress();
   const familyCode='FAM-'+Date.now().toString(36).toUpperCase();
   const timestamp=new Date().toLocaleString('ru-RU');
 
   document.getElementById('loadingOverlay').classList.add('show');
-
-  try {
-    // Send one row per child
-    const promises = S.children.map((child, i) => {
-      const price = Math.round(base*(i>0?.95:1));
-      const payload = {
-        timestamp, familyCode, school:schoolName, branch:S.branch?S.branch.name:'',
-        address:fullAddr,
-        lat:S.homeLat||'', lng:S.homeLng||'',
-        schoolLat:S.schoolLat, schoolLng:S.schoolLng,
-        distanceKm:S.distKm?S.distKm.toFixed(2):'', zone:S.zone||'',
-        transport:tsMap[S.tsType], zonePrice:base,
-        childName:child.name, childGrade:child.grade,
-        childNum:i+1, childPrice:price, discount:i>0?'5%':'',
+  try{
+    const promises=S.children.map((child,i)=>{
+      const price=Math.round(base*(i>0?.95:1));
+      const payload={
+        timestamp,familyCode,school:schoolName,branch:S.branch?S.branch.name:'',
+        address:S.homeText||document.getElementById('addrInput').value,
+        lat:S.homeLat,lng:S.homeLng,
+        schoolLat:S.schoolLat,schoolLng:S.schoolLng,
+        distanceKm:S.distKm?S.distKm.toFixed(2):'',zone:S.zone||'',
+        transport:tsMap[S.tsType],zonePrice:base,
+        childName:child.name,childGrade:child.grade,
+        childNum:i+1,childPrice:price,discount:i>0?'5%':'',
         totalChildren:S.children.length,
-        parentName:v('parentName'), parentRelation:v('parentRelation'),
-        parentPhone1:v('parentPhone1'), parentPhone2:v('parentPhone2'),
-        parentTelegram:v('parentTelegram'),
-        extraName:v('extraName'), extraRelation:v('extraRelation'),
-        extraPhone1:v('extraPhone1'), extraPhone2:v('extraPhone2'),
-        comment:v('comment'), manager:S.school.manager,
+        parentName:v('parentName'),parentRelation:v('parentRelation'),
+        parentPhone1:v('parentPhone1'),parentPhone2:v('parentPhone2'),parentTelegram:v('parentTelegram'),
+        extraName:v('extraName'),extraRelation:v('extraRelation'),
+        extraPhone1:v('extraPhone1'),extraPhone2:v('extraPhone2'),
+        comment:v('comment'),manager:S.school.manager,
       };
       return fetch(APPS_SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
     });
-
     await Promise.all(promises);
-
     let total=0; S.children.forEach((_,i)=>total+=Math.round(base*(i>0?.95:1)));
-    showSuccess(schoolName, fullAddr, total, familyCode);
-  } catch(e){ toast('Ошибка. Попробуйте ещё раз.','error'); }
-  finally{ document.getElementById('loadingOverlay').classList.remove('show'); }
+    showSuccess(schoolName,total,familyCode);
+  } catch(e){toast('Ошибка. Попробуйте ещё раз.','error');}
+  finally{document.getElementById('loadingOverlay').classList.remove('show');}
 }
 
 function v(id){return(document.getElementById(id)||{}).value?.trim()||'';}
 
-function showSuccess(schoolName,addr,total,familyCode){
+function showSuccess(schoolName,total,familyCode){
   document.getElementById('formWrap').style.display='none';
-  let total2=0; S.children.forEach((_,i)=>{ const p=Math.round(getTsPrice()*(i>0?.95:1)); total2+=p; });
   document.getElementById('successCard').innerHTML=`
-    <div class="s-row"><span class="k">Код семьи</span><span class="v" style="font-family:monospace;font-size:12px">${familyCode}</span></div>
+    <div class="s-row"><span class="k">Код семьи</span><span class="v" style="font-family:monospace">${familyCode}</span></div>
     <div class="s-row"><span class="k">Школа</span><span class="v">${schoolName}</span></div>
-    <div class="s-row"><span class="k">Адрес</span><span class="v">${addr}</span></div>
+    <div class="s-row"><span class="k">Адрес</span><span class="v">${(S.homeText||'').split(',').slice(0,2).join(',')}</span></div>
     <div class="s-row"><span class="k">Зона</span><span class="v">Зона ${S.zone||'—'} · ${S.distKm?S.distKm.toFixed(2)+' км':'—'}</span></div>
     <div class="s-row"><span class="k">Детей</span><span class="v">${S.children.length}</span></div>
-    <div class="s-row"><span class="k">Итого / мес</span><span class="v" style="font-size:16px;font-weight:700">${total2.toLocaleString()} сом</span></div>`;
+    <div class="s-row"><span class="k">Итого / мес</span><span class="v" style="font-size:16px;font-weight:700">${total.toLocaleString()} сом</span></div>`;
   const ph='+'+S.school.manager;
   document.getElementById('mgrPhone').textContent=ph;
   document.getElementById('mgrCallLink').href='tel:'+ph;
@@ -816,12 +894,10 @@ function renderFaq(){
 }
 function toggleFaqCat(ci){const o=document.getElementById('fq'+ci).classList.toggle('open');document.getElementById('fcb'+ci).classList.toggle('open',o);document.getElementById('fci'+ci).textContent=o?'▴':'▾';}
 function toggleFaqQ(ci,qi){document.getElementById(`fa${ci}_${qi}`).classList.toggle('open');}
-
 function toast(msg,type=''){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show '+type;setTimeout(()=>t.className='toast',3200);}
 
 checkAccess();
 </script>
-
 <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCgh5hCCGGDGfPY2Ph9gBB6yKZa4HQ3bDg&libraries=places&language=ru&region=KG&callback=initGoogleMap"></script>
 </body>
 </html>
