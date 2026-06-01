@@ -1,8 +1,393 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OutWay — Школьный трансфер</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://api-maps.yandex.ru/2.1/?apikey=f3c503f1-db1b-4b84-907c-b85cacd1af85&lang=ru_RU"></script>
+<style>
+:root {
+  --orange: #E8621A;
+  --bg: #F5F4F0;
+  --white: #FFFFFF;
+  --text: #111111;
+  --text-soft: #555555;
+  --text-muted: #999999;
+  --border: #E0DED8;
+  --success: #1E7A4A;
+  --error: #C0392B;
+  --radius: 10px;
+  --radius-sm: 6px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 13px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+
+.header { background: var(--white); border-bottom: 1px solid var(--border); padding: 0 24px; display: flex; align-items: center; gap: 20px; height: 56px; position: sticky; top: 0; z-index: 400; }
+.logo { font-size: 15px; font-weight: 700; letter-spacing: 2px; color: var(--text); text-transform: uppercase; }
+.logo-sub { font-size: 9px; color: var(--text-muted); font-weight: 400; letter-spacing: 1.5px; text-transform: uppercase; margin-top: 1px; }
+.hd { width: 1px; height: 22px; background: var(--border); }
+.school-badge { display: none; align-items: center; font-size: 12px; font-weight: 500; color: var(--text-soft); background: var(--bg); border: 1px solid var(--border); border-radius: 4px; padding: 4px 10px; }
+.header-right { margin-left: auto; display: flex; gap: 2px; }
+.nav-btn { background: none; border: none; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 12px; color: var(--text-muted); padding: 6px 12px; border-radius: 4px; transition: all .15s; font-weight: 500; }
+.nav-btn:hover { background: var(--bg); color: var(--text); }
+.nav-btn.active { background: var(--text); color: var(--white); }
+
+.layout { display: flex; min-height: calc(100vh - 56px); }
+.sidebar { width: 380px; min-width: 340px; background: var(--white); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow-y: auto; position: sticky; top: 56px; height: calc(100vh - 56px); }
+.sidebar-section { display: none; flex-direction: column; min-height: 100%; }
+.sidebar-section.active { display: flex; }
+
+.school-select-wrap { padding: 20px; border-bottom: 1px solid var(--border); }
+.field-label { font-size: 10px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+.ss-btn { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 11px 14px; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 500; color: var(--text); cursor: pointer; text-align: left; display: flex; align-items: center; justify-content: space-between; transition: all .15s; }
+.ss-btn:hover { border-color: var(--text); }
+.branch-picker { display: none; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.branch-picker.show { display: flex; }
+.branch-btn { background: var(--bg); border: 1px solid var(--border); border-radius: 4px; padding: 5px 12px; font-size: 11px; font-weight: 500; cursor: pointer; transition: all .15s; font-family: 'Inter', sans-serif; color: var(--text-soft); }
+.branch-btn:hover { border-color: var(--text); color: var(--text); }
+.branch-btn.selected { background: var(--text); border-color: var(--text); color: white; }
+
+.form-wrap { padding: 20px; flex: 1; overflow-y: auto; }
+.form-section { margin-bottom: 24px; }
+.form-section-title { font-size: 10px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+.step-num { width: 18px; height: 18px; background: var(--text); color: white; border-radius: 50%; font-size: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-weight: 600; }
+.form-row { display: flex; gap: 10px; }
+.form-group { flex: 1; margin-bottom: 12px; }
+.form-group:last-child { margin-bottom: 0; }
+label { display: block; font-size: 11px; font-weight: 500; color: var(--text-soft); margin-bottom: 5px; }
+label .req { color: var(--orange); }
+input[type=text], input[type=tel], select, textarea { width: 100%; background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 12px; font-family: 'Inter', sans-serif; font-size: 13px; color: var(--text); transition: border-color .15s; outline: none; -webkit-appearance: none; }
+input:focus, select:focus, textarea:focus { border-color: var(--text); }
+input::placeholder { color: var(--text-muted); }
+textarea { resize: none; height: 72px; }
+
+.addr-search-wrap { position: relative; margin-bottom: 12px; }
+.addr-search-inner { position: relative; }
+.addr-search-inner input { padding-left: 34px; }
+.addr-icon { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: var(--text-muted); pointer-events: none; }
+.addr-sug { position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-sm); box-shadow: 0 8px 24px rgba(0,0,0,0.08); z-index: 500; max-height: 240px; overflow-y: auto; display: none; }
+.addr-sug.open { display: block; }
+.sug-item { padding: 10px 14px; cursor: pointer; border-bottom: 1px solid var(--bg); transition: background .1s; display: flex; align-items: flex-start; gap: 10px; }
+.sug-item:last-child { border-bottom: none; }
+.sug-item:hover { background: var(--bg); }
+.sug-item-icon { flex-shrink: 0; margin-top: 2px; color: var(--text-muted); }
+.sug-main { font-weight: 500; font-size: 13px; color: var(--text); }
+.sug-sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+.sug-loading { padding: 12px 14px; font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 8px; }
+.sug-spin { width: 12px; height: 12px; border: 1.5px solid var(--border); border-top-color: var(--text-muted); border-radius: 50%; animation: spin .7s linear infinite; flex-shrink: 0; }
+
+.addr-fields { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px 14px; display: none; }
+.addr-fields.show { display: block; }
+.addr-fields-title { font-size: 10px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 10px; }
+
+.dist-badge { display: none; align-items: center; justify-content: space-between; background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 14px; margin-top: 10px; }
+.dist-badge.show { display: flex; }
+.dist-val { font-size: 18px; font-weight: 700; letter-spacing: -0.5px; }
+.dist-unit { font-size: 12px; color: var(--text-muted); }
+.zone-tag { font-size: 11px; font-weight: 600; color: var(--white); background: var(--text); border-radius: 4px; padding: 3px 9px; }
+
+.ts-options { display: flex; flex-direction: column; gap: 8px; }
+.ts-opt { display: flex; align-items: center; gap: 14px; background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px 14px; cursor: pointer; transition: all .15s; }
+.ts-opt:hover { border-color: var(--text-soft); }
+.ts-opt.selected { border-color: var(--text); background: var(--bg); }
+.ts-opt input { display: none; }
+.ts-icon-wrap { width: 36px; height: 36px; background: var(--bg); border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--text-soft); }
+.ts-opt.selected .ts-icon-wrap { background: var(--white); color: var(--text); }
+.ts-name { font-weight: 600; font-size: 13px; }
+.ts-desc { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+.ts-price { font-size: 15px; font-weight: 700; }
+.ts-price-sub { font-size: 10px; color: var(--text-muted); margin-top: 1px; }
+
+.child-card { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px; margin-bottom: 10px; }
+.child-hd { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.child-title { font-size: 12px; font-weight: 600; color: var(--text); display: flex; align-items: center; gap: 8px; }
+.disc-tag { font-size: 10px; font-weight: 600; color: var(--success); background: #E8F5EC; border-radius: 4px; padding: 2px 7px; }
+.btn-rm { background: none; border: none; cursor: pointer; color: var(--text-muted); font-size: 15px; padding: 2px 4px; transition: color .15s; }
+.btn-rm:hover { color: var(--error); }
+.btn-add { width: 100%; background: none; border: 1px dashed var(--border); border-radius: var(--radius-sm); padding: 10px; font-family: 'Inter', sans-serif; font-size: 12px; color: var(--text-soft); cursor: pointer; transition: all .15s; font-weight: 500; display: flex; align-items: center; justify-content: center; gap: 6px; }
+.btn-add:hover { border-color: var(--text-soft); color: var(--text); }
+
+.add-ct-toggle { background: none; border: none; font-family: 'Inter', sans-serif; font-size: 12px; color: var(--text-soft); cursor: pointer; padding: 4px 0; font-weight: 500; display: flex; align-items: center; gap: 5px; text-decoration: underline; text-underline-offset: 3px; }
+.extra-ct { display: none; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); }
+.extra-ct.show { display: block; }
+
+.price-summary { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px; margin-top: 20px; display: none; }
+.ps-title { font-size: 10px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+.price-row { display: flex; justify-content: space-between; padding: 5px 0; font-size: 13px; color: var(--text-soft); }
+.price-row .val { color: var(--text); font-weight: 500; }
+.price-divider { height: 1px; background: var(--border); margin: 8px 0; }
+.price-total { display: flex; justify-content: space-between; align-items: baseline; }
+.price-total .label { font-size: 13px; font-weight: 600; }
+.price-total .amount { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; }
+.price-total .currency { font-size: 13px; color: var(--text-soft); margin-left: 3px; }
+
+.btn-submit { width: 100%; background: var(--text); border: none; border-radius: var(--radius-sm); padding: 14px; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; color: white; cursor: pointer; transition: all .2s; margin-top: 16px; }
+.btn-submit:hover { background: #333; }
+
+.success-screen { display: none; padding: 32px 20px; flex-direction: column; align-items: center; gap: 16px; }
+.success-screen.show { display: flex; }
+.s-check { width: 56px; height: 56px; background: #E8F5EC; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 700; color: var(--success); }
+.s-title { font-size: 18px; font-weight: 700; }
+.s-sub { font-size: 13px; color: var(--text-soft); text-align: center; line-height: 1.6; }
+.s-card { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px; }
+.s-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 13px; border-bottom: 1px solid var(--border); }
+.s-row:last-child { border-bottom: none; }
+.s-row .k { color: var(--text-muted); }
+.s-row .v { font-weight: 500; text-align: right; max-width: 60%; }
+.mgr-btn { display: flex; align-items: center; gap: 12px; background: var(--text); color: white; border: none; border-radius: var(--radius-sm); padding: 14px 18px; width: 100%; text-decoration: none; transition: background .15s; }
+.mgr-btn:hover { background: #333; }
+.mgr-ph { font-size: 15px; font-weight: 700; }
+.mgr-lbl { font-size: 10px; opacity: 0.6; text-transform: uppercase; letter-spacing: 0.5px; }
+
+.map-area { flex: 1; position: sticky; top: 56px; height: calc(100vh - 56px); }
+#map { width: 100%; height: 100%; }
+
+.faq-sidebar { flex: 1; overflow-y: auto; }
+.faq-hd { padding: 16px 20px; border-bottom: 1px solid var(--border); font-size: 10px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+.faq-cat { border-bottom: 1px solid var(--border); }
+.faq-cat-btn { width: 100%; background: none; border: none; padding: 14px 20px; text-align: left; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; color: var(--text); display: flex; align-items: center; justify-content: space-between; transition: background .1s; }
+.faq-cat-btn:hover, .faq-cat-btn.open { background: var(--bg); }
+.faq-questions { display: none; }
+.faq-questions.open { display: block; }
+.faq-q-btn { width: 100%; background: none; border: none; border-top: 1px solid var(--border); padding: 12px 20px 12px 36px; text-align: left; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 500; color: var(--text-soft); display: flex; align-items: center; justify-content: space-between; gap: 8px; transition: all .1s; line-height: 1.5; }
+.faq-q-btn:hover, .faq-q-btn.open { background: var(--bg); color: var(--text); }
+.faq-answer { display: none; padding: 12px 20px 14px 36px; font-size: 12px; color: var(--text-soft); line-height: 1.8; background: #FAFAF8; border-top: 1px solid var(--border); }
+.faq-answer.open { display: block; }
+
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 600; display: none; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
+.modal-overlay.show { display: flex; }
+.modal { background: var(--white); border-radius: var(--radius); width: 460px; max-width: 95vw; max-height: 78vh; display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0,0,0,0.15); overflow: hidden; }
+.modal-hd { padding: 18px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+.modal-title { font-size: 14px; font-weight: 700; }
+.modal-close { background: none; border: none; cursor: pointer; font-size: 18px; color: var(--text-muted); width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 4px; }
+.modal-close:hover { background: var(--bg); }
+.modal-search { padding: 12px 20px; border-bottom: 1px solid var(--border); }
+.modal-search input { background: var(--bg); }
+.modal-list { overflow-y: auto; flex: 1; }
+.school-item { padding: 14px 20px; border-bottom: 1px solid var(--bg); cursor: pointer; transition: background .1s; display: flex; align-items: center; gap: 14px; }
+.school-item:hover { background: var(--bg); }
+.s-dot { width: 8px; height: 8px; background: var(--border); border-radius: 50%; flex-shrink: 0; }
+.school-item:hover .s-dot { background: var(--orange); }
+.s-name { font-weight: 600; font-size: 13px; }
+.s-addr { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+.s-price { font-size: 12px; font-weight: 600; color: var(--text-soft); white-space: nowrap; }
+
+.loading-overlay { display: none; position: fixed; inset: 0; background: rgba(245,244,240,0.9); z-index: 999; align-items: center; justify-content: center; flex-direction: column; gap: 14px; backdrop-filter: blur(4px); }
+.loading-overlay.show { display: flex; }
+.spin { width: 32px; height: 32px; border: 2px solid var(--border); border-top-color: var(--text); border-radius: 50%; animation: spin .7s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-text { font-size: 12px; color: var(--text-soft); }
+
+.toast { position: fixed; bottom: 20px; right: 20px; background: var(--text); color: white; border-radius: var(--radius-sm); padding: 11px 16px; font-size: 12px; font-weight: 500; z-index: 9999; transform: translateY(50px); opacity: 0; transition: all .25s; max-width: 280px; }
+.toast.show { transform: translateY(0); opacity: 1; }
+.toast.error { background: var(--error); }
+
+.access-denied { display: none; flex-direction: column; align-items: center; justify-content: center; height: 100vh; gap: 16px; text-align: center; padding: 40px; }
+.access-denied.show { display: flex; }
+.access-denied h2 { font-size: 20px; font-weight: 700; }
+.access-denied p { color: var(--text-soft); font-size: 14px; line-height: 1.6; }
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+@media (max-width: 768px) {
+  .layout { flex-direction: column; }
+  .sidebar { width: 100%; min-width: unset; height: auto; position: static; border-right: none; border-bottom: 1px solid var(--border); }
+  .map-area { height: 300px; }
+}
+</style>
+</head>
+<body>
+
+<div class="access-denied" id="accessDenied">
+  <div style="font-size:40px">🔒</div>
+  <h2>Доступ закрыт</h2>
+  <p>Эта страница доступна только по персональной ссылке.<br>Обратитесь к менеджеру OutWay.</p>
+</div>
+
+<div id="app" style="display:none">
+<header class="header">
+  <div>
+    <div class="logo">OUTWAY</div>
+    <div class="logo-sub">Организатор школьного трансфера</div>
+  </div>
+  <div class="hd"></div>
+  <div class="school-badge" id="headerBadge"><span id="headerSchoolName"></span></div>
+  <div class="header-right">
+    <button class="nav-btn active" onclick="showSection('form')">Заявка</button>
+    <button class="nav-btn" onclick="showSection('faq')">Вопросы</button>
+  </div>
+</header>
+
+<div class="modal-overlay" id="schoolModal">
+  <div class="modal">
+    <div class="modal-hd">
+      <div class="modal-title">Выберите школу</div>
+      <button class="modal-close" onclick="closeSchoolModal()">✕</button>
+    </div>
+    <div class="modal-search"><input type="text" id="schoolSearch" placeholder="Поиск..." oninput="filterSchools(this.value)"></div>
+    <div class="modal-list" id="schoolList"></div>
+  </div>
+</div>
+
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="spin"></div>
+  <div class="loading-text">Отправляем заявку...</div>
+</div>
+<div class="toast" id="toast"></div>
+
+<div class="layout">
+  <div class="sidebar">
+    <div class="sidebar-section active" id="sectionForm">
+      <div class="school-select-wrap">
+        <div class="field-label">Школа</div>
+        <button class="ss-btn" id="schoolSelectBtn" onclick="openSchoolModal()">
+          <span id="selectedSchoolLabel">Выберите школу</span>
+          <span style="color:var(--text-muted);font-size:11px">▾</span>
+        </button>
+        <div class="branch-picker" id="branchPicker"></div>
+      </div>
+
+      <div class="form-wrap" id="formWrap" style="display:none">
+
+        <div class="form-section">
+          <div class="form-section-title"><span class="step-num">1</span> Адрес ребёнка</div>
+          <div class="addr-search-wrap">
+            <div class="addr-search-inner">
+              <svg class="addr-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+              <input type="text" id="addrSearch" placeholder="Начните вводить адрес..." autocomplete="off"
+                oninput="onAddrInput(this.value)" onblur="setTimeout(closeSug,200)" onfocus="if(this.value.length>1) onAddrInput(this.value)">
+            </div>
+            <div class="addr-sug" id="addrSug"></div>
+          </div>
+
+          <div class="addr-fields" id="addrFields">
+            <div class="addr-fields-title">Уточните адрес</div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Улица / Микрорайон <span class="req">*</span></label>
+                <input type="text" id="addrStreet" placeholder="ул. Горького / мкр 7">
+              </div>
+              <div class="form-group" style="max-width:90px">
+                <label>Дом <span class="req">*</span></label>
+                <input type="text" id="addrHouse" placeholder="21">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Квартира</label>
+                <input type="text" id="addrFlat" placeholder="45">
+              </div>
+              <div class="form-group">
+                <label>Подъезд / ориентир</label>
+                <input type="text" id="addrNote" placeholder="подъезд 2">
+              </div>
+            </div>
+          </div>
+
+          <div class="dist-badge" id="distBadge">
+            <div style="display:flex;align-items:baseline;gap:6px">
+              <span class="dist-val" id="distVal">—</span>
+              <span class="dist-unit">км от школы</span>
+            </div>
+            <span class="zone-tag" id="zoneTag">Зона 1</span>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-title"><span class="step-num">2</span> Тип транспорта</div>
+          <div class="ts-options" id="tsOptions"></div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-title"><span class="step-num">3</span> Дети</div>
+          <div id="childrenList"></div>
+          <button class="btn-add" onclick="addChild()">+ Добавить ребёнка</button>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-title"><span class="step-num">4</span> Законный представитель</div>
+          <div class="form-group"><label>ФИО <span class="req">*</span></label><input type="text" id="parentName" placeholder="Иванова Айгерим Асановна"></div>
+          <div class="form-group">
+            <label>Родство <span class="req">*</span></label>
+            <select id="parentRelation">
+              <option value="">Выберите</option>
+              <option>Мать</option><option>Отец</option><option>Опекун</option><option>Другое</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label>Телефон 1 <span class="req">*</span></label><input type="tel" id="parentPhone1" placeholder="+996 700 000 000"></div>
+            <div class="form-group"><label>Телефон 2</label><input type="tel" id="parentPhone2" placeholder="+996 700 000 000"></div>
+          </div>
+          <div class="form-group"><label>Telegram <span class="req">*</span></label><input type="tel" id="parentTelegram" placeholder="+996 700 000 000"></div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-title"><span class="step-num">5</span> Дополнительный контакт</div>
+          <button class="add-ct-toggle" onclick="toggleExtraCt()"><span id="extraCtIcon">+</span> Добавить доп. контакт</button>
+          <div class="extra-ct" id="extraCtForm">
+            <div style="height:12px"></div>
+            <div class="form-group"><label>Имя</label><input type="text" id="extraName" placeholder="Имя"></div>
+            <div class="form-group">
+              <label>Родство</label>
+              <select id="extraRelation"><option value="">Выберите</option><option>Мать</option><option>Отец</option><option>Бабушка</option><option>Дедушка</option><option>Няня</option><option>Другое</option></select>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label>Телефон 1</label><input type="tel" id="extraPhone1" placeholder="+996 700 000 000"></div>
+              <div class="form-group"><label>Телефон 2</label><input type="tel" id="extraPhone2" placeholder="+996 700 000 000"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-title"><span class="step-num">6</span> Комментарий</div>
+          <textarea id="comment" placeholder="Дополнительные пожелания..."></textarea>
+        </div>
+
+        <div class="price-summary" id="priceSummary">
+          <div class="ps-title">Итог</div>
+          <div id="priceRows"></div>
+          <div class="price-divider"></div>
+          <div class="price-total">
+            <span class="label">В месяц</span>
+            <div><span class="amount" id="priceTotal">—</span><span class="currency">сом</span></div>
+          </div>
+        </div>
+
+        <button class="btn-submit" onclick="submitForm()">Отправить заявку</button>
+        <div style="height:24px"></div>
+      </div>
+
+      <div class="success-screen" id="successScreen">
+        <div class="s-check">✓</div>
+        <div class="s-title">Заявка принята</div>
+        <div class="s-sub">Менеджер свяжется с вами в течение рабочего дня для подтверждения места</div>
+        <div class="s-card" id="successCard"></div>
+        <a class="mgr-btn" id="mgrCallLink" href="#">
+          <div><div class="mgr-lbl">Позвонить менеджеру</div><div class="mgr-ph" id="mgrPhone">—</div></div>
+          <span style="margin-left:auto">→</span>
+        </a>
+        <button class="btn-submit" onclick="location.reload()" style="background:var(--bg);color:var(--text);border:1px solid var(--border);margin-top:0">Новая заявка</button>
+      </div>
+    </div>
+
+    <div class="sidebar-section" id="sectionFaq">
+      <div class="faq-hd">Часто задаваемые вопросы</div>
+      <div class="faq-sidebar"><div id="faqCategories"></div></div>
+    </div>
+  </div>
+
+  <div class="map-area"><div id="map"></div></div>
+</div>
+</div>
+
 <script>
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyOLDrpvMa6kUTjM_PPyJxG1EetVSX-VBl3L3fcfHJ4Y7r4pVHTrl6vApxMRK2vevb7/exec';
-
-// Ключ JavaScript API (он сам внутри себя обрабатывает карту, поиск и подсказки)
-const YANDEX_JS_API_KEY = 'f3c503f1-db1b-4b84-907c-b85cacd1af85';
+const YANDEX_SUGGEST_KEY = '1a2e737b-d538-4a3a-b319-ebad15855d47';
+const YANDEX_GEOCODER_KEY = 'cfbdce72-0cdf-45ea-91e4-1b6e5826a090';
 
 const SCHOOL_KEYS = {
   kings:'KNG2026',light:'LGT2026',aes:'AES2026',kas:'KAS2026',
@@ -36,163 +421,167 @@ const SCHOOLS = [
     ]},
 ];
 
-let allowedSchoolId=null, isAdmin=false;
+let allowedSchoolId=null,isAdmin=false;
 const S={school:null,branch:null,schoolLat:null,schoolLng:null,homeLat:null,homeLng:null,homeText:'',distKm:null,zone:null,zonePrice:null,tsType:'bus',children:[{name:'',grade:''}],extraOpen:false};
+let ymap,homeMarker,schoolMarker,routeObj;
 
-let ymap, homePlacemark, schoolPlacemark, currentRoute;
-
-// ── ACCESS ───────────────────────────────────────────────────
 function checkAccess(){
   const p=new URLSearchParams(window.location.search);
   const school=p.get('school'),key=p.get('key');
   if(!school||!key||SCHOOL_KEYS[school]!==key){document.getElementById('accessDenied').classList.add('show');return;}
   isAdmin=school==='admin'; allowedSchoolId=isAdmin?null:school;
   document.getElementById('app').style.display='block';
+  ymaps.ready(initYandexMap);
 }
 
-// ── YANDEX MAP INITIALIZATION ────────────────────────────────
+// ── YANDEX MAP ───────────────────────────────────────────────
+function schoolIconHref(){
+  const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="40" height="48" viewBox="0 0 40 48"><path d="M20 0C9 0 0 9 0 20c0 14 20 28 20 28s20-14 20-28C40 9 31 0 20 0z" fill="#FFFFFF" stroke="#111111" stroke-width="2"/><rect x="9" y="12" width="22" height="15" rx="1" fill="none" stroke="#111111" stroke-width="1.5"/><rect x="16" y="19" width="8" height="8" rx="1" fill="#111111" opacity="0.85"/><rect x="11" y="15" width="4" height="3.5" rx="0.5" fill="#111111" opacity="0.5"/><rect x="25" y="15" width="4" height="3.5" rx="0.5" fill="#111111" opacity="0.5"/><rect x="17" y="9" width="6" height="3" rx="1" fill="#111111" opacity="0.4"/></svg>`;
+  return 'data:image/svg+xml;charset=UTF-8,'+encodeURIComponent(svg);
+}
+function homeIconHref(){
+  const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="40" height="48" viewBox="0 0 40 48"><path d="M20 0C9 0 0 9 0 20c0 14 20 28 20 28s20-14 20-28C40 9 31 0 20 0z" fill="#FFFFFF" stroke="#E8621A" stroke-width="2"/><polygon points="20,9 30,18 30,28 10,28 10,18" fill="none" stroke="#E8621A" stroke-width="1.6" stroke-linejoin="round"/><line x1="20" y1="9" x2="10" y2="18" stroke="#E8621A" stroke-width="1.6"/><line x1="20" y1="9" x2="30" y2="18" stroke="#E8621A" stroke-width="1.6"/><rect x="16" y="20" width="8" height="8" rx="1" fill="#E8621A" opacity="0.85"/></svg>`;
+  return 'data:image/svg+xml;charset=UTF-8,'+encodeURIComponent(svg);
+}
+
 function initYandexMap(){
-  ymap = new ymaps.Map("map", {
-    center: [42.87, 74.59],
-    zoom: 12,
-    controls: ['zoomControl']
-  });
+  ymap=new ymaps.Map('map',{
+    center:[42.87,74.59], zoom:12, controls:['zoomControl']
+  },{ suppressMapOpenBlock:true });
   renderFaq();
   autoSelectSchool();
 }
 
-function setSchoolMarker(lat, lng){
-  if(schoolPlacemark) ymap.geoObjects.remove(schoolPlacemark);
-  // Используем светлый пресет академической шапки без жесткого переопределения цвета в черный
-  schoolPlacemark = new ymaps.Placemark([lat, lng], {
-    hintContent: S.school ? S.school.name : 'Школа',
-    balloonContent: S.school ? S.school.name : 'Школа'
-  }, {
-    preset: 'islands#blueEducationIcon' 
+function setSchoolMarker(lat,lng){
+  if(schoolMarker) ymap.geoObjects.remove(schoolMarker);
+  schoolMarker=new ymaps.Placemark([lat,lng],{},{
+    iconLayout:'default#image',
+    iconImageHref:schoolIconHref(),
+    iconImageSize:[40,48],
+    iconImageOffset:[-20,-48]
   });
-  ymap.geoObjects.add(schoolPlacemark);
+  ymap.geoObjects.add(schoolMarker);
 }
-
-function setHomeMarker(lat, lng){
-  if(homePlacemark) ymap.geoObjects.remove(homePlacemark);
-  homePlacemark = new ymaps.Placemark([lat, lng], {
-    hintContent: 'Дом ребёнка'
-  }, {
-    preset: 'islands#orangeHomeIcon'
+function setHomeMarker(lat,lng){
+  if(homeMarker) ymap.geoObjects.remove(homeMarker);
+  homeMarker=new ymaps.Placemark([lat,lng],{},{
+    iconLayout:'default#image',
+    iconImageHref:homeIconHref(),
+    iconImageSize:[40,48],
+    iconImageOffset:[-20,-48]
   });
-  ymap.geoObjects.add(homePlacemark);
-  if(S.schoolLat) drawRoute([lat, lng], [S.schoolLat, S.schoolLng]);
+  ymap.geoObjects.add(homeMarker);
+  if(S.schoolLat) drawRoute(lat,lng,S.schoolLat,S.schoolLng);
 }
 
-function drawRoute(start, end){
-  if(currentRoute) ymap.geoObjects.remove(currentRoute);
-  
-  ymaps.route([start, end], {
-    mapStateAutoApply: false,
-    routingMode: 'auto'
-  }).then(function (route) {
-    currentRoute = route;
-    currentRoute.getPaths().options.set({
-      strokeColor: '#E8621A',
-      strokeWidth: 4,
-      strokeOpacity: 0.8
-    });
-    currentRoute.getWayPoints().removeAll();
-    ymap.geoObjects.add(currentRoute);
-  });
+async function drawRoute(lat1,lng1,lat2,lng2){
+  if(routeObj){ ymap.geoObjects.remove(routeObj); routeObj=null; }
+  try{
+    const route=await ymaps.route([[lat1,lng1],[lat2,lng2]],{mapStateAutoApply:true});
+    route.getPaths().options.set({strokeColor:'#E8621A',strokeWidth:4,opacity:0.85});
+    // hide default route markers
+    route.getWayPoints().options.set('visible',false);
+    routeObj=route;
+    ymap.geoObjects.add(routeObj);
+  }catch(e){
+    // fallback straight line
+    routeObj=new ymaps.Polyline([[lat1,lng1],[lat2,lng2]],{},{strokeColor:'#E8621A',strokeWidth:3,strokeStyle:'dash',opacity:0.7});
+    ymap.geoObjects.add(routeObj);
+    ymap.setBounds(routeObj.geometry.getBounds(),{checkZoomRange:true,zoomMargin:50});
+  }
 }
 
-function setHome(lat, lng, text){
-  S.homeLat = lat;
-  S.homeLng = lng;
-  S.homeText = text || '';
-  setHomeMarker(lat, lng);
-  calcDist(lat, lng);
+function setHome(lat,lng,text){
+  S.homeLat=lat;S.homeLng=lng;S.homeText=text||'';
+  setHomeMarker(lat,lng);
+  calcDist(lat,lng);
 }
 
-// ── NATIVE YANDEX SUGGEST ────────────────────────────────────
-let searchTimer, lastQ='';
-
+// ── SEARCH: Yandex Suggest ───────────────────────────────────
+let searchTimer,lastQ='';
 function onAddrInput(val){
   clearTimeout(searchTimer);
   if(val.length<2){closeSug();return;}
   lastQ=val;
   showLoading();
-  searchTimer=setTimeout(()=>doSearch(val),400);
+  searchTimer=setTimeout(()=>doSearch(val),350);
 }
-
 function showLoading(){
   const el=document.getElementById('addrSug');
   el.innerHTML=`<div class="sug-loading"><div class="sug-spin"></div>Поиск...</div>`;
   el.classList.add('open');
 }
 
-function doSearch(q){
+async function doSearch(q){
   if(q!==lastQ) return;
-  
-  // Используем встроенный метод подсказок API Яндекса (работает без CORS-ошибок)
-  ymaps.suggest("Бишкек, " + q, { results: 5 }).then(function (items) {
-    if(items && items.length > 0){
-      renderSug(items);
-    } else {
-      document.getElementById('addrSug').innerHTML=`<div class="sug-loading">Ничего не найдено</div>`;
-    }
-  }).catch(function(e) {
+  try{
+    const url=`https://suggest-maps.yandex.ru/v1/suggest?apikey=${YANDEX_SUGGEST_KEY}&text=${encodeURIComponent('Бишкек '+q)}&lang=ru_RU&results=7&types=geo,house&ll=74.59,42.87&spn=0.4,0.4`;
+    const r=await fetch(url);
+    const d=await r.json();
+    const items=(d.results||[]).map(item=>({
+      main:item.title?.text||'',
+      sub:item.subtitle?.text||'Бишкек',
+      uri:item.uri||null
+    })).filter(x=>x.main);
+    if(items.length) renderSug(items);
+    else document.getElementById('addrSug').innerHTML=`<div class="sug-loading">Ничего не найдено</div>`;
+  }catch(e){
     document.getElementById('addrSug').innerHTML=`<div class="sug-loading">Ошибка поиска</div>`;
-  });
+  }
 }
 
 function renderSug(items){
   if(lastQ!==document.getElementById('addrSearch').value) return;
   const el=document.getElementById('addrSug');
-  
-  el.innerHTML=items.map((item, i)=>{
-    // Убираем лишние префиксы страны для красоты в списке
-    const display = item.displayName.replace('Кыргызстан, ', '').replace('Бишкек, ', '');
-    return `
-      <div class="sug-item" onmousedown="selectSug(${i})">
-        <svg class="sug-item-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-        <div>
-          <div class="sug-main">${display}</div>
-        </div>
-      </div>`;
-  }).join('');
+  el.innerHTML=items.map((item,i)=>`
+    <div class="sug-item" onmousedown="selectSug(${i})">
+      <svg class="sug-item-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+      <div><div class="sug-main">${item.main}</div><div class="sug-sub">${item.sub}</div></div>
+    </div>`).join('');
   el.classList.add('open');
   window._sugItems=items;
 }
 
-function selectSug(i){
+async function selectSug(i){
   const item=window._sugItems[i];
   if(!item) return;
   closeSug();
-  
-  const cleanText = item.displayName.replace('Кыргызстан, ', '').replace('Бишкек, ', '');
-  document.getElementById('addrSearch').value = cleanText;
-
-  // Через родной геокодер превращаем выбранную подсказку в точные координаты lat/lng
-  ymaps.geocode(item.value).then(function (res) {
-    const firstGeoObject = res.geoObjects.get(0);
-    if (firstGeoObject) {
-      const coords = firstGeoObject.geometry.getCoordinates();
-      const lat = coords[0];
-      const lng = coords[1];
-      
-      if(!isNaN(lat) && !isNaN(lng)){
-        fillAddrFieldsFromText(cleanText);
-        setHome(lat, lng, cleanText + ', Бишкек');
-        ymap.setCenter([lat, lng], 16);
-      }
-    }
-  }).catch(e => console.error("Ошибка получения координат:", e));
+  document.getElementById('addrSearch').value=item.main;
+  const fullText=(item.sub&&item.sub!==item.main)?item.main+', '+item.sub:item.main;
+  fillAddrFields(item.main);
+  // Geocode via Yandex Geocoder to get coords
+  const coords=await geocodeYandex(fullText);
+  if(coords){
+    setHome(coords[0],coords[1],fullText);
+    ymap.setCenter([coords[0],coords[1]],16);
+  } else {
+    document.getElementById('addrFields').classList.add('show');
+    toast('Не удалось определить координаты, уточните адрес вручную','error');
+  }
 }
 
-function fillAddrFieldsFromText(text){
+async function geocodeYandex(text){
+  try{
+    const url=`https://geocode-maps.yandex.ru/1.x/?apikey=${YANDEX_GEOCODER_KEY}&geocode=${encodeURIComponent('Бишкек, '+text)}&format=json&results=1&lang=ru_RU`;
+    const r=await fetch(url);
+    const d=await r.json();
+    const member=d.response?.GeoObjectCollection?.featureMember?.[0];
+    if(member){
+      const pos=member.GeoObject.Point.pos.split(' ');
+      const lng=parseFloat(pos[0]), lat=parseFloat(pos[1]);
+      return [lat,lng];
+    }
+  }catch(e){}
+  return null;
+}
+
+function fillAddrFields(text){
   document.getElementById('addrFields').classList.add('show');
   const parts=text.split(',');
   document.getElementById('addrStreet').value=(parts[0]||'').trim();
   const housePart=(parts[1]||'').trim();
-  const houseMatch=housePart.match(/\d+/);
-  document.getElementById('addrHouse').value=houseMatch?houseMatch[0]:'';
+  const m=housePart.match(/\d+[А-Яа-я]?(\/\d+)?/);
+  document.getElementById('addrHouse').value=m?m[0]:'';
 }
 
 function closeSug(){document.getElementById('addrSug').classList.remove('open');}
@@ -216,12 +605,11 @@ function autoSelectSchool(){
     } else {
       S.schoolLat=s.lat;S.schoolLng=s.lng;
       setSchoolMarker(s.lat,s.lng);
-      ymap.setCenter([s.lat, s.lng], 14);
+      ymap.setCenter([s.lat,s.lng],14);
       showForm();
     }
   }
 }
-
 function openSchoolModal(){
   const list=isAdmin?SCHOOLS:SCHOOLS.filter(s=>s.id===allowedSchoolId);
   if(list.length===1&&!isAdmin){selectSchool(list[0].id);return;}
@@ -239,7 +627,6 @@ function renderSchoolList(list){
       <div class="s-price">от ${s.p1.toLocaleString()} с</div>
     </div>`).join('');
 }
-
 function selectSchool(id){
   const s=SCHOOLS.find(x=>x.id===id);if(!s)return;
   S.school=s;S.branch=null;
@@ -256,22 +643,20 @@ function selectSchool(id){
     bp.classList.remove('show');bp.innerHTML='';
     S.schoolLat=s.lat;S.schoolLng=s.lng;
     setSchoolMarker(s.lat,s.lng);
-    ymap.setCenter([s.lat, s.lng], 14);
+    ymap.setCenter([s.lat,s.lng],14);
     showForm();
   }
 }
-
 function selectBranch(sid,bid){
   const s=SCHOOLS.find(x=>x.id===sid),b=s.branches.find(x=>x.id===bid);
   S.branch=b;S.schoolLat=b.lat;S.schoolLng=b.lng;
   document.querySelectorAll('.branch-btn').forEach(el=>el.classList.remove('selected'));
   document.getElementById('bb_'+bid)?.classList.add('selected');
   setSchoolMarker(b.lat,b.lng);
-  ymap.setCenter([b.lat, b.lng], 14);
+  ymap.setCenter([b.lat,b.lng],14);
   showForm();
   if(S.homeLat){calcDist(S.homeLat,S.homeLng);setHomeMarker(S.homeLat,S.homeLng);}
 }
-
 function showForm(){document.getElementById('formWrap').style.display='block';renderTs();renderChildren();updatePrice();}
 
 // ── DISTANCE ─────────────────────────────────────────────────
@@ -362,31 +747,27 @@ function showSection(sec){
   });
 }
 
-// ── SUBMIT ───────────────────────────────────────────────────
 function getFullAddr(){
-  const street=document.getElementById('addrStreet').value.trim();
-  const house=document.getElementById('addrHouse').value.trim();
-  const flat=document.getElementById('addrFlat').value.trim();
-  const note=document.getElementById('addrNote').value.trim();
+  const street=v('addrStreet'),house=v('addrHouse'),flat=v('addrFlat'),note=v('addrNote');
   let addr=street;
   if(house) addr+=', д.'+house;
   if(flat) addr+=', кв.'+flat;
   if(note) addr+=' ('+note+')';
-  return addr||S.homeText||document.getElementById('addrSearch').value;
+  return addr||S.homeText||v('addrSearch');
 }
 
 async function submitForm(){
   if(!S.school){toast('Выберите школу','error');return;}
   if(!S.homeLat){toast('Укажите адрес','error');return;}
-  if(!document.getElementById('addrStreet').value.trim()){toast('Укажите улицу или микрорайон','error');return;}
-  if(!document.getElementById('addrHouse').value.trim()){toast('Укажите номер дома','error');return;}
+  if(!v('addrStreet')){toast('Укажите улицу или микрорайон','error');return;}
+  if(!v('addrHouse')){toast('Укажите номер дома','error');return;}
   if(!S.children.every(c=>c.name.trim()&&c.grade.trim())){toast('Заполните данные всех детей','error');return;}
   if(!v('parentName')){toast('Укажите ФИО родителя','error');return;}
   if(!v('parentRelation')){toast('Укажите родство','error');return;}
   if(!v('parentPhone1')){toast('Укажите телефон','error');return;}
   if(!v('parentTelegram')){toast('Укажите Telegram','error');return;}
 
-  const base=getTsPrice(), schoolName=S.branch?S.branch.name:S.school.name;
+  const base=getTsPrice(),schoolName=S.branch?S.branch.name:S.school.name;
   const tsMap={bus:'Микроавтобус',van:'Минивэн',sedan:'Седан'};
   const familyCode='FAM-'+Date.now().toString(36).toUpperCase();
   const timestamp=new Date().toLocaleString('ru-RU');
@@ -398,8 +779,7 @@ async function submitForm(){
       const price=Math.round(base*(i>0?.95:1));
       const payload={
         timestamp,familyCode,school:schoolName,branch:S.branch?S.branch.name:'',
-        address:fullAddr,
-        lat:S.homeLat,lng:S.homeLng,              // Точные координаты дома
+        address:fullAddr,lat:S.homeLat,lng:S.homeLng,
         schoolLat:S.schoolLat,schoolLng:S.schoolLng,
         distanceKm:S.distKm?S.distKm.toFixed(2):'',zone:S.zone||'',
         transport:tsMap[S.tsType],zonePrice:base,
@@ -470,7 +850,6 @@ const FAQ=[
     {q:'Кто такой Организатор?',a:'OUTWAY (ООО АйКай Груп) — Организатор трансфера, не перевозчик. Перевозку осуществляют независимые лицензированные водители.'},
   ]},
 ];
-
 function renderFaq(){
   document.getElementById('faqCategories').innerHTML=FAQ.map((cat,ci)=>`
     <div class="faq-cat">
@@ -490,15 +869,6 @@ function toggleFaqQ(ci,qi){document.getElementById(`fa${ci}_${qi}`).classList.to
 function toast(msg,type=''){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show '+type;setTimeout(()=>t.className='toast',3200);}
 
 checkAccess();
-
-// Динамически загружаем API Яндекс.Карт по вашему JavaScript ключу
-const script = document.createElement('script');
-script.src = `https://api-maps.yandex.ru/2.1/?lang=ru_RU&apikey=${YANDEX_JS_API_KEY}`;
-script.type = 'text/javascript';
-script.onload = () => {
-  ymaps.ready(initYandexMap);
-};
-document.head.appendChild(script);
 </script>
 </body>
 </html>
