@@ -451,45 +451,61 @@ function showLoadingS(){
   el.classList.add('open');
 }
 
-// Use built-in ymaps.suggest() - always works since JS API is loaded
+// Normalize Bishkek address shortcuts
+function normalizeAddr(q){
+  let r = q;
+  r = r.replace(/(\d+)\s*(й|ой|ый)?\s*мкр\S*/gi, '$1-й микрорайон');
+  r = r.replace(/мкрн?/gi, 'микрорайон');
+  r = r.replace(/м-н/gi, 'микрорайон');
+  r = r.replace(/жм/gi, 'жилмассив');
+  r = r.replace(/ж\/м/gi, 'жилмассив');
+  r = r.replace(/ул\.\s*/gi, 'улица ');
+  r = r.replace(/пр\.\s*/gi, 'проспект ');
+  return r.trim();
+}
+
+// Search: Yandex Suggest API (working - confirmed 22 requests used)
 async function doSearch(q){
   if(q!==lastQ)return;
+  const norm = normalizeAddr(q);
+  const text = 'Бишкек ' + norm;
+  let found = false;
+
+  // Try Suggest API first
   try{
-    const query='Бишкек '+q;
-    // ymaps.suggest returns promise
-    const results=await new Promise((resolve,reject)=>{
-      ymaps.suggest(query,{
-        results:7,
-        boundedBy:[[42.7,74.4],[43.1,74.8]],
-        strictBounds:false
-      }).then(resolve).catch(reject);
-    });
-    if(!results||!results.length){
-      document.getElementById('addrSug').innerHTML=`<div class="sug-loading">Ничего не найдено — попробуйте иначе</div>`;
-      return;
+    const url = 'https://suggest-maps.yandex.ru/v1/suggest?apikey='+YANDEX_SUGGEST_KEY+'&text='+encodeURIComponent(text)+'&lang=ru_RU&results=7&types=geo,house&ll=74.59,42.87&spn=0.35,0.25';
+    const r = await fetch(url);
+    if(r.ok){
+      const d = await r.json();
+      const items = (d.results||[]).map(function(item){
+        return {
+          main: (item.title&&item.title.text||'').replace(/^(Бишкек|Кыргызстан|Киргизия),\s*/gi,''),
+          sub: (item.subtitle&&item.subtitle.text)||'Бишкек',
+          uri: item.uri||null,
+          lat: null, lng: null
+        };
+      }).filter(function(x){ return x.main.length > 0; });
+      if(items.length){ renderSug(items); found=true; }
     }
-    const items=results.map(r=>({
-      main:(r.displayName||r.value||'').replace(/^Киргизия, Бишкек, /,'').replace(/^Бишкек, /,''),
-      full:r.value||r.displayName||''
-    })).filter(x=>x.main);
-    renderSug(items);
-  }catch(e){
-    // Fallback: use geocode search directly
+  }catch(e1){}
+
+  // Fallback: ymaps.geocode
+  if(!found){
     try{
-      const geo=await ymaps.geocode('Бишкек '+q,{results:5,boundedBy:[[42.7,74.4],[43.1,74.8]]});
-      const items=[];
-      geo.geoObjects.each(obj=>{
-        const name=obj.properties.get('name')||'';
-        const desc=obj.properties.get('description')||'';
-        const full=obj.properties.get('text')||name;
-        const coords=obj.geometry.getCoordinates();
-        if(name) items.push({main:name,full,desc,lat:coords[0],lng:coords[1]});
+      const geo = await ymaps.geocode('Бишкек, '+norm, {results:6, boundedBy:[[42.6,74.2],[43.2,75.0]]});
+      const items = [];
+      geo.geoObjects.each(function(obj){
+        const name = obj.properties.get('name')||'';
+        const full = obj.properties.get('text')||name;
+        const coords = obj.geometry.getCoordinates();
+        if(name) items.push({main:name, sub:'Бишкек', full:full, lat:coords[0], lng:coords[1]});
       });
-      if(items.length) renderSug(items);
-      else document.getElementById('addrSug').innerHTML=`<div class="sug-loading">Ничего не найдено</div>`;
-    }catch(e2){
-      document.getElementById('addrSug').innerHTML=`<div class="sug-loading">Ничего не найдено</div>`;
-    }
+      if(items.length){ renderSug(items); found=true; }
+    }catch(e2){}
+  }
+
+  if(!found){
+    document.getElementById('addrSug').innerHTML='<div class="sug-loading">Ничего не найдено</div>';
   }
 }
 
@@ -510,34 +526,49 @@ async function selectSug(i){
   closeSug();
   document.getElementById('addrSearch').value=item.main;
   fillAddrFields(item.main);
-  
-  // If item already has coords (from geocode fallback)
+
+  // If geocode fallback already gave coords
   if(item.lat&&item.lng){
     setHome(item.lat,item.lng,item.full||item.main+', Бишкек');
     ymap.setCenter([item.lat,item.lng],16);
     return;
   }
-  
-  // Geocode the selected address
+
+  // Geocode via Yandex Geocoder REST API
   try{
-    const searchText=item.full||('Бишкек, '+item.main);
-    const res=await ymaps.geocode(searchText,{
-      boundedBy:[[42.7,74.4],[43.1,74.8]],
-      strictBounds:false,
-      results:1
-    });
-    const obj=res.geoObjects.get(0);
+    const q = encodeURIComponent('Бишкек, '+item.main);
+    const url = 'https://geocode-maps.yandex.ru/1.x/?apikey='+YANDEX_GEOCODER_KEY+'&geocode='+q+'&format=json&results=1&lang=ru_RU&bbox=74.2,42.6~75.0,43.2&rspn=1';
+    const r = await fetch(url);
+    if(r.ok){
+      const d = await r.json();
+      const member = d.response&&d.response.GeoObjectCollection&&d.response.GeoObjectCollection.featureMember&&d.response.GeoObjectCollection.featureMember[0];
+      if(member){
+        const pos = member.GeoObject.Point.pos.split(' ');
+        const lng = parseFloat(pos[0]), lat = parseFloat(pos[1]);
+        if(lat>=42.6&&lat<=43.2&&lng>=74.2&&lng<=75.0){
+          const fullAddr = member.GeoObject.metaDataProperty.GeocoderMetaData.text||item.main;
+          setHome(lat,lng,fullAddr);
+          ymap.setCenter([lat,lng],16);
+          return;
+        }
+      }
+    }
+  }catch(e){}
+
+  // Final fallback: ymaps.geocode
+  try{
+    const res = await ymaps.geocode('Бишкек, '+item.main,{results:1,boundedBy:[[42.6,74.2],[43.2,75.0]]});
+    const obj = res.geoObjects.get(0);
     if(obj){
-      const coords=obj.geometry.getCoordinates();
-      const lat=coords[0],lng=coords[1];
-      if(lat>=42.6&&lat<=43.2&&lng>=74.2&&lng<=75.0){
-        const fullAddr=obj.properties.get('text')||item.main;
-        setHome(lat,lng,fullAddr);
-        ymap.setCenter([lat,lng],16);
+      const coords = obj.geometry.getCoordinates();
+      if(coords[0]>=42.6&&coords[0]<=43.2){
+        setHome(coords[0],coords[1],obj.properties.get('text')||item.main);
+        ymap.setCenter([coords[0],coords[1]],16);
         return;
       }
     }
-  }catch(e){console.log('geocode error',e);}
+  }catch(e){}
+
   document.getElementById('addrFields').classList.add('show');
   toast('Уточните адрес в полях ниже','error');
 }
