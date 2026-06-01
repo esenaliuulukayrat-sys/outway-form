@@ -6,6 +6,9 @@
 <title>OutWay — Школьный трансфер</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<script src="https://api-maps.yandex.ru/2.1/?apikey=f3c503f1-db1b-4b84-907c-b85cacd1af85&lang=ru_RU" type="text/javascript"></script>
+
 <style>
 :root {
   --orange: #E8621A;
@@ -54,6 +57,7 @@ body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--tex
 .step-num { width: 18px; height: 18px; background: var(--text); color: white; border-radius: 50%; font-size: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-weight: 600; }
 .form-row { display: flex; gap: 10px; }
 .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .form-group { flex: 1; margin-bottom: 12px; }
 .form-group:last-child { margin-bottom: 0; }
 label { display: block; font-size: 11px; font-weight: 500; color: var(--text-soft); margin-bottom: 5px; }
@@ -77,11 +81,10 @@ textarea { resize: none; height: 72px; }
 .sug-item-icon { flex-shrink: 0; margin-top: 2px; color: var(--text-muted); }
 .sug-main { font-weight: 500; font-size: 13px; color: var(--text); }
 .sug-sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
-.sug-source { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
 .sug-loading { padding: 12px 14px; font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 8px; }
 .sug-spin { width: 12px; height: 12px; border: 1.5px solid var(--border); border-top-color: var(--text-muted); border-radius: 50%; animation: spin .7s linear infinite; flex-shrink: 0; }
 
-/* ADDR FIELDS - auto-filled */
+/* ADDR FIELDS */
 .addr-fields { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px 14px; margin-top: 0; display: none; }
 .addr-fields.show { display: block; }
 .addr-fields-title { font-size: 10px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 10px; }
@@ -260,11 +263,9 @@ textarea { resize: none; height: 72px; }
 
       <div class="form-wrap" id="formWrap" style="display:none">
 
-        <!-- 1. ADDRESS -->
         <div class="form-section">
           <div class="form-section-title"><span class="step-num">1</span> Адрес ребёнка</div>
 
-          <!-- Search -->
           <div class="addr-search-wrap">
             <div class="addr-search-inner">
               <svg class="addr-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
@@ -274,7 +275,6 @@ textarea { resize: none; height: 72px; }
             <div class="addr-sug" id="addrSug"></div>
           </div>
 
-          <!-- Auto-filled fields -->
           <div class="addr-fields" id="addrFields">
             <div class="addr-fields-title">Уточните адрес</div>
             <div class="form-grid">
@@ -308,20 +308,17 @@ textarea { resize: none; height: 72px; }
           </div>
         </div>
 
-        <!-- 2. TRANSPORT -->
         <div class="form-section">
           <div class="form-section-title"><span class="step-num">2</span> Тип транспорта</div>
           <div class="ts-options" id="tsOptions"></div>
         </div>
 
-        <!-- 3. CHILDREN -->
         <div class="form-section">
           <div class="form-section-title"><span class="step-num">3</span> Дети</div>
           <div id="childrenList"></div>
           <button class="btn-add" onclick="addChild()">+ Добавить ребёнка</button>
         </div>
 
-        <!-- 4. PARENT -->
         <div class="form-section">
           <div class="form-section-title"><span class="step-num">4</span> Законный представитель</div>
           <div class="form-group"><label>ФИО <span class="req">*</span></label><input type="text" id="parentName" placeholder="Иванова Айгерим Асановна"></div>
@@ -339,7 +336,6 @@ textarea { resize: none; height: 72px; }
           <div class="form-group"><label>Telegram <span class="req">*</span></label><input type="tel" id="parentTelegram" placeholder="+996 700 000 000"></div>
         </div>
 
-        <!-- 5. EXTRA CONTACT -->
         <div class="form-section">
           <div class="form-section-title"><span class="step-num">5</span> Дополнительный контакт</div>
           <button class="add-ct-toggle" onclick="toggleExtraCt()"><span id="extraCtIcon">+</span> Добавить доп. контакт</button>
@@ -357,7 +353,6 @@ textarea { resize: none; height: 72px; }
           </div>
         </div>
 
-        <!-- 6. COMMENT -->
         <div class="form-section">
           <div class="form-section-title"><span class="step-num">6</span> Комментарий</div>
           <textarea id="comment" placeholder="Дополнительные пожелания..."></textarea>
@@ -402,7 +397,6 @@ textarea { resize: none; height: 72px; }
 
 <script>
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyOLDrpvMa6kUTjM_PPyJxG1EetVSX-VBl3L3fcfHJ4Y7r4pVHTrl6vApxMRK2vevb7/exec';
-const YANDEX_KEY = 'f3c503f1-db1b-4b84-907c-b85cacd1af85';
 
 const SCHOOL_KEYS = {
   kings:'KNG2026',light:'LGT2026',aes:'AES2026',kas:'KAS2026',
@@ -449,7 +443,7 @@ function checkAccess(){
   document.getElementById('app').style.display='block';
 }
 
-// ── MAP (YANDEX) ─────────────────────────────────────────────
+// ── MAP INITIALIZATION (PURE YANDEX) ──────────────────────────
 function makeSchoolIcon(){
   const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="36" height="44" viewBox="0 0 36 44"><rect x="0" y="0" width="36" height="36" rx="6" fill="#111"/><polygon points="18,36 27,44 9,44" fill="#111"/><rect x="7" y="7" width="22" height="16" rx="1" fill="none" stroke="white" stroke-width="1.5"/><rect x="14" y="15" width="8" height="8" rx="1" fill="white" opacity="0.9"/><rect x="9" y="10" width="5" height="4" rx="1" fill="white" opacity="0.6"/><rect x="22" y="10" width="5" height="4" rx="1" fill="white" opacity="0.6"/><rect x="15" y="4" width="6" height="3" rx="1" fill="white" opacity="0.5"/></svg>`;
   return 'data:image/svg+xml;charset=UTF-8,'+encodeURIComponent(svg);
@@ -508,6 +502,8 @@ function drawRoute(lat1,lng1,lat2,lng2){
     });
     route.getMarkers().removeAll();
     gmap.geoObjects.add(currentRoute);
+  }, function(err) {
+    console.error("Ошибка маршрутизации:", err);
   });
 }
 
@@ -517,10 +513,11 @@ function setHome(lat,lng,text){
   calcDist(lat,lng);
 }
 
-// ── SEARCH (YANDEX SUGGEST & GEOCODER) ───────────────────────
-let searchTimer,lastQ='';
+// ── ADVANCED PURE YANDEX SUGGEST & GEOCODER ───────────────────
+let searchTimer, lastQ='';
 
 function onAddrInput(val){
+  if (typeof ymaps === 'undefined' || !ymaps.suggest) return;
   clearTimeout(searchTimer);
   if(val.length<2){closeSug();return;}
   lastQ=val;
@@ -535,23 +532,21 @@ function showLoading(){
 }
 
 async function doSearch(q){
-  if(q!==lastQ) return;
+  if(q !== lastQ) return;
   try {
-    const items = await ymaps.suggest(q + ", Бишкек");
+    // Явный фокус подсказок именно на Бишкек
+    const items = await ymaps.suggest("Бишкек, " + q);
     if(items && items.length > 0){
-      const formatted = items.slice(0, 5).map(item => {
+      const formatted = items.slice(0, 6).map(item => {
         const parts = item.value.split(', ');
+        // Отсекаем лишнюю страну/город в визуальном списке для красоты
         const mainText = parts.slice(2).join(', ') || parts[1] || parts[0];
         const subText = parts.slice(0, 2).join(', ');
-        return {
-          main: mainText,
-          sub: subText,
-          value: item.value
-        };
+        return { main: mainText, sub: subText, value: item.value };
       });
       renderSug(formatted);
     } else {
-      document.getElementById('addrSug').innerHTML=`<div class="sug-loading">Ничего не найдено. Попробуйте другой запрос.</div>`;
+      document.getElementById('addrSug').innerHTML=`<div class="sug-loading">Ничего не найдено. Уточните микрорайон или улицу.</div>`;
     }
   } catch(e) {
     document.getElementById('addrSug').innerHTML=`<div class="sug-loading">Ошибка поиска. Попробуйте снова.</div>`;
@@ -559,7 +554,7 @@ async function doSearch(q){
 }
 
 function renderSug(items){
-  if(lastQ!==document.getElementById('addrSearch').value) return;
+  if(lastQ !== document.getElementById('addrSearch').value) return;
   const el=document.getElementById('addrSug');
   el.innerHTML=items.map((item,i)=>`
     <div class="sug-item" onmousedown="selectSug(${i})">
@@ -579,6 +574,7 @@ async function selectSug(i){
   closeSug();
   document.getElementById('addrSearch').value=item.main;
 
+  // Прямое геокодирование через Яндекс
   ymaps.geocode(item.value, {results: 1}).then(function(res){
     const firstGeoObject = res.geoObjects.get(0);
     if(firstGeoObject) {
@@ -586,23 +582,28 @@ async function selectSug(i){
       const lat = coords[0];
       const lng = coords[1];
       
-      const components = firstGeoObject.properties.get('metaDataProperty').GeocoderMetaData.Address.Components;
-      fillAddrFieldsYandex(components, item.main);
+      const meta = firstGeoObject.properties.get('metaDataProperty').GeocoderMetaData;
+      const components = meta.Address.Components;
+      const fullLine = firstGeoObject.getAddressLine();
       
-      setHome(lat, lng, item.value);
+      fillAddrFieldsYandex(components, item.main, fullLine);
+      
+      setHome(lat, lng, fullLine);
       gmap.setCenter([lat, lng]);
       gmap.setZoom(16);
     }
   });
 }
 
-function fillAddrFieldsYandex(components, fallbackText){
+// Умная раскладка адресов Бишкека по инпутам формы
+function fillAddrFieldsYandex(components, fallbackText, fullLine){
   document.getElementById('addrFields').classList.add('show');
   let street = '';
   let house = '';
   
   for(const c of (components || [])){
-    if(c.kind === 'street' || c.kind === 'district' || c.kind === 'dependent_locality') {
+    // Для микрорайонов Бишкека Яндекс часто возвращает district или dependent_locality вместо street
+    if(['street', 'district', 'dependent_locality'].includes(c.kind)) {
       street = c.name;
     }
     if(c.kind === 'house') {
@@ -610,9 +611,15 @@ function fillAddrFieldsYandex(components, fallbackText){
     }
   }
   
+  // Если структура Яндекса сложная (микрорайонные дома без выраженной улицы) — парсим текстовый запасной вариант
   if(!street) {
-    street = fallbackText.split(',')[0].trim();
+    const parts = fallbackText.split(',');
+    street = parts[0].trim();
+    if(parts[1] && !house) {
+      house = parts[1].trim();
+    }
   }
+  
   document.getElementById('addrStreet').value = street;
   document.getElementById('addrHouse').value = house;
 }
@@ -780,7 +787,7 @@ function showSection(sec){
   });
 }
 
-// ── SUBMIT ───────────────────────────────────────────────────
+// ── SUBMIT FORM ──────────────────────────────────────────────
 function getFullAddr(){
   const street=document.getElementById('addrStreet').value.trim();
   const house=document.getElementById('addrHouse').value.trim();
@@ -887,6 +894,7 @@ const FAQ=[
     {q:'Кто такой Организатор?',a:'OUTWAY (ООО АйКай Груп) — Организатор трансфера, не перевозчик. Перевозку осуществляют независимые лицензированные водители.'},
   ]},
 ];
+
 function renderFaq(){
   document.getElementById('faqCategories').innerHTML=FAQ.map((cat,ci)=>`
     <div class="faq-cat">
@@ -906,11 +914,9 @@ function toggleFaqQ(ci,qi){document.getElementById(`fa${ci}_${qi}`).classList.to
 function toast(msg,type=''){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show '+type;setTimeout(()=>t.className='toast',3200);}
 
 checkAccess();
-</script>
 
-<script src="https://api-maps.yandex.ru/2.1/?apikey=f3c503f1-db1b-4b84-907c-b85cacd1af85&lang=ru_RU" type="text/javascript"></script>
-<script type="text/javascript">
-  ymaps.ready(initYandexMap);
+// Запуск карты после полной готовности API Яндекса
+ymaps.ready(initYandexMap);
 </script>
 </body>
 </html>
