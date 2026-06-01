@@ -26,12 +26,11 @@ body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--tex
 
 .header { background: var(--white); border-bottom: 1px solid var(--border); padding: 0 24px; display: flex; align-items: center; gap: 20px; height: 56px; position: sticky; top: 0; z-index: 400; }
 .logo { font-size: 15px; font-weight: 700; letter-spacing: 2px; color: var(--text); text-transform: uppercase; }
-.logo-dot { color: var(--orange); }
 .logo-sub { font-size: 9px; color: var(--text-muted); font-weight: 400; letter-spacing: 1.5px; text-transform: uppercase; margin-top: 1px; }
 .hd { width: 1px; height: 22px; background: var(--border); }
-.school-badge { display: none; align-items: center; gap: 6px; font-size: 12px; font-weight: 500; color: var(--text-soft); background: var(--bg); border: 1px solid var(--border); border-radius: 4px; padding: 4px 10px; }
+.school-badge { display: none; align-items: center; font-size: 12px; font-weight: 500; color: var(--text-soft); background: var(--bg); border: 1px solid var(--border); border-radius: 4px; padding: 4px 10px; }
 .header-right { margin-left: auto; display: flex; gap: 2px; }
-.nav-btn { background: none; border: none; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 12px; color: var(--text-muted); padding: 6px 12px; border-radius: 4px; transition: all .15s; font-weight: 500; letter-spacing: 0.3px; }
+.nav-btn { background: none; border: none; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 12px; color: var(--text-muted); padding: 6px 12px; border-radius: 4px; transition: all .15s; font-weight: 500; }
 .nav-btn:hover { background: var(--bg); color: var(--text); }
 .nav-btn.active { background: var(--text); color: var(--white); }
 
@@ -57,27 +56,25 @@ body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--tex
 .form-row { display: flex; gap: 10px; }
 .form-group { flex: 1; margin-bottom: 12px; }
 .form-group:last-child { margin-bottom: 0; }
-label { display: block; font-size: 11px; font-weight: 500; color: var(--text-soft); margin-bottom: 5px; letter-spacing: 0.2px; }
+label { display: block; font-size: 11px; font-weight: 500; color: var(--text-soft); margin-bottom: 5px; }
 label .req { color: var(--orange); }
 input[type=text], input[type=tel], select, textarea { width: 100%; background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 12px; font-family: 'Inter', sans-serif; font-size: 13px; color: var(--text); transition: border-color .15s; outline: none; -webkit-appearance: none; }
 input:focus, select:focus, textarea:focus { border-color: var(--text); }
 input::placeholder { color: var(--text-muted); }
-textarea { resize: none; height: 80px; }
+textarea { resize: none; height: 72px; }
 
-/* ADDRESS */
-.addr-wrap { position: relative; margin-bottom: 12px; }
-.addr-input-inner { position: relative; }
-.addr-input-inner input { padding-left: 34px; }
-.addr-icon { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: var(--text-muted); pointer-events: none; font-size: 13px; }
-#pac-input { width: 100%; }
+/* ADDRESS FORM */
+.addr-preview { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 14px; margin-top: 10px; font-size: 12px; color: var(--text-soft); display: none; }
+.addr-preview.show { display: block; }
+.addr-preview strong { color: var(--text); font-weight: 600; }
 
-/* DISTANCE BADGE */
-.dist-badge { display: none; align-items: center; justify-content: space-between; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 14px; margin-bottom: 12px; }
+/* DISTANCE */
+.dist-badge { display: none; align-items: center; justify-content: space-between; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 14px; margin-top: 10px; }
 .dist-badge.show { display: flex; }
 .dist-left { display: flex; align-items: baseline; gap: 6px; }
 .dist-val { font-size: 18px; font-weight: 700; color: var(--text); letter-spacing: -0.5px; }
 .dist-unit { font-size: 12px; color: var(--text-muted); }
-.zone-tag { font-size: 11px; font-weight: 600; color: var(--white); background: var(--text); border-radius: 4px; padding: 3px 9px; letter-spacing: 0.3px; }
+.zone-tag { font-size: 11px; font-weight: 600; color: var(--white); background: var(--text); border-radius: 4px; padding: 3px 9px; }
 
 /* TRANSPORT */
 .ts-options { display: flex; flex-direction: column; gap: 8px; }
@@ -85,14 +82,11 @@ textarea { resize: none; height: 80px; }
 .ts-opt:hover { border-color: var(--text-soft); }
 .ts-opt.selected { border-color: var(--text); background: var(--bg); }
 .ts-opt input { display: none; }
-.ts-icon-wrap { width: 36px; height: 36px; background: var(--bg); border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.ts-opt.selected .ts-icon-wrap { background: var(--white); }
-.ts-icon-svg { width: 20px; height: 20px; }
-.ts-info { flex: 1; }
+.ts-icon-wrap { width: 36px; height: 36px; background: var(--bg); border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--text-soft); }
+.ts-opt.selected .ts-icon-wrap { background: var(--white); color: var(--text); }
 .ts-name { font-weight: 600; font-size: 13px; color: var(--text); }
 .ts-desc { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
-.ts-price-wrap { text-align: right; }
-.ts-price { font-size: 15px; font-weight: 700; color: var(--text); letter-spacing: -0.3px; }
+.ts-price { font-size: 15px; font-weight: 700; color: var(--text); }
 .ts-price-sub { font-size: 10px; color: var(--text-muted); margin-top: 1px; }
 
 /* CHILDREN */
@@ -100,51 +94,46 @@ textarea { resize: none; height: 80px; }
 .child-hd { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
 .child-title { font-size: 12px; font-weight: 600; color: var(--text); display: flex; align-items: center; gap: 8px; }
 .disc-tag { font-size: 10px; font-weight: 600; color: var(--success); background: #E8F5EC; border-radius: 4px; padding: 2px 7px; }
-.btn-rm { background: none; border: none; cursor: pointer; color: var(--text-muted); font-size: 16px; line-height: 1; padding: 2px 4px; transition: color .15s; }
+.btn-rm { background: none; border: none; cursor: pointer; color: var(--text-muted); font-size: 15px; padding: 2px 4px; transition: color .15s; }
 .btn-rm:hover { color: var(--error); }
-.btn-add { width: 100%; background: none; border: 1px dashed var(--border); border-radius: var(--radius-sm); padding: 10px; font-family: 'Inter', sans-serif; font-size: 12px; color: var(--text-soft); cursor: pointer; transition: all .15s; font-weight: 500; display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 2px; }
+.btn-add { width: 100%; background: none; border: 1px dashed var(--border); border-radius: var(--radius-sm); padding: 10px; font-family: 'Inter', sans-serif; font-size: 12px; color: var(--text-soft); cursor: pointer; transition: all .15s; font-weight: 500; display: flex; align-items: center; justify-content: center; gap: 6px; }
 .btn-add:hover { border-color: var(--text-soft); color: var(--text); }
 
 .add-ct-toggle { background: none; border: none; font-family: 'Inter', sans-serif; font-size: 12px; color: var(--text-soft); cursor: pointer; padding: 4px 0; font-weight: 500; display: flex; align-items: center; gap: 5px; text-decoration: underline; text-underline-offset: 3px; }
-.add-ct-toggle:hover { color: var(--text); }
 .extra-ct { display: none; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); }
 .extra-ct.show { display: block; }
 
-/* PRICE */
 .price-summary { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px; margin-top: 20px; display: none; }
 .ps-title { font-size: 10px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
 .price-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; font-size: 13px; color: var(--text-soft); }
 .price-row .val { color: var(--text); font-weight: 500; }
 .price-divider { height: 1px; background: var(--border); margin: 8px 0; }
 .price-total { display: flex; justify-content: space-between; align-items: baseline; }
-.price-total .label { font-size: 13px; font-weight: 600; color: var(--text); }
-.price-total .amount { font-size: 22px; font-weight: 700; color: var(--text); letter-spacing: -0.5px; }
-.price-total .currency { font-size: 13px; font-weight: 500; color: var(--text-soft); margin-left: 3px; }
+.price-total .label { font-size: 13px; font-weight: 600; }
+.price-total .amount { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; }
+.price-total .currency { font-size: 13px; color: var(--text-soft); margin-left: 3px; }
 
 .btn-submit { width: 100%; background: var(--text); border: none; border-radius: var(--radius-sm); padding: 14px; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; color: white; cursor: pointer; transition: all .2s; margin-top: 16px; letter-spacing: 0.3px; }
 .btn-submit:hover { background: #333; }
 
-/* SUCCESS */
 .success-screen { display: none; padding: 32px 20px; flex-direction: column; align-items: center; gap: 16px; }
 .success-screen.show { display: flex; }
 .s-check { width: 56px; height: 56px; background: #E8F5EC; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 700; color: var(--success); }
-.s-title { font-size: 18px; font-weight: 700; letter-spacing: -0.3px; }
+.s-title { font-size: 18px; font-weight: 700; }
 .s-sub { font-size: 13px; color: var(--text-soft); text-align: center; line-height: 1.6; }
 .s-card { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px; }
 .s-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 13px; border-bottom: 1px solid var(--border); }
 .s-row:last-child { border-bottom: none; }
 .s-row .k { color: var(--text-muted); }
-.s-row .v { font-weight: 500; color: var(--text); text-align: right; max-width: 60%; }
+.s-row .v { font-weight: 500; text-align: right; max-width: 60%; }
 .mgr-btn { display: flex; align-items: center; gap: 12px; background: var(--text); color: white; border: none; border-radius: var(--radius-sm); padding: 14px 18px; width: 100%; text-decoration: none; transition: background .15s; }
 .mgr-btn:hover { background: #333; }
-.mgr-ph { font-size: 15px; font-weight: 700; letter-spacing: 0.5px; }
-.mgr-lbl { font-size: 10px; opacity: 0.6; letter-spacing: 0.5px; text-transform: uppercase; }
+.mgr-ph { font-size: 15px; font-weight: 700; }
+.mgr-lbl { font-size: 10px; opacity: 0.6; text-transform: uppercase; letter-spacing: 0.5px; }
 
-/* MAP */
 .map-area { flex: 1; position: sticky; top: 56px; height: calc(100vh - 56px); }
 #map { width: 100%; height: 100%; }
 
-/* FAQ */
 .faq-sidebar { flex: 1; overflow-y: auto; }
 .faq-hd { padding: 16px 20px; border-bottom: 1px solid var(--border); font-size: 10px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
 .faq-cat { border-bottom: 1px solid var(--border); }
@@ -157,7 +146,6 @@ textarea { resize: none; height: 80px; }
 .faq-answer { display: none; padding: 12px 20px 14px 36px; font-size: 12px; color: var(--text-soft); line-height: 1.8; background: #FAFAF8; border-top: 1px solid var(--border); }
 .faq-answer.open { display: block; }
 
-/* MODAL */
 .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 600; display: none; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
 .modal-overlay.show { display: flex; }
 .modal { background: var(--white); border-radius: var(--radius); width: 460px; max-width: 95vw; max-height: 78vh; display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0,0,0,0.15); overflow: hidden; }
@@ -172,7 +160,7 @@ textarea { resize: none; height: 80px; }
 .school-item:hover { background: var(--bg); }
 .s-dot { width: 8px; height: 8px; background: var(--border); border-radius: 50%; flex-shrink: 0; transition: background .1s; }
 .school-item:hover .s-dot { background: var(--orange); }
-.s-name { font-weight: 600; font-size: 13px; color: var(--text); }
+.s-name { font-weight: 600; font-size: 13px; }
 .s-addr { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
 .s-price { font-size: 12px; font-weight: 600; color: var(--text-soft); white-space: nowrap; }
 
@@ -212,7 +200,6 @@ textarea { resize: none; height: 80px; }
 </div>
 
 <div id="app" style="display:none">
-
 <header class="header">
   <div>
     <div class="logo">OUTWAY</div>
@@ -245,7 +232,6 @@ textarea { resize: none; height: 80px; }
 
 <div class="layout">
   <div class="sidebar">
-
     <div class="sidebar-section active" id="sectionForm">
       <div class="school-select-wrap">
         <div class="field-label">Школа</div>
@@ -258,14 +244,39 @@ textarea { resize: none; height: 80px; }
 
       <div class="form-wrap" id="formWrap" style="display:none">
 
+        <!-- 1. ADDRESS -->
         <div class="form-section">
           <div class="form-section-title"><span class="step-num">1</span> Адрес ребёнка</div>
-          <div class="addr-wrap">
-            <div class="addr-input-inner">
-              <span class="addr-icon">⌕</span>
-              <input id="pac-input" type="text" placeholder="Начните вводить адрес в Бишкеке...">
+          <div class="form-group">
+            <label>Тип <span class="req">*</span></label>
+            <select id="addrType" onchange="updateAddrPreview()">
+              <option value="">Выберите</option>
+              <option value="мкр">Микрорайон</option>
+              <option value="ул.">Улица</option>
+              <option value="ж/м">Жилмассив</option>
+              <option value="пр.">Проспект</option>
+              <option value="пер.">Переулок</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Название <span class="req">*</span></label>
+            <input type="text" id="addrName" placeholder="напр: 7, Горького, Джал, Аламедин-1" oninput="updateAddrPreview()">
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Дом <span class="req">*</span></label>
+              <input type="text" id="addrHouse" placeholder="21" oninput="updateAddrPreview()">
+            </div>
+            <div class="form-group">
+              <label>Квартира</label>
+              <input type="text" id="addrFlat" placeholder="45" oninput="updateAddrPreview()">
             </div>
           </div>
+          <div class="form-group">
+            <label>Ориентир / подъезд</label>
+            <input type="text" id="addrLandmark" placeholder="подъезд 2, рядом с магазином..." oninput="updateAddrPreview()">
+          </div>
+          <div class="addr-preview" id="addrPreview"></div>
           <div class="dist-badge" id="distBadge">
             <div class="dist-left">
               <span class="dist-val" id="distVal">—</span>
@@ -275,28 +286,29 @@ textarea { resize: none; height: 80px; }
           </div>
         </div>
 
+        <!-- 2. TRANSPORT -->
         <div class="form-section">
           <div class="form-section-title"><span class="step-num">2</span> Тип транспорта</div>
           <div class="ts-options" id="tsOptions"></div>
         </div>
 
+        <!-- 3. CHILDREN -->
         <div class="form-section">
           <div class="form-section-title"><span class="step-num">3</span> Дети</div>
           <div id="childrenList"></div>
           <button class="btn-add" onclick="addChild()">+ Добавить ребёнка</button>
         </div>
 
+        <!-- 4. PARENT -->
         <div class="form-section">
           <div class="form-section-title"><span class="step-num">4</span> Законный представитель</div>
           <div class="form-group"><label>ФИО <span class="req">*</span></label><input type="text" id="parentName" placeholder="Иванова Айгерим Асановна"></div>
-          <div class="form-row">
-            <div class="form-group">
-              <label>Родство <span class="req">*</span></label>
-              <select id="parentRelation">
-                <option value="">Выберите</option>
-                <option>Мать</option><option>Отец</option><option>Опекун</option><option>Другое</option>
-              </select>
-            </div>
+          <div class="form-group">
+            <label>Родство <span class="req">*</span></label>
+            <select id="parentRelation">
+              <option value="">Выберите</option>
+              <option>Мать</option><option>Отец</option><option>Опекун</option><option>Другое</option>
+            </select>
           </div>
           <div class="form-row">
             <div class="form-group"><label>Телефон 1 <span class="req">*</span></label><input type="tel" id="parentPhone1" placeholder="+996 700 000 000"></div>
@@ -305,12 +317,15 @@ textarea { resize: none; height: 80px; }
           <div class="form-group"><label>Telegram <span class="req">*</span></label><input type="tel" id="parentTelegram" placeholder="+996 700 000 000"></div>
         </div>
 
+        <!-- 5. EXTRA CONTACT -->
         <div class="form-section">
           <div class="form-section-title"><span class="step-num">5</span> Дополнительный контакт</div>
           <button class="add-ct-toggle" onclick="toggleExtraCt()"><span id="extraCtIcon">+</span> Добавить доп. контакт</button>
           <div class="extra-ct" id="extraCtForm">
+            <div style="height:12px"></div>
             <div class="form-group"><label>Имя</label><input type="text" id="extraName" placeholder="Имя"></div>
-            <div class="form-group"><label>Родство</label>
+            <div class="form-group">
+              <label>Родство</label>
               <select id="extraRelation"><option value="">Выберите</option><option>Мать</option><option>Отец</option><option>Бабушка</option><option>Дедушка</option><option>Няня</option><option>Другое</option></select>
             </div>
             <div class="form-row">
@@ -320,6 +335,7 @@ textarea { resize: none; height: 80px; }
           </div>
         </div>
 
+        <!-- 6. COMMENT -->
         <div class="form-section">
           <div class="form-section-title"><span class="step-num">6</span> Комментарий</div>
           <textarea id="comment" placeholder="Дополнительные пожелания..."></textarea>
@@ -356,7 +372,6 @@ textarea { resize: none; height: 80px; }
       <div class="faq-hd">Часто задаваемые вопросы</div>
       <div class="faq-sidebar"><div id="faqCategories"></div></div>
     </div>
-
   </div>
 
   <div class="map-area"><div id="map"></div></div>
@@ -364,15 +379,14 @@ textarea { resize: none; height: 80px; }
 </div>
 
 <script>
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyOLDrpvMa6kUTjM_PPyJxG1EetVSX-VBl3L3fcfHJ4Y7r4pVHTrl6vApxMRK2vevb7/exec';
 const GOOGLE_KEY = 'AIzaSyCgh5hCCGGDGfPY2Ph9gBB6yKZa4HQ3bDg';
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzWJwT3kDO1HL8MILw7ZKy5SocFZn8nOixscMer9O2g2jkc3c4r-5quo4_f3TEIFC4c/exec';
 
 const SCHOOL_KEYS = {
-  kings:   'KNG2026', light:  'LGT2026', aes:    'AES2026',
-  kas:     'KAS2026', tensay: 'TNS2026', erudit: 'ERD2026',
-  indigo:  'IND2026', genius: 'GNS2026', epsilon:'EPS2026',
-  nova:    'NOV2026', bilim:  'BLM2026', edison: 'EDS2026',
-  admin:   'ADMIN2026'
+  kings:'KNG2026', light:'LGT2026', aes:'AES2026', kas:'KAS2026',
+  tensay:'TNS2026', erudit:'ERD2026', indigo:'IND2026', genius:'GNS2026',
+  epsilon:'EPS2026', nova:'NOV2026', bilim:'BLM2026', edison:'EDS2026',
+  admin:'ADMIN2026'
 };
 
 const SCHOOLS = [
@@ -401,220 +415,245 @@ const SCHOOLS = [
 ];
 
 let allowedSchoolId = null, isAdmin = false;
-const S = { school:null, branch:null, schoolLat:null, schoolLng:null, homeLat:null, homeLng:null, homeText:'', distKm:null, zone:null, zonePrice:null, tsType:'bus', children:[{name:'',grade:''}], extraOpen:false };
-let gmap, homeMarker, schoolMarker, directionsRenderer, autocomplete;
+const S = {
+  school:null, branch:null, schoolLat:null, schoolLng:null,
+  homeLat:null, homeLng:null, distKm:null, zone:null, zonePrice:null,
+  tsType:'bus', children:[{name:'',grade:''}], extraOpen:false
+};
+let gmap, homeMarker, schoolMarker, directionsRenderer;
 
+// ── ACCESS ──────────────────────────────────────────────────
 function checkAccess() {
   const p = new URLSearchParams(window.location.search);
   const school = p.get('school'), key = p.get('key');
-  if (!school || !key || SCHOOL_KEYS[school] !== key) { document.getElementById('accessDenied').classList.add('show'); return; }
-  if (school === 'admin') { isAdmin = true; allowedSchoolId = null; }
-  else { allowedSchoolId = school; }
+  if (!school || !key || SCHOOL_KEYS[school] !== key) {
+    document.getElementById('accessDenied').classList.add('show'); return;
+  }
+  isAdmin = school === 'admin';
+  allowedSchoolId = isAdmin ? null : school;
   document.getElementById('app').style.display = 'block';
 }
 
+// ── MAP ──────────────────────────────────────────────────────
 function initGoogleMap() {
   gmap = new google.maps.Map(document.getElementById('map'), {
-    center: { lat: 42.87, lng: 74.59 },
-    zoom: 12,
-    mapTypeControl: false,
-    streetViewControl: false,
-    fullscreenControl: false,
-    styles: [
-      { featureType: 'poi', stylers: [{ visibility: 'off' }] },
-      { featureType: 'transit', stylers: [{ visibility: 'off' }] },
+    center: { lat:42.87, lng:74.59 }, zoom:12,
+    mapTypeControl:false, streetViewControl:false, fullscreenControl:false,
+    styles:[
+      {featureType:'poi',stylers:[{visibility:'off'}]},
+      {featureType:'transit',stylers:[{visibility:'off'}]},
     ]
   });
-
-  autocomplete = new google.maps.places.Autocomplete(
-    document.getElementById('pac-input'),
-    { componentRestrictions: { country: 'kg' }, fields: ['geometry', 'name', 'formatted_address'], language: 'ru' }
-  );
-
-  autocomplete.addListener('place_changed', () => {
-    const place = autocomplete.getPlace();
-    if (!place.geometry) return;
-    const lat = place.geometry.location.lat();
-    const lng = place.geometry.location.lng();
-    S.homeLat = lat; S.homeLng = lng;
-    S.homeText = place.formatted_address || place.name;
-    if (S.schoolLat) { calcDist(lat, lng); setHomeMarker(lat, lng); }
-  });
-
   directionsRenderer = new google.maps.DirectionsRenderer({
-    suppressMarkers: true,
-    polylineOptions: { strokeColor: '#E8621A', strokeWeight: 4, strokeOpacity: 0.8 }
+    suppressMarkers:true,
+    polylineOptions:{ strokeColor:'#E8621A', strokeWeight:4, strokeOpacity:0.8 }
   });
   directionsRenderer.setMap(gmap);
-
   renderFaq();
+  autoSelectSchool();
+}
 
+function autoSelectSchool() {
   if (!isAdmin && allowedSchoolId) {
     const s = SCHOOLS.find(x => x.id === allowedSchoolId);
-    if (s) {
-      document.getElementById('selectedSchoolLabel').textContent = s.name;
-      document.getElementById('headerBadge').style.display = 'flex';
-      document.getElementById('headerSchoolName').textContent = s.name;
-      document.getElementById('schoolSelectBtn').style.pointerEvents = 'none';
-      document.getElementById('schoolSelectBtn').style.opacity = '0.75';
-      S.school = s;
-      if (s.branches) {
-        const bp = document.getElementById('branchPicker');
-        bp.innerHTML = s.branches.map(b => `<button class="branch-btn" onclick="selectBranch('${s.id}','${b.id}')" id="bb_${b.id}">${b.name}</button>`).join('');
-        bp.classList.add('show');
-        selectBranch(s.id, s.branches[0].id);
-      } else {
-        S.schoolLat = s.lat; S.schoolLng = s.lng;
-        setSchoolMarker(s.lat, s.lng, s.name);
-        gmap.setCenter({ lat: s.lat, lng: s.lng }); gmap.setZoom(14);
-        showForm();
-      }
+    if (!s) return;
+    document.getElementById('selectedSchoolLabel').textContent = s.name;
+    document.getElementById('headerBadge').style.display = 'flex';
+    document.getElementById('headerSchoolName').textContent = s.name;
+    document.getElementById('schoolSelectBtn').style.pointerEvents = 'none';
+    document.getElementById('schoolSelectBtn').style.opacity = '0.75';
+    S.school = s;
+    if (s.branches) {
+      const bp = document.getElementById('branchPicker');
+      bp.innerHTML = s.branches.map(b => `<button class="branch-btn" onclick="selectBranch('${s.id}','${b.id}')" id="bb_${b.id}">${b.name}</button>`).join('');
+      bp.classList.add('show');
+      selectBranch(s.id, s.branches[0].id);
+    } else {
+      S.schoolLat = s.lat; S.schoolLng = s.lng;
+      setSchoolMarker(s.lat, s.lng, s.name);
+      gmap.setCenter({lat:s.lat,lng:s.lng}); gmap.setZoom(14);
+      showForm();
     }
   }
 }
 
+function mkIcon(color, emoji) {
+  return {
+    url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(
+      `<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><circle cx="20" cy="20" r="20" fill="${color}"/><text x="20" y="26" text-anchor="middle" font-size="18">${emoji}</text></svg>`
+    ),
+    scaledSize: new google.maps.Size(40, 40)
+  };
+}
+
 function setSchoolMarker(lat, lng, name) {
   if (schoolMarker) schoolMarker.setMap(null);
-  schoolMarker = new google.maps.Marker({
-    position: { lat, lng }, map: gmap,
-    title: name,
-    icon: { url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36"><circle cx="18" cy="18" r="18" fill="#111111"/><text x="18" y="23" text-anchor="middle" font-size="16" font-family="Inter,sans-serif">🏫</text></svg>`), scaledSize: new google.maps.Size(36, 36) }
-  });
-  new google.maps.InfoWindow({ content: `<div style="font-family:Inter,sans-serif;font-size:12px;font-weight:600;padding:2px 4px">${name}</div>` }).open(gmap, schoolMarker);
+  schoolMarker = new google.maps.Marker({ position:{lat,lng}, map:gmap, title:name, icon:mkIcon('#111111','🏫') });
 }
 
 function setHomeMarker(lat, lng) {
   if (homeMarker) homeMarker.setMap(null);
-  homeMarker = new google.maps.Marker({
-    position: { lat, lng }, map: gmap,
-    icon: { url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36"><circle cx="18" cy="18" r="18" fill="#E8621A"/><text x="18" y="23" text-anchor="middle" font-size="16" font-family="Inter,sans-serif">🏠</text></svg>`), scaledSize: new google.maps.Size(36, 36) }
-  });
-  drawRoute(lat, lng, S.schoolLat, S.schoolLng);
+  homeMarker = new google.maps.Marker({ position:{lat,lng}, map:gmap, icon:mkIcon('#E8621A','🏠') });
+  if (S.schoolLat) drawRoute(lat, lng, S.schoolLat, S.schoolLng);
 }
 
-function drawRoute(lat1, lng1, lat2, lng2) {
-  if (!lat2) return;
-  const svc = new google.maps.DirectionsService();
-  svc.route({
-    origin: { lat: lat1, lng: lng1 },
-    destination: { lat: lat2, lng: lng2 },
-    travelMode: google.maps.TravelMode.DRIVING
-  }, (result, status) => {
-    if (status === 'OK') directionsRenderer.setDirections(result);
-  });
+function drawRoute(lat1,lng1,lat2,lng2) {
+  new google.maps.DirectionsService().route({
+    origin:{lat:lat1,lng:lng1}, destination:{lat:lat2,lng:lng2},
+    travelMode:google.maps.TravelMode.DRIVING
+  }, (res,status) => { if(status==='OK') directionsRenderer.setDirections(res); });
 }
 
+// ── SCHOOL ───────────────────────────────────────────────────
 function openSchoolModal() {
-  const schools = isAdmin ? SCHOOLS : SCHOOLS.filter(s => s.id === allowedSchoolId);
-  if (schools.length === 1 && !isAdmin) { selectSchool(schools[0].id); return; }
+  const list = isAdmin ? SCHOOLS : SCHOOLS.filter(s=>s.id===allowedSchoolId);
+  if (list.length===1 && !isAdmin) { selectSchool(list[0].id); return; }
   document.getElementById('schoolModal').classList.add('show');
-  renderSchoolList(schools);
-  setTimeout(() => document.getElementById('schoolSearch').focus(), 80);
+  renderSchoolList(list);
+  setTimeout(()=>document.getElementById('schoolSearch').focus(),80);
 }
 function closeSchoolModal() { document.getElementById('schoolModal').classList.remove('show'); }
 function filterSchools(q) {
-  const f = SCHOOLS.filter(s => s.name.toLowerCase().includes(q.toLowerCase()) || s.addr.toLowerCase().includes(q.toLowerCase()));
-  renderSchoolList(f);
+  renderSchoolList(SCHOOLS.filter(s=>s.name.toLowerCase().includes(q.toLowerCase())));
 }
 function renderSchoolList(list) {
-  document.getElementById('schoolList').innerHTML = list.map(s => `
+  document.getElementById('schoolList').innerHTML = list.map(s=>`
     <div class="school-item" onclick="selectSchool('${s.id}')">
       <div class="s-dot"></div>
       <div><div class="s-name">${s.name}</div><div class="s-addr">${s.addr}</div></div>
       <div class="s-price">от ${s.p1.toLocaleString()} с</div>
     </div>`).join('');
 }
-
 function selectSchool(id) {
-  const s = SCHOOLS.find(x => x.id === id);
-  if (!s) return;
-  S.school = s; S.branch = null;
+  const s = SCHOOLS.find(x=>x.id===id); if(!s) return;
+  S.school=s; S.branch=null;
   closeSchoolModal();
-  document.getElementById('selectedSchoolLabel').textContent = s.name;
-  document.getElementById('headerBadge').style.display = 'flex';
-  document.getElementById('headerSchoolName').textContent = s.name;
-  const bp = document.getElementById('branchPicker');
-  if (s.branches) {
-    bp.innerHTML = s.branches.map(b => `<button class="branch-btn" onclick="selectBranch('${s.id}','${b.id}')" id="bb_${b.id}">${b.name}</button>`).join('');
+  document.getElementById('selectedSchoolLabel').textContent=s.name;
+  document.getElementById('headerBadge').style.display='flex';
+  document.getElementById('headerSchoolName').textContent=s.name;
+  const bp=document.getElementById('branchPicker');
+  if(s.branches){
+    bp.innerHTML=s.branches.map(b=>`<button class="branch-btn" onclick="selectBranch('${s.id}','${b.id}')" id="bb_${b.id}">${b.name}</button>`).join('');
     bp.classList.add('show');
-    selectBranch(s.id, s.branches[0].id);
+    selectBranch(s.id,s.branches[0].id);
   } else {
-    bp.classList.remove('show'); bp.innerHTML = '';
-    S.schoolLat = s.lat; S.schoolLng = s.lng;
-    setSchoolMarker(s.lat, s.lng, s.name);
-    gmap.setCenter({ lat: s.lat, lng: s.lng }); gmap.setZoom(14);
+    bp.classList.remove('show'); bp.innerHTML='';
+    S.schoolLat=s.lat; S.schoolLng=s.lng;
+    setSchoolMarker(s.lat,s.lng,s.name);
+    gmap.setCenter({lat:s.lat,lng:s.lng}); gmap.setZoom(14);
     showForm();
   }
 }
-
-function selectBranch(sid, bid) {
-  const s = SCHOOLS.find(x => x.id === sid);
-  const b = s.branches.find(x => x.id === bid);
-  S.branch = b; S.schoolLat = b.lat; S.schoolLng = b.lng;
-  document.querySelectorAll('.branch-btn').forEach(el => el.classList.remove('selected'));
-  document.getElementById('bb_' + bid)?.classList.add('selected');
-  setSchoolMarker(b.lat, b.lng, b.name);
-  gmap.setCenter({ lat: b.lat, lng: b.lng }); gmap.setZoom(14);
+function selectBranch(sid,bid) {
+  const s=SCHOOLS.find(x=>x.id===sid), b=s.branches.find(x=>x.id===bid);
+  S.branch=b; S.schoolLat=b.lat; S.schoolLng=b.lng;
+  document.querySelectorAll('.branch-btn').forEach(el=>el.classList.remove('selected'));
+  document.getElementById('bb_'+bid)?.classList.add('selected');
+  setSchoolMarker(b.lat,b.lng,b.name);
+  gmap.setCenter({lat:b.lat,lng:b.lng}); gmap.setZoom(14);
   showForm();
-  if (S.homeLat) { calcDist(S.homeLat, S.homeLng); setHomeMarker(S.homeLat, S.homeLng); }
+  if(S.homeLat) { calcDist(S.homeLat,S.homeLng); setHomeMarker(S.homeLat,S.homeLng); }
 }
-
 function showForm() {
-  document.getElementById('formWrap').style.display = 'block';
+  document.getElementById('formWrap').style.display='block';
   renderTs(); renderChildren(); updatePrice();
 }
 
-function haversine(a,b,c,d) {
+// ── ADDRESS FORM ─────────────────────────────────────────────
+let geocodeTimer;
+function updateAddrPreview() {
+  const type = v('addrType'), name = v('addrName'), house = v('addrHouse');
+  const flat = v('addrFlat'), lm = v('addrLandmark');
+  if (!type && !name) { document.getElementById('addrPreview').classList.remove('show'); return; }
+  let addr = '';
+  if (type) addr += type + ' ';
+  if (name) addr += name;
+  if (house) addr += ', д. ' + house;
+  if (flat) addr += ', кв. ' + flat;
+  if (lm) addr += ' (' + lm + ')';
+  addr = addr.trim();
+  const el = document.getElementById('addrPreview');
+  el.innerHTML = '<strong>Адрес:</strong> ' + addr + ', Бишкек';
+  el.classList.add('show');
+  if (type && name && house) {
+    clearTimeout(geocodeTimer);
+    geocodeTimer = setTimeout(() => geocodeAddress(addr), 800);
+  }
+}
+
+function geocodeAddress(addr) {
+  const fullAddr = addr + ', Бишкек, Кыргызстан';
+  const geocoder = new google.maps.Geocoder();
+  geocoder.geocode({ address: fullAddr, region: 'kg' }, (results, status) => {
+    if (status === 'OK' && results[0]) {
+      const loc = results[0].geometry.location;
+      S.homeLat = loc.lat(); S.homeLng = loc.lng();
+      calcDist(S.homeLat, S.homeLng);
+      setHomeMarker(S.homeLat, S.homeLng);
+    }
+  });
+}
+
+function getFullAddress() {
+  const type = v('addrType'), name = v('addrName'), house = v('addrHouse');
+  const flat = v('addrFlat'), lm = v('addrLandmark');
+  let addr = '';
+  if (type) addr += type + ' ';
+  if (name) addr += name;
+  if (house) addr += ', д. ' + house;
+  if (flat) addr += ', кв. ' + flat;
+  if (lm) addr += ' (' + lm + ')';
+  return addr.trim() + ', Бишкек';
+}
+
+// ── DISTANCE ─────────────────────────────────────────────────
+function haversine(a,b,c,d){
   const R=6371,dL=(c-a)*Math.PI/180,dN=(d-b)*Math.PI/180;
   const x=Math.sin(dL/2)**2+Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.sin(dN/2)**2;
   return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));
 }
-
-function calcDist(lat, lng) {
-  const dist = haversine(lat, lng, S.schoolLat, S.schoolLng);
-  const eff = dist - 0.3;
-  S.distKm = dist;
-  const s = S.school;
-  let zone, price;
-  if (s.p3 === 0) { zone = eff<=3?1:2; price = eff<=3?s.p1:s.p2; }
-  else { zone = eff<=3?1:eff<=6?2:3; price = eff<=3?s.p1:eff<=6?s.p2:s.p3; }
-  S.zone = zone; S.zonePrice = price;
+function calcDist(lat,lng) {
+  if (!S.schoolLat) return;
+  const dist=haversine(lat,lng,S.schoolLat,S.schoolLng), eff=dist-0.3;
+  S.distKm=dist;
+  const s=S.school;
+  let zone,price;
+  if(s.p3===0){zone=eff<=3?1:2;price=eff<=3?s.p1:s.p2;}
+  else{zone=eff<=3?1:eff<=6?2:3;price=eff<=3?s.p1:eff<=6?s.p2:s.p3;}
+  S.zone=zone; S.zonePrice=price;
   document.getElementById('distBadge').classList.add('show');
-  document.getElementById('distVal').textContent = dist.toFixed(2);
-  document.getElementById('zoneTag').textContent = 'Зона ' + zone;
+  document.getElementById('distVal').textContent=dist.toFixed(2);
+  document.getElementById('zoneTag').textContent='Зона '+zone;
   renderTs(); updatePrice();
 }
 
+// ── TRANSPORT ────────────────────────────────────────────────
 const TS_ICONS = {
-  bus: `<svg class="ts-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="5" width="20" height="13" rx="2"/><path d="M2 10h20"/><circle cx="7" cy="18" r="1.5"/><circle cx="17" cy="18" r="1.5"/><path d="M7 5V3M17 5V3"/></svg>`,
-  van: `<svg class="ts-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 12V8a2 2 0 012-2h10l4 4v4"/><path d="M3 12h18v4a1 1 0 01-1 1H4a1 1 0 01-1-1v-4z"/><circle cx="7" cy="17" r="1.5"/><circle cx="17" cy="17" r="1.5"/></svg>`,
-  sedan: `<svg class="ts-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12l2-5h10l2 5"/><path d="M3 12h18v5a1 1 0 01-1 1H4a1 1 0 01-1-1v-5z"/><circle cx="7" cy="17.5" r="1.5"/><circle cx="17" cy="17.5" r="1.5"/><path d="M7 7h10"/></svg>`
+  bus:`<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="5" width="20" height="13" rx="2"/><path d="M2 10h20"/><circle cx="7" cy="18" r="1.5"/><circle cx="17" cy="18" r="1.5"/></svg>`,
+  van:`<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 11V8a2 2 0 012-2h10l4 5"/><path d="M3 11h18v5a1 1 0 01-1 1H4a1 1 0 01-1-1v-5z"/><circle cx="7" cy="17" r="1.5"/><circle cx="17" cy="17" r="1.5"/></svg>`,
+  sedan:`<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 11l2-4h10l2 4"/><path d="M3 11h18v5a1 1 0 01-1 1H4a1 1 0 01-1-1v-5z"/><circle cx="7" cy="17" r="1.5"/><circle cx="17" cy="17" r="1.5"/></svg>`
 };
-
-function renderTs() {
-  const zp = S.zonePrice || 0;
-  const opts = [
-    { id:'bus',   name:'Микроавтобус', desc:'До 20 мест', price:zp,    sub:S.zone?'Зона '+S.zone:'выберите адрес' },
-    { id:'van',   name:'Минивэн',       desc:'До 8 мест',  price:9500,  sub:'фиксированная' },
-    { id:'sedan', name:'Седан',          desc:'До 4 мест',  price:10500, sub:'фиксированная' },
+function renderTs(){
+  const zp=S.zonePrice||0;
+  const opts=[
+    {id:'bus',  name:'Микроавтобус',desc:'До 20 мест',price:zp,   sub:S.zone?'Зона '+S.zone:'выберите адрес'},
+    {id:'van',  name:'Минивэн',      desc:'До 8 мест', price:9500, sub:'фиксированная'},
+    {id:'sedan',name:'Седан',         desc:'До 4 мест', price:10500,sub:'фиксированная'},
   ];
-  document.getElementById('tsOptions').innerHTML = opts.map(o => `
+  document.getElementById('tsOptions').innerHTML=opts.map(o=>`
     <label class="ts-opt ${S.tsType===o.id?'selected':''}" onclick="selectTs('${o.id}')">
       <input type="radio" name="ts">
       <div class="ts-icon-wrap">${TS_ICONS[o.id]}</div>
-      <div class="ts-info"><div class="ts-name">${o.name}</div><div class="ts-desc">${o.desc}</div></div>
-      <div class="ts-price-wrap">
-        <div class="ts-price">${o.price?o.price.toLocaleString()+' с':'—'}</div>
-        <div class="ts-price-sub">${o.sub}</div>
-      </div>
+      <div style="flex:1"><div class="ts-name">${o.name}</div><div class="ts-desc">${o.desc}</div></div>
+      <div style="text-align:right"><div class="ts-price">${o.price?o.price.toLocaleString()+' с':'—'}</div><div class="ts-price-sub">${o.sub}</div></div>
     </label>`).join('');
 }
+function selectTs(t){S.tsType=t;renderTs();updatePrice();}
+function getTsPrice(){return S.tsType==='bus'?S.zonePrice||0:S.tsType==='van'?9500:10500;}
 
-function selectTs(t) { S.tsType=t; renderTs(); updatePrice(); }
-function getTsPrice() { return S.tsType==='bus'?S.zonePrice||0:S.tsType==='van'?9500:10500; }
-
-function renderChildren() {
-  document.getElementById('childrenList').innerHTML = S.children.map((c,i) => `
+// ── CHILDREN ─────────────────────────────────────────────────
+function renderChildren(){
+  document.getElementById('childrenList').innerHTML=S.children.map((c,i)=>`
     <div class="child-card">
       <div class="child-hd">
         <div class="child-title">Ребёнок ${i+1}${i>0?' <span class="disc-tag">−5%</span>':''}</div>
@@ -628,92 +667,108 @@ function renderChildren() {
       </div>
     </div>`).join('');
 }
-function addChild() { S.children.push({name:'',grade:''}); renderChildren(); updatePrice(); }
-function rmChild(i) { S.children.splice(i,1); renderChildren(); updatePrice(); }
+function addChild(){S.children.push({name:'',grade:''});renderChildren();updatePrice();}
+function rmChild(i){S.children.splice(i,1);renderChildren();updatePrice();}
 
-function updatePrice() {
-  const base = getTsPrice();
-  const ps = document.getElementById('priceSummary');
-  if (!base || !S.children.length) { ps.style.display='none'; return; }
+// ── PRICE ────────────────────────────────────────────────────
+function updatePrice(){
+  const base=getTsPrice();
+  const ps=document.getElementById('priceSummary');
+  if(!base||!S.children.length){ps.style.display='none';return;}
   ps.style.display='block';
   let total=0;
-  document.getElementById('priceRows').innerHTML = S.children.map((c,i) => {
-    const p=Math.round(base*(i>0?.95:1)); total+=p;
+  document.getElementById('priceRows').innerHTML=S.children.map((c,i)=>{
+    const p=Math.round(base*(i>0?.95:1));total+=p;
     return `<div class="price-row"><span>${c.name||'Ребёнок '+(i+1)}${i>0?' (−5%)':''}</span><span class="val">${p.toLocaleString()} сом</span></div>`;
   }).join('');
-  document.getElementById('priceTotal').textContent = total.toLocaleString();
+  document.getElementById('priceTotal').textContent=total.toLocaleString();
 }
 
-function toggleExtraCt() {
+function toggleExtraCt(){
   S.extraOpen=!S.extraOpen;
   document.getElementById('extraCtForm').classList.toggle('show',S.extraOpen);
   document.getElementById('extraCtIcon').textContent=S.extraOpen?'−':'+';
 }
 
-function showSection(sec) {
+function showSection(sec){
   document.querySelectorAll('.sidebar-section').forEach(s=>s.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById('sectionForm').classList.toggle('active',sec==='form');
-  document.getElementById('sectionFaq').classList.toggle('active',sec==='faq');
+  document.getElementById('section'+sec.charAt(0).toUpperCase()+sec.slice(1)).classList.add('active');
   document.querySelectorAll('.nav-btn').forEach(b=>{
-    if((sec==='form'&&b.textContent==='Заявка')||(sec==='faq'&&b.textContent==='Вопросы')) b.classList.add('active');
+    if((sec==='form'&&b.textContent==='Заявка')||(sec==='faq'&&b.textContent==='Вопросы'))b.classList.add('active');
   });
 }
 
-async function submitForm() {
-  if (!S.school) { toast('Выберите школу','error'); return; }
-  if (!S.homeLat) { toast('Укажите адрес','error'); return; }
-  if (!S.children.every(c=>c.name.trim()&&c.grade.trim())) { toast('Заполните данные всех детей','error'); return; }
-  if (!v('parentName')) { toast('Укажите ФИО родителя','error'); return; }
-  if (!v('parentRelation')) { toast('Укажите родство','error'); return; }
-  if (!v('parentPhone1')) { toast('Укажите телефон','error'); return; }
-  if (!v('parentTelegram')) { toast('Укажите Telegram','error'); return; }
+// ── SUBMIT ───────────────────────────────────────────────────
+async function submitForm(){
+  if(!S.school){toast('Выберите школу','error');return;}
+  if(!v('addrType')||!v('addrName')||!v('addrHouse')){toast('Заполните адрес полностью','error');return;}
+  if(!S.children.every(c=>c.name.trim()&&c.grade.trim())){toast('Заполните данные всех детей','error');return;}
+  if(!v('parentName')){toast('Укажите ФИО родителя','error');return;}
+  if(!v('parentRelation')){toast('Укажите родство','error');return;}
+  if(!v('parentPhone1')){toast('Укажите телефон','error');return;}
+  if(!v('parentTelegram')){toast('Укажите Telegram','error');return;}
 
-  const base=getTsPrice(), schoolName=S.branch?S.branch.name:S.school.name;
+  const base=getTsPrice();
+  const schoolName=S.branch?S.branch.name:S.school.name;
   const tsMap={bus:'Микроавтобус',van:'Минивэн',sedan:'Седан'};
-  let total=0;
-  const childStr=S.children.map((c,i)=>{const p=Math.round(base*(i>0?.95:1));total+=p;return `${c.name} (${c.grade}) — ${p} сом${i>0?' −5%':''}`;}).join(' | ');
-
-  const payload={
-    timestamp:new Date().toLocaleString('ru-RU'),
-    school:schoolName, branch:S.branch?S.branch.name:'',
-    address:S.homeText, lat:S.homeLat, lng:S.homeLng,
-    schoolLat:S.schoolLat, schoolLng:S.schoolLng,
-    distanceKm:S.distKm?S.distKm.toFixed(2):'', zone:S.zone||'',
-    transport:tsMap[S.tsType], zonePrice:base,
-    children:childStr, childrenCount:S.children.length, totalPerMonth:total,
-    parentName:v('parentName'), parentRelation:v('parentRelation'),
-    parentPhone1:v('parentPhone1'), parentPhone2:v('parentPhone2'), parentTelegram:v('parentTelegram'),
-    extraName:v('extraName'), extraRelation:v('extraRelation'),
-    extraPhone1:v('extraPhone1'), extraPhone2:v('extraPhone2'),
-    comment:v('comment'), manager:S.school.manager,
-  };
+  const fullAddr=getFullAddress();
+  const familyCode='FAM-'+Date.now().toString(36).toUpperCase();
+  const timestamp=new Date().toLocaleString('ru-RU');
 
   document.getElementById('loadingOverlay').classList.add('show');
+
   try {
-    await fetch(APPS_SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
-    showSuccess(payload,schoolName,total);
-  } catch(e) { toast('Ошибка. Попробуйте ещё раз.','error'); }
-  finally { document.getElementById('loadingOverlay').classList.remove('show'); }
+    // Send one row per child
+    const promises = S.children.map((child, i) => {
+      const price = Math.round(base*(i>0?.95:1));
+      const payload = {
+        timestamp, familyCode, school:schoolName, branch:S.branch?S.branch.name:'',
+        address:fullAddr,
+        lat:S.homeLat||'', lng:S.homeLng||'',
+        schoolLat:S.schoolLat, schoolLng:S.schoolLng,
+        distanceKm:S.distKm?S.distKm.toFixed(2):'', zone:S.zone||'',
+        transport:tsMap[S.tsType], zonePrice:base,
+        childName:child.name, childGrade:child.grade,
+        childNum:i+1, childPrice:price, discount:i>0?'5%':'',
+        totalChildren:S.children.length,
+        parentName:v('parentName'), parentRelation:v('parentRelation'),
+        parentPhone1:v('parentPhone1'), parentPhone2:v('parentPhone2'),
+        parentTelegram:v('parentTelegram'),
+        extraName:v('extraName'), extraRelation:v('extraRelation'),
+        extraPhone1:v('extraPhone1'), extraPhone2:v('extraPhone2'),
+        comment:v('comment'), manager:S.school.manager,
+      };
+      return fetch(APPS_SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    });
+
+    await Promise.all(promises);
+
+    let total=0; S.children.forEach((_,i)=>total+=Math.round(base*(i>0?.95:1)));
+    showSuccess(schoolName, fullAddr, total, familyCode);
+  } catch(e){ toast('Ошибка. Попробуйте ещё раз.','error'); }
+  finally{ document.getElementById('loadingOverlay').classList.remove('show'); }
 }
 
-function v(id) { return (document.getElementById(id)||{}).value?.trim()||''; }
+function v(id){return(document.getElementById(id)||{}).value?.trim()||'';}
 
-function showSuccess(p,schoolName,total) {
+function showSuccess(schoolName,addr,total,familyCode){
   document.getElementById('formWrap').style.display='none';
+  let total2=0; S.children.forEach((_,i)=>{ const p=Math.round(getTsPrice()*(i>0?.95:1)); total2+=p; });
   document.getElementById('successCard').innerHTML=`
+    <div class="s-row"><span class="k">Код семьи</span><span class="v" style="font-family:monospace;font-size:12px">${familyCode}</span></div>
     <div class="s-row"><span class="k">Школа</span><span class="v">${schoolName}</span></div>
-    <div class="s-row"><span class="k">Адрес</span><span class="v">${p.address.split(',').slice(0,2).join(',')}</span></div>
-    <div class="s-row"><span class="k">Расстояние</span><span class="v">${p.distanceKm} км · Зона ${p.zone}</span></div>
-    <div class="s-row"><span class="k">Транспорт</span><span class="v">${p.transport}</span></div>
-    <div class="s-row"><span class="k">Детей</span><span class="v">${p.childrenCount}</span></div>
-    <div class="s-row"><span class="k">Итого / мес</span><span class="v" style="font-size:16px;font-weight:700">${total.toLocaleString()} сом</span></div>`;
-  const ph='+'+p.manager;
+    <div class="s-row"><span class="k">Адрес</span><span class="v">${addr}</span></div>
+    <div class="s-row"><span class="k">Зона</span><span class="v">Зона ${S.zone||'—'} · ${S.distKm?S.distKm.toFixed(2)+' км':'—'}</span></div>
+    <div class="s-row"><span class="k">Детей</span><span class="v">${S.children.length}</span></div>
+    <div class="s-row"><span class="k">Итого / мес</span><span class="v" style="font-size:16px;font-weight:700">${total2.toLocaleString()} сом</span></div>`;
+  const ph='+'+S.school.manager;
   document.getElementById('mgrPhone').textContent=ph;
   document.getElementById('mgrCallLink').href='tel:'+ph;
   document.getElementById('successScreen').classList.add('show');
 }
 
+// ── FAQ ──────────────────────────────────────────────────────
 const FAQ=[
   {cat:'Цены и оплата',items:[
     {q:'Почему цена не меняется на каникулах?',a:'Стоимость рассчитана за весь учебный год (162 рабочих дня) и равномерно распределена на 9 месяцев. Пропуски, болезни и каникулы учтены через резервные дни.'},
@@ -742,11 +797,10 @@ const FAQ=[
   {cat:'Договор и расторжение',items:[
     {q:'Как расторгнуть договор?',a:'Уведомить за 30 дней. Депозит не возвращается. Без уведомления — штраф 2 000 сом.'},
     {q:'Производится ли перерасчёт?',a:'Нет. Каникулы, болезни, пропуски до 7 дней — не считаются. Все случаи учтены в резервных днях.'},
-    {q:'Кто такой Организатор?',a:'OutWay (ООО АйКай Груп) — Организатор трансфера, не перевозчик. Перевозку осуществляют независимые лицензированные водители.'},
+    {q:'Кто такой Организатор?',a:'OUTWAY (ООО АйКай Груп) — Организатор трансфера, не перевозчик. Перевозку осуществляют независимые лицензированные водители.'},
   ]},
 ];
-
-function renderFaq() {
+function renderFaq(){
   document.getElementById('faqCategories').innerHTML=FAQ.map((cat,ci)=>`
     <div class="faq-cat">
       <button class="faq-cat-btn" onclick="toggleFaqCat(${ci})" id="fcb${ci}">
@@ -760,7 +814,7 @@ function renderFaq() {
       </div>
     </div>`).join('');
 }
-function toggleFaqCat(ci){const open=document.getElementById('fq'+ci).classList.toggle('open');document.getElementById('fcb'+ci).classList.toggle('open',open);document.getElementById('fci'+ci).textContent=open?'▴':'▾';}
+function toggleFaqCat(ci){const o=document.getElementById('fq'+ci).classList.toggle('open');document.getElementById('fcb'+ci).classList.toggle('open',o);document.getElementById('fci'+ci).textContent=o?'▴':'▾';}
 function toggleFaqQ(ci,qi){document.getElementById(`fa${ci}_${qi}`).classList.toggle('open');}
 
 function toast(msg,type=''){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show '+type;setTimeout(()=>t.className='toast',3200);}
@@ -768,8 +822,6 @@ function toast(msg,type=''){const t=document.getElementById('toast');t.textConte
 checkAccess();
 </script>
 
-<script async defer
-  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCgh5hCCGGDGfPY2Ph9gBB6yKZa4HQ3bDg&libraries=places&language=ru&region=KG&callback=initGoogleMap">
-</script>
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCgh5hCCGGDGfPY2Ph9gBB6yKZa4HQ3bDg&libraries=places&language=ru&region=KG&callback=initGoogleMap"></script>
 </body>
 </html>
