@@ -6,7 +6,7 @@
 <title>OutWay — Школьный трансфер</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://api-maps.yandex.ru/2.1/?apikey=f3c503f1-db1b-4b84-907c-b85cacd1af85&lang=ru_RU"></script>
+<script src="https://api-maps.yandex.ru/2.1/?apikey=f3c503f1-db1b-4b84-907c-b85cacd1af85&lang=ru_RU&load=package.full"></script>
 <style>
 :root{--orange:#E8621A;--bg:#F5F4F0;--white:#FFFFFF;--text:#111111;--text-soft:#555555;--text-muted:#999999;--border:#E0DED8;--success:#1E7A4A;--error:#C0392B;--radius:10px;--radius-sm:6px;}
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -374,13 +374,21 @@ function checkAccess(){
 
 // ── ICONS ────────────────────────────────────────────────────
 function schoolIconHref(){
-  // Filled dark pin like screenshot 1
-  const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="44" height="54" viewBox="0 0 44 54"><path d="M22 0C10 0 0 10 0 22c0 16 22 32 22 32S44 38 44 22C44 10 34 0 22 0z" fill="#2B2B2B"/><rect x="9" y="13" width="26" height="18" rx="2" fill="white" opacity="0.15"/><rect x="9" y="13" width="26" height="18" rx="2" fill="none" stroke="white" stroke-width="1.5"/><rect x="17" y="21" width="10" height="10" rx="1" fill="white" opacity="0.9"/><rect x="11" y="16" width="6" height="5" rx="1" fill="white" opacity="0.7"/><rect x="27" y="16" width="6" height="5" rx="1" fill="white" opacity="0.7"/><rect x="19" y="9" width="6" height="4" rx="1" fill="white" opacity="0.6"/><line x1="22" y1="9" x2="22" y2="13" stroke="white" stroke-width="1.5"/></svg>`;
+  // Red circle with white dot - like Yandex Maps destination pin
+  const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="44" height="54" viewBox="0 0 44 54">
+    <path d="M22 0C10 0 0 10 0 22c0 16 22 32 22 32S44 38 44 22C44 10 34 0 22 0z" fill="#E8621A"/>
+    <circle cx="22" cy="22" r="10" fill="white" opacity="0.25"/>
+    <circle cx="22" cy="22" r="6" fill="white"/>
+  </svg>`;
   return 'data:image/svg+xml;charset=UTF-8,'+encodeURIComponent(svg);
 }
 function homeIconHref(){
-  // White fill green border like screenshot 2
-  const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="44" height="54" viewBox="0 0 44 54"><path d="M22 0C10 0 0 10 0 22c0 16 22 32 22 32S44 38 44 22C44 10 34 0 22 0z" fill="white" stroke="#22C55E" stroke-width="2.5"/><polygon points="22,10 32,19 32,30 12,30 12,19" fill="none" stroke="#22C55E" stroke-width="2" stroke-linejoin="round"/><line x1="22" y1="10" x2="12" y2="19" stroke="#22C55E" stroke-width="2"/><line x1="22" y1="10" x2="32" y2="19" stroke="#22C55E" stroke-width="2"/><rect x="18" y="21" width="8" height="9" rx="1" fill="#22C55E" opacity="0.8"/></svg>`;
+  // Green circle with white dot - like Yandex Maps origin pin
+  const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="44" height="54" viewBox="0 0 44 54">
+    <path d="M22 0C10 0 0 10 0 22c0 16 22 32 22 32S44 38 44 22C44 10 34 0 22 0z" fill="#22C55E"/>
+    <circle cx="22" cy="22" r="10" fill="white" opacity="0.25"/>
+    <circle cx="22" cy="22" r="6" fill="white"/>
+  </svg>`;
   return 'data:image/svg+xml;charset=UTF-8,'+encodeURIComponent(svg);
 }
 
@@ -410,27 +418,42 @@ function setHomeMarker(lat,lng){
   if(S.schoolLat)drawRoute(lat,lng,S.schoolLat,S.schoolLng);
 }
 
-async function drawRoute(lat1,lng1,lat2,lng2){
+function drawRoute(lat1,lng1,lat2,lng2){
   if(routeObj){ymap.geoObjects.remove(routeObj);routeObj=null;}
   try{
-    const route = await ymaps.route([[lat1,lng1],[lat2,lng2]],{mapStateAutoApply:false});
-    // Style the route
-    route.getPaths().options.set({
-      strokeColor:'#E8621A',
-      strokeWidth:5,
-      opacity:0.85
+    const multiRoute = new ymaps.multiRouter.MultiRoute(
+      {
+        referencePoints:[[lat1,lng1],[lat2,lng2]],
+        params:{routingMode:'auto'}
+      },
+      {
+        // Hide default waypoint balloons and markers
+        boundsAutoApply:true,
+        wayPointVisible:false,
+        pinVisible:false,
+        // Route line style
+        routeActiveStrokeColor:'#1E88E5',
+        routeActiveStrokeWidth:6,
+        routeActiveStrokeStyle:'solid',
+        routeActiveOpacity:0.85,
+        // Inactive routes
+        routeStrokeColor:'#90CAF9',
+        routeStrokeWidth:3,
+        routeStrokeStyle:'solid',
+        routeStrokeOpacity:0.5,
+      }
+    );
+    ymap.geoObjects.add(multiRoute);
+    routeObj = multiRoute;
+    // Fit bounds after route loads
+    multiRoute.model.events.add('requestsuccess', function(){
+      const bounds = multiRoute.getBounds();
+      if(bounds) ymap.setBounds(bounds,{checkZoomRange:true,zoomMargin:60});
     });
-    // Hide default waypoint markers
-    route.getWayPoints().options.set('visible',false);
-    ymap.geoObjects.add(route);
-    routeObj=route;
-    // Fit map to show both points
-    const bounds=route.getBounds();
-    if(bounds) ymap.setBounds(bounds,{checkZoomRange:true,zoomMargin:60});
   }catch(e){
-    // Fallback: straight dashed line
-    routeObj=new ymaps.Polyline([[lat1,lng1],[lat2,lng2]],{},{
-      strokeColor:'#E8621A',strokeWidth:4,strokeStyle:'dash',opacity:0.75
+    // Fallback polyline
+    routeObj = new ymaps.Polyline([[lat1,lng1],[lat2,lng2]],{},{
+      strokeColor:'#1E88E5',strokeWidth:5,opacity:0.8
     });
     ymap.geoObjects.add(routeObj);
     ymap.setBounds(routeObj.geometry.getBounds(),{checkZoomRange:true,zoomMargin:60});
