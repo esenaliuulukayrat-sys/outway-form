@@ -8,196 +8,160 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://api-maps.yandex.ru/2.1/?apikey=f3c503f1-db1b-4b84-907c-b85cacd1af85&lang=ru_RU"></script>
 <style>
-:root {
-  --orange: #E8621A;
-  --bg: #F5F4F0;
-  --white: #FFFFFF;
-  --text: #111111;
-  --text-soft: #555555;
-  --text-muted: #999999;
-  --border: #E0DED8;
-  --success: #1E7A4A;
-  --error: #C0392B;
-  --radius: 10px;
-  --radius-sm: 6px;
-}
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 13px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
-
-.header { background: var(--white); border-bottom: 1px solid var(--border); padding: 0 24px; display: flex; align-items: center; gap: 20px; height: 56px; position: sticky; top: 0; z-index: 400; }
-.logo { font-size: 15px; font-weight: 700; letter-spacing: 2px; color: var(--text); text-transform: uppercase; }
-.logo-sub { font-size: 9px; color: var(--text-muted); font-weight: 400; letter-spacing: 1.5px; text-transform: uppercase; margin-top: 1px; }
-.hd { width: 1px; height: 22px; background: var(--border); }
-.school-badge { display: none; align-items: center; font-size: 12px; font-weight: 500; color: var(--text-soft); background: var(--bg); border: 1px solid var(--border); border-radius: 4px; padding: 4px 10px; }
-.header-right { margin-left: auto; display: flex; gap: 2px; }
-.nav-btn { background: none; border: none; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 12px; color: var(--text-muted); padding: 6px 12px; border-radius: 4px; transition: all .15s; font-weight: 500; }
-.nav-btn:hover { background: var(--bg); color: var(--text); }
-.nav-btn.active { background: var(--text); color: var(--white); }
-
-.layout { display: flex; min-height: calc(100vh - 56px); }
-.sidebar { width: 380px; min-width: 340px; background: var(--white); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow-y: auto; position: sticky; top: 56px; height: calc(100vh - 56px); }
-.sidebar-section { display: none; flex-direction: column; min-height: 100%; }
-.sidebar-section.active { display: flex; }
-
-.school-select-wrap { padding: 20px; border-bottom: 1px solid var(--border); }
-.field-label { font-size: 10px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
-.ss-btn { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 11px 14px; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 500; color: var(--text); cursor: pointer; text-align: left; display: flex; align-items: center; justify-content: space-between; transition: all .15s; }
-.ss-btn:hover { border-color: var(--text); }
-.branch-picker { display: none; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
-.branch-picker.show { display: flex; }
-.branch-btn { background: var(--bg); border: 1px solid var(--border); border-radius: 4px; padding: 5px 12px; font-size: 11px; font-weight: 500; cursor: pointer; transition: all .15s; font-family: 'Inter', sans-serif; color: var(--text-soft); }
-.branch-btn:hover { border-color: var(--text); color: var(--text); }
-.branch-btn.selected { background: var(--text); border-color: var(--text); color: white; }
-
-.form-wrap { padding: 20px; flex: 1; overflow-y: auto; }
-.form-section { margin-bottom: 24px; }
-.form-section-title { font-size: 10px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
-.step-num { width: 18px; height: 18px; background: var(--text); color: white; border-radius: 50%; font-size: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-weight: 600; }
-.form-row { display: flex; gap: 10px; }
-.form-group { flex: 1; margin-bottom: 12px; }
-.form-group:last-child { margin-bottom: 0; }
-label { display: block; font-size: 11px; font-weight: 500; color: var(--text-soft); margin-bottom: 5px; }
-label .req { color: var(--orange); }
-input[type=text], input[type=tel], select, textarea { width: 100%; background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 12px; font-family: 'Inter', sans-serif; font-size: 13px; color: var(--text); transition: border-color .15s; outline: none; -webkit-appearance: none; }
-input:focus, select:focus, textarea:focus { border-color: var(--text); }
-input::placeholder { color: var(--text-muted); }
-textarea { resize: none; height: 72px; }
-
-.addr-search-wrap { position: relative; margin-bottom: 12px; }
-.addr-search-inner { position: relative; }
-.addr-search-inner input { padding-left: 34px; }
-.addr-icon { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: var(--text-muted); pointer-events: none; }
-.addr-sug { position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-sm); box-shadow: 0 8px 24px rgba(0,0,0,0.08); z-index: 500; max-height: 240px; overflow-y: auto; display: none; }
-.addr-sug.open { display: block; }
-.sug-item { padding: 10px 14px; cursor: pointer; border-bottom: 1px solid var(--bg); transition: background .1s; display: flex; align-items: flex-start; gap: 10px; }
-.sug-item:last-child { border-bottom: none; }
-.sug-item:hover { background: var(--bg); }
-.sug-item-icon { flex-shrink: 0; margin-top: 2px; color: var(--text-muted); }
-.sug-main { font-weight: 500; font-size: 13px; color: var(--text); }
-.sug-sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
-.sug-loading { padding: 12px 14px; font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 8px; }
-.sug-spin { width: 12px; height: 12px; border: 1.5px solid var(--border); border-top-color: var(--text-muted); border-radius: 50%; animation: spin .7s linear infinite; flex-shrink: 0; }
-
-.addr-fields { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px 14px; display: none; }
-.addr-fields.show { display: block; }
-.addr-fields-title { font-size: 10px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 10px; }
-
-.dist-badge { display: none; align-items: center; justify-content: space-between; background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 14px; margin-top: 10px; }
-.dist-badge.show { display: flex; }
-.dist-val { font-size: 18px; font-weight: 700; letter-spacing: -0.5px; }
-.dist-unit { font-size: 12px; color: var(--text-muted); }
-.zone-tag { font-size: 11px; font-weight: 600; color: var(--white); background: var(--text); border-radius: 4px; padding: 3px 9px; }
-
-.ts-options { display: flex; flex-direction: column; gap: 8px; }
-.ts-opt { display: flex; align-items: center; gap: 14px; background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px 14px; cursor: pointer; transition: all .15s; }
-.ts-opt:hover { border-color: var(--text-soft); }
-.ts-opt.selected { border-color: var(--text); background: var(--bg); }
-.ts-opt input { display: none; }
-.ts-icon-wrap { width: 36px; height: 36px; background: var(--bg); border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--text-soft); }
-.ts-opt.selected .ts-icon-wrap { background: var(--white); color: var(--text); }
-.ts-name { font-weight: 600; font-size: 13px; }
-.ts-desc { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
-.ts-price { font-size: 15px; font-weight: 700; }
-.ts-price-sub { font-size: 10px; color: var(--text-muted); margin-top: 1px; }
-
-.child-card { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px; margin-bottom: 10px; }
-.child-hd { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
-.child-title { font-size: 12px; font-weight: 600; color: var(--text); display: flex; align-items: center; gap: 8px; }
-.disc-tag { font-size: 10px; font-weight: 600; color: var(--success); background: #E8F5EC; border-radius: 4px; padding: 2px 7px; }
-.btn-rm { background: none; border: none; cursor: pointer; color: var(--text-muted); font-size: 15px; padding: 2px 4px; transition: color .15s; }
-.btn-rm:hover { color: var(--error); }
-.btn-add { width: 100%; background: none; border: 1px dashed var(--border); border-radius: var(--radius-sm); padding: 10px; font-family: 'Inter', sans-serif; font-size: 12px; color: var(--text-soft); cursor: pointer; transition: all .15s; font-weight: 500; display: flex; align-items: center; justify-content: center; gap: 6px; }
-.btn-add:hover { border-color: var(--text-soft); color: var(--text); }
-
-.add-ct-toggle { background: none; border: none; font-family: 'Inter', sans-serif; font-size: 12px; color: var(--text-soft); cursor: pointer; padding: 4px 0; font-weight: 500; display: flex; align-items: center; gap: 5px; text-decoration: underline; text-underline-offset: 3px; }
-.extra-ct { display: none; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); }
-.extra-ct.show { display: block; }
-
-.price-summary { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px; margin-top: 20px; display: none; }
-.ps-title { font-size: 10px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
-.price-row { display: flex; justify-content: space-between; padding: 5px 0; font-size: 13px; color: var(--text-soft); }
-.price-row .val { color: var(--text); font-weight: 500; }
-.price-divider { height: 1px; background: var(--border); margin: 8px 0; }
-.price-total { display: flex; justify-content: space-between; align-items: baseline; }
-.price-total .label { font-size: 13px; font-weight: 600; }
-.price-total .amount { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; }
-.price-total .currency { font-size: 13px; color: var(--text-soft); margin-left: 3px; }
-
-.btn-submit { width: 100%; background: var(--text); border: none; border-radius: var(--radius-sm); padding: 14px; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; color: white; cursor: pointer; transition: all .2s; margin-top: 16px; }
-.btn-submit:hover { background: #333; }
-
-.success-screen { display: none; padding: 32px 20px; flex-direction: column; align-items: center; gap: 16px; }
-.success-screen.show { display: flex; }
-.s-check { width: 56px; height: 56px; background: #E8F5EC; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 700; color: var(--success); }
-.s-title { font-size: 18px; font-weight: 700; }
-.s-sub { font-size: 13px; color: var(--text-soft); text-align: center; line-height: 1.6; }
-.s-card { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px; }
-.s-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 13px; border-bottom: 1px solid var(--border); }
-.s-row:last-child { border-bottom: none; }
-.s-row .k { color: var(--text-muted); }
-.s-row .v { font-weight: 500; text-align: right; max-width: 60%; }
-.mgr-btn { display: flex; align-items: center; gap: 12px; background: var(--text); color: white; border: none; border-radius: var(--radius-sm); padding: 14px 18px; width: 100%; text-decoration: none; transition: background .15s; }
-.mgr-btn:hover { background: #333; }
-.mgr-ph { font-size: 15px; font-weight: 700; }
-.mgr-lbl { font-size: 10px; opacity: 0.6; text-transform: uppercase; letter-spacing: 0.5px; }
-
-.map-area { flex: 1; position: sticky; top: 56px; height: calc(100vh - 56px); }
-#map { width: 100%; height: 100%; }
-
-.faq-sidebar { flex: 1; overflow-y: auto; }
-.faq-hd { padding: 16px 20px; border-bottom: 1px solid var(--border); font-size: 10px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
-.faq-cat { border-bottom: 1px solid var(--border); }
-.faq-cat-btn { width: 100%; background: none; border: none; padding: 14px 20px; text-align: left; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; color: var(--text); display: flex; align-items: center; justify-content: space-between; transition: background .1s; }
-.faq-cat-btn:hover, .faq-cat-btn.open { background: var(--bg); }
-.faq-questions { display: none; }
-.faq-questions.open { display: block; }
-.faq-q-btn { width: 100%; background: none; border: none; border-top: 1px solid var(--border); padding: 12px 20px 12px 36px; text-align: left; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 500; color: var(--text-soft); display: flex; align-items: center; justify-content: space-between; gap: 8px; transition: all .1s; line-height: 1.5; }
-.faq-q-btn:hover, .faq-q-btn.open { background: var(--bg); color: var(--text); }
-.faq-answer { display: none; padding: 12px 20px 14px 36px; font-size: 12px; color: var(--text-soft); line-height: 1.8; background: #FAFAF8; border-top: 1px solid var(--border); }
-.faq-answer.open { display: block; }
-
-.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 600; display: none; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
-.modal-overlay.show { display: flex; }
-.modal { background: var(--white); border-radius: var(--radius); width: 460px; max-width: 95vw; max-height: 78vh; display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0,0,0,0.15); overflow: hidden; }
-.modal-hd { padding: 18px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
-.modal-title { font-size: 14px; font-weight: 700; }
-.modal-close { background: none; border: none; cursor: pointer; font-size: 18px; color: var(--text-muted); width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 4px; }
-.modal-close:hover { background: var(--bg); }
-.modal-search { padding: 12px 20px; border-bottom: 1px solid var(--border); }
-.modal-search input { background: var(--bg); }
-.modal-list { overflow-y: auto; flex: 1; }
-.school-item { padding: 14px 20px; border-bottom: 1px solid var(--bg); cursor: pointer; transition: background .1s; display: flex; align-items: center; gap: 14px; }
-.school-item:hover { background: var(--bg); }
-.s-dot { width: 8px; height: 8px; background: var(--border); border-radius: 50%; flex-shrink: 0; }
-.school-item:hover .s-dot { background: var(--orange); }
-.s-name { font-weight: 600; font-size: 13px; }
-.s-addr { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
-.s-price { font-size: 12px; font-weight: 600; color: var(--text-soft); white-space: nowrap; }
-
-.loading-overlay { display: none; position: fixed; inset: 0; background: rgba(245,244,240,0.9); z-index: 999; align-items: center; justify-content: center; flex-direction: column; gap: 14px; backdrop-filter: blur(4px); }
-.loading-overlay.show { display: flex; }
-.spin { width: 32px; height: 32px; border: 2px solid var(--border); border-top-color: var(--text); border-radius: 50%; animation: spin .7s linear infinite; }
-@keyframes spin { to { transform: rotate(360deg); } }
-.loading-text { font-size: 12px; color: var(--text-soft); }
-
-.toast { position: fixed; bottom: 20px; right: 20px; background: var(--text); color: white; border-radius: var(--radius-sm); padding: 11px 16px; font-size: 12px; font-weight: 500; z-index: 9999; transform: translateY(50px); opacity: 0; transition: all .25s; max-width: 280px; }
-.toast.show { transform: translateY(0); opacity: 1; }
-.toast.error { background: var(--error); }
-
-.access-denied { display: none; flex-direction: column; align-items: center; justify-content: center; height: 100vh; gap: 16px; text-align: center; padding: 40px; }
-.access-denied.show { display: flex; }
-.access-denied h2 { font-size: 20px; font-weight: 700; }
-.access-denied p { color: var(--text-soft); font-size: 14px; line-height: 1.6; }
-
-::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
-
-@media (max-width: 768px) {
-  .layout { flex-direction: column; }
-  .sidebar { width: 100%; min-width: unset; height: auto; position: static; border-right: none; border-bottom: 1px solid var(--border); }
-  .map-area { height: 300px; }
-}
+:root{--orange:#E8621A;--bg:#F5F4F0;--white:#FFFFFF;--text:#111111;--text-soft:#555555;--text-muted:#999999;--border:#E0DED8;--success:#1E7A4A;--error:#C0392B;--radius:10px;--radius-sm:6px;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:13px;line-height:1.5;-webkit-font-smoothing:antialiased;}
+.header{background:var(--white);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;gap:20px;height:56px;position:sticky;top:0;z-index:400;}
+.logo{font-size:15px;font-weight:700;letter-spacing:2px;color:var(--text);text-transform:uppercase;}
+.logo-sub{font-size:9px;color:var(--text-muted);font-weight:400;letter-spacing:1.5px;text-transform:uppercase;margin-top:1px;}
+.hd{width:1px;height:22px;background:var(--border);}
+.school-badge{display:none;align-items:center;font-size:12px;font-weight:500;color:var(--text-soft);background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:4px 10px;}
+.header-right{margin-left:auto;display:flex;gap:2px;}
+.nav-btn{background:none;border:none;cursor:pointer;font-family:'Inter',sans-serif;font-size:12px;color:var(--text-muted);padding:6px 12px;border-radius:4px;transition:all .15s;font-weight:500;}
+.nav-btn:hover{background:var(--bg);color:var(--text);}
+.nav-btn.active{background:var(--text);color:var(--white);}
+.layout{display:flex;min-height:calc(100vh - 56px);}
+.sidebar{width:380px;min-width:340px;background:var(--white);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow-y:auto;position:sticky;top:56px;height:calc(100vh - 56px);}
+.sidebar-section{display:none;flex-direction:column;min-height:100%;}
+.sidebar-section.active{display:flex;}
+.school-select-wrap{padding:20px;border-bottom:1px solid var(--border);}
+.field-label{font-size:10px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;}
+.ss-btn{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:11px 14px;font-family:'Inter',sans-serif;font-size:13px;font-weight:500;color:var(--text);cursor:pointer;text-align:left;display:flex;align-items:center;justify-content:space-between;transition:all .15s;}
+.ss-btn:hover{border-color:var(--text);}
+.branch-picker{display:none;flex-wrap:wrap;gap:6px;margin-top:10px;}
+.branch-picker.show{display:flex;}
+.branch-btn{background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:5px 12px;font-size:11px;font-weight:500;cursor:pointer;transition:all .15s;font-family:'Inter',sans-serif;color:var(--text-soft);}
+.branch-btn:hover{border-color:var(--text);color:var(--text);}
+.branch-btn.selected{background:var(--text);border-color:var(--text);color:white;}
+.form-wrap{padding:20px;flex:1;overflow-y:auto;}
+.form-section{margin-bottom:24px;}
+.form-section-title{font-size:10px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:14px;display:flex;align-items:center;gap:8px;padding-bottom:10px;border-bottom:1px solid var(--border);}
+.step-num{width:18px;height:18px;background:var(--text);color:white;border-radius:50%;font-size:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:600;}
+.form-row{display:flex;gap:10px;}
+.form-group{flex:1;margin-bottom:12px;}
+.form-group:last-child{margin-bottom:0;}
+label{display:block;font-size:11px;font-weight:500;color:var(--text-soft);margin-bottom:5px;}
+label .req{color:var(--orange);}
+input[type=text],input[type=tel],select,textarea{width:100%;background:var(--white);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;font-family:'Inter',sans-serif;font-size:13px;color:var(--text);transition:border-color .15s;outline:none;-webkit-appearance:none;}
+input:focus,select:focus,textarea:focus{border-color:var(--text);}
+input.error-field,select.error-field{border-color:var(--error);}
+input::placeholder{color:var(--text-muted);}
+textarea{resize:none;height:72px;}
+.addr-search-wrap{position:relative;margin-bottom:12px;}
+.addr-search-inner{position:relative;}
+.addr-search-inner input{padding-left:34px;}
+.addr-icon{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--text-muted);pointer-events:none;}
+.addr-sug{position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--white);border:1px solid var(--border);border-radius:var(--radius-sm);box-shadow:0 8px 24px rgba(0,0,0,0.08);z-index:500;max-height:240px;overflow-y:auto;display:none;}
+.addr-sug.open{display:block;}
+.sug-item{padding:10px 14px;cursor:pointer;border-bottom:1px solid var(--bg);transition:background .1s;display:flex;align-items:flex-start;gap:10px;}
+.sug-item:last-child{border-bottom:none;}
+.sug-item:hover{background:var(--bg);}
+.sug-item-icon{flex-shrink:0;margin-top:2px;color:var(--text-muted);}
+.sug-main{font-weight:500;font-size:13px;color:var(--text);}
+.sug-sub{font-size:11px;color:var(--text-muted);margin-top:2px;}
+.sug-loading{padding:12px 14px;font-size:12px;color:var(--text-muted);display:flex;align-items:center;gap:8px;}
+.sug-spin{width:12px;height:12px;border:1.5px solid var(--border);border-top-color:var(--text-muted);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0;}
+.addr-fields{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;display:none;}
+.addr-fields.show{display:block;}
+.addr-fields-title{font-size:10px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:10px;}
+.dist-badge{display:none;align-items:center;justify-content:space-between;background:var(--white);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 14px;margin-top:10px;}
+.dist-badge.show{display:flex;}
+.dist-val{font-size:18px;font-weight:700;letter-spacing:-0.5px;}
+.dist-unit{font-size:12px;color:var(--text-muted);}
+.zone-tag{font-size:11px;font-weight:600;color:var(--white);background:var(--text);border-radius:4px;padding:3px 9px;}
+.ts-options{display:flex;flex-direction:column;gap:8px;}
+.ts-opt{display:flex;align-items:center;gap:14px;background:var(--white);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;cursor:pointer;transition:all .15s;}
+.ts-opt:hover{border-color:var(--text-soft);}
+.ts-opt.selected{border-color:var(--text);background:var(--bg);}
+.ts-opt input{display:none;}
+.ts-icon-wrap{width:36px;height:36px;background:var(--bg);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--text-soft);}
+.ts-opt.selected .ts-icon-wrap{background:var(--white);color:var(--text);}
+.ts-name{font-weight:600;font-size:13px;}
+.ts-desc{font-size:11px;color:var(--text-muted);margin-top:1px;}
+.ts-price{font-size:15px;font-weight:700;}
+.ts-price-sub{font-size:10px;color:var(--text-muted);margin-top:1px;}
+.child-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;margin-bottom:10px;}
+.child-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.child-title{font-size:12px;font-weight:600;color:var(--text);display:flex;align-items:center;gap:8px;}
+.disc-tag{font-size:10px;font-weight:600;color:var(--success);background:#E8F5EC;border-radius:4px;padding:2px 7px;}
+.btn-rm{background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:15px;padding:2px 4px;transition:color .15s;}
+.btn-rm:hover{color:var(--error);}
+.btn-add{width:100%;background:none;border:1px dashed var(--border);border-radius:var(--radius-sm);padding:10px;font-family:'Inter',sans-serif;font-size:12px;color:var(--text-soft);cursor:pointer;transition:all .15s;font-weight:500;display:flex;align-items:center;justify-content:center;gap:6px;}
+.btn-add:hover{border-color:var(--text-soft);color:var(--text);}
+.add-ct-toggle{background:none;border:none;font-family:'Inter',sans-serif;font-size:12px;color:var(--text-soft);cursor:pointer;padding:4px 0;font-weight:500;display:flex;align-items:center;gap:5px;text-decoration:underline;text-underline-offset:3px;}
+.extra-ct{display:none;margin-top:14px;padding-top:14px;border-top:1px solid var(--border);}
+.extra-ct.show{display:block;}
+.price-summary{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:16px;margin-top:20px;display:none;}
+.ps-title{font-size:10px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;}
+.price-row{display:flex;justify-content:space-between;padding:5px 0;font-size:13px;color:var(--text-soft);}
+.price-row .val{color:var(--text);font-weight:500;}
+.price-divider{height:1px;background:var(--border);margin:8px 0;}
+.price-total{display:flex;justify-content:space-between;align-items:baseline;}
+.price-total .label{font-size:13px;font-weight:600;}
+.price-total .amount{font-size:22px;font-weight:700;letter-spacing:-0.5px;}
+.price-total .currency{font-size:13px;color:var(--text-soft);margin-left:3px;}
+.btn-submit{width:100%;background:var(--text);border:none;border-radius:var(--radius-sm);padding:14px;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;color:white;cursor:pointer;transition:all .2s;margin-top:16px;}
+.btn-submit:hover{background:#333;}
+.success-screen{display:none;padding:32px 20px;flex-direction:column;align-items:center;gap:16px;}
+.success-screen.show{display:flex;}
+.s-check{width:56px;height:56px;background:#E8F5EC;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:var(--success);}
+.s-title{font-size:18px;font-weight:700;}
+.s-sub{font-size:13px;color:var(--text-soft);text-align:center;line-height:1.6;}
+.s-card{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:16px;}
+.s-row{display:flex;justify-content:space-between;padding:6px 0;font-size:13px;border-bottom:1px solid var(--border);}
+.s-row:last-child{border-bottom:none;}
+.s-row .k{color:var(--text-muted);}
+.s-row .v{font-weight:500;text-align:right;max-width:65%;}
+.mgr-btn{display:flex;align-items:center;gap:12px;background:var(--text);color:white;border:none;border-radius:var(--radius-sm);padding:14px 18px;width:100%;text-decoration:none;transition:background .15s;}
+.mgr-btn:hover{background:#333;}
+.mgr-ph{font-size:15px;font-weight:700;}
+.mgr-lbl{font-size:10px;opacity:0.6;text-transform:uppercase;letter-spacing:0.5px;}
+.map-area{flex:1;position:sticky;top:56px;height:calc(100vh - 56px);}
+#map{width:100%;height:100%;}
+.faq-sidebar{flex:1;overflow-y:auto;}
+.faq-hd{padding:16px 20px;border-bottom:1px solid var(--border);font-size:10px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;}
+.faq-cat{border-bottom:1px solid var(--border);}
+.faq-cat-btn{width:100%;background:none;border:none;padding:14px 20px;text-align:left;cursor:pointer;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;color:var(--text);display:flex;align-items:center;justify-content:space-between;transition:background .1s;}
+.faq-cat-btn:hover,.faq-cat-btn.open{background:var(--bg);}
+.faq-questions{display:none;}
+.faq-questions.open{display:block;}
+.faq-q-btn{width:100%;background:none;border:none;border-top:1px solid var(--border);padding:12px 20px 12px 36px;text-align:left;cursor:pointer;font-family:'Inter',sans-serif;font-size:12px;font-weight:500;color:var(--text-soft);display:flex;align-items:center;justify-content:space-between;gap:8px;transition:all .1s;line-height:1.5;}
+.faq-q-btn:hover,.faq-q-btn.open{background:var(--bg);color:var(--text);}
+.faq-answer{display:none;padding:12px 20px 14px 36px;font-size:12px;color:var(--text-soft);line-height:1.8;background:#FAFAF8;border-top:1px solid var(--border);}
+.faq-answer.open{display:block;}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.3);z-index:600;display:none;align-items:center;justify-content:center;backdrop-filter:blur(2px);}
+.modal-overlay.show{display:flex;}
+.modal{background:var(--white);border-radius:var(--radius);width:460px;max-width:95vw;max-height:78vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,0.15);overflow:hidden;}
+.modal-hd{padding:18px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.modal-title{font-size:14px;font-weight:700;}
+.modal-close{background:none;border:none;cursor:pointer;font-size:18px;color:var(--text-muted);width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:4px;}
+.modal-close:hover{background:var(--bg);}
+.modal-search{padding:12px 20px;border-bottom:1px solid var(--border);}
+.modal-search input{background:var(--bg);}
+.modal-list{overflow-y:auto;flex:1;}
+.school-item{padding:14px 20px;border-bottom:1px solid var(--bg);cursor:pointer;transition:background .1s;display:flex;align-items:center;gap:14px;}
+.school-item:hover{background:var(--bg);}
+.s-dot{width:8px;height:8px;background:var(--border);border-radius:50%;flex-shrink:0;}
+.school-item:hover .s-dot{background:var(--orange);}
+.s-name{font-weight:600;font-size:13px;}
+.s-addr{font-size:11px;color:var(--text-muted);margin-top:2px;}
+.s-price{font-size:12px;font-weight:600;color:var(--text-soft);white-space:nowrap;}
+.loading-overlay{display:none;position:fixed;inset:0;background:rgba(245,244,240,0.9);z-index:999;align-items:center;justify-content:center;flex-direction:column;gap:14px;backdrop-filter:blur(4px);}
+.loading-overlay.show{display:flex;}
+.spin{width:32px;height:32px;border:2px solid var(--border);border-top-color:var(--text);border-radius:50%;animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.loading-text{font-size:12px;color:var(--text-soft);}
+.toast{position:fixed;bottom:20px;right:20px;background:var(--text);color:white;border-radius:var(--radius-sm);padding:11px 16px;font-size:12px;font-weight:500;z-index:9999;transform:translateY(50px);opacity:0;transition:all .25s;max-width:300px;}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast.error{background:var(--error);}
+.access-denied{display:none;flex-direction:column;align-items:center;justify-content:center;height:100vh;gap:16px;text-align:center;padding:40px;}
+.access-denied.show{display:flex;}
+.access-denied h2{font-size:20px;font-weight:700;}
+.access-denied p{color:var(--text-soft);font-size:14px;line-height:1.6;}
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
+@media(max-width:768px){.layout{flex-direction:column;}.sidebar{width:100%;min-width:unset;height:auto;position:static;border-right:none;border-bottom:1px solid var(--border);}.map-area{height:300px;}}
 </style>
 </head>
 <body>
@@ -210,10 +174,7 @@ textarea { resize: none; height: 72px; }
 
 <div id="app" style="display:none">
 <header class="header">
-  <div>
-    <div class="logo">OUTWAY</div>
-    <div class="logo-sub">Организатор школьного трансфера</div>
-  </div>
+  <div><div class="logo">OUTWAY</div><div class="logo-sub">Организатор школьного трансфера</div></div>
   <div class="hd"></div>
   <div class="school-badge" id="headerBadge"><span id="headerSchoolName"></span></div>
   <div class="header-right">
@@ -224,19 +185,13 @@ textarea { resize: none; height: 72px; }
 
 <div class="modal-overlay" id="schoolModal">
   <div class="modal">
-    <div class="modal-hd">
-      <div class="modal-title">Выберите школу</div>
-      <button class="modal-close" onclick="closeSchoolModal()">✕</button>
-    </div>
+    <div class="modal-hd"><div class="modal-title">Выберите школу</div><button class="modal-close" onclick="closeSchoolModal()">✕</button></div>
     <div class="modal-search"><input type="text" id="schoolSearch" placeholder="Поиск..." oninput="filterSchools(this.value)"></div>
     <div class="modal-list" id="schoolList"></div>
   </div>
 </div>
 
-<div class="loading-overlay" id="loadingOverlay">
-  <div class="spin"></div>
-  <div class="loading-text">Отправляем заявку...</div>
-</div>
+<div class="loading-overlay" id="loadingOverlay"><div class="spin"></div><div class="loading-text">Отправляем заявку...</div></div>
 <div class="toast" id="toast"></div>
 
 <div class="layout">
@@ -252,18 +207,16 @@ textarea { resize: none; height: 72px; }
       </div>
 
       <div class="form-wrap" id="formWrap" style="display:none">
-
+        <!-- 1. ADDRESS -->
         <div class="form-section">
           <div class="form-section-title"><span class="step-num">1</span> Адрес ребёнка</div>
           <div class="addr-search-wrap">
             <div class="addr-search-inner">
               <svg class="addr-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-              <input type="text" id="addrSearch" placeholder="Начните вводить адрес..." autocomplete="off"
-                oninput="onAddrInput(this.value)" onblur="setTimeout(closeSug,200)" onfocus="if(this.value.length>1) onAddrInput(this.value)">
+              <input type="text" id="addrSearch" placeholder="Начните вводить адрес..." autocomplete="off" oninput="onAddrInput(this.value)" onblur="setTimeout(closeSug,200)" onfocus="if(this.value.length>1)onAddrInput(this.value)">
             </div>
             <div class="addr-sug" id="addrSug"></div>
           </div>
-
           <div class="addr-fields" id="addrFields">
             <div class="addr-fields-title">Уточните адрес</div>
             <div class="form-row">
@@ -277,71 +230,61 @@ textarea { resize: none; height: 72px; }
               </div>
             </div>
             <div class="form-row">
-              <div class="form-group">
-                <label>Квартира</label>
-                <input type="text" id="addrFlat" placeholder="45">
-              </div>
-              <div class="form-group">
-                <label>Подъезд / ориентир</label>
-                <input type="text" id="addrNote" placeholder="подъезд 2">
-              </div>
+              <div class="form-group"><label>Квартира</label><input type="text" id="addrFlat" placeholder="45"></div>
+              <div class="form-group"><label>Подъезд / ориентир</label><input type="text" id="addrNote" placeholder="подъезд 2"></div>
             </div>
           </div>
-
           <div class="dist-badge" id="distBadge">
-            <div style="display:flex;align-items:baseline;gap:6px">
-              <span class="dist-val" id="distVal">—</span>
-              <span class="dist-unit">км от школы</span>
-            </div>
+            <div style="display:flex;align-items:baseline;gap:6px"><span class="dist-val" id="distVal">—</span><span class="dist-unit">км от школы</span></div>
             <span class="zone-tag" id="zoneTag">Зона 1</span>
           </div>
         </div>
 
+        <!-- 2. TRANSPORT -->
         <div class="form-section">
           <div class="form-section-title"><span class="step-num">2</span> Тип транспорта</div>
           <div class="ts-options" id="tsOptions"></div>
         </div>
 
+        <!-- 3. CHILDREN -->
         <div class="form-section">
           <div class="form-section-title"><span class="step-num">3</span> Дети</div>
           <div id="childrenList"></div>
           <button class="btn-add" onclick="addChild()">+ Добавить ребёнка</button>
         </div>
 
+        <!-- 4. PARENT -->
         <div class="form-section">
           <div class="form-section-title"><span class="step-num">4</span> Законный представитель</div>
-          <div class="form-group"><label>ФИО <span class="req">*</span></label><input type="text" id="parentName" placeholder="Иванова Айгерим Асановна"></div>
-          <div class="form-group">
-            <label>Родство <span class="req">*</span></label>
-            <select id="parentRelation">
-              <option value="">Выберите</option>
-              <option>Мать</option><option>Отец</option><option>Опекун</option><option>Другое</option>
-            </select>
+          <div class="form-group"><label>ФИО <span class="req">*</span></label><input type="text" id="parentName" placeholder="Иванова Айгерим Асановна" oninput="autoCapFIO(this)"></div>
+          <div class="form-group"><label>Родство <span class="req">*</span></label>
+            <select id="parentRelation"><option value="">Выберите</option><option>Мать</option><option>Отец</option><option>Опекун</option><option>Другое</option></select>
           </div>
           <div class="form-row">
-            <div class="form-group"><label>Телефон 1 <span class="req">*</span></label><input type="tel" id="parentPhone1" placeholder="+996 700 000 000"></div>
-            <div class="form-group"><label>Телефон 2</label><input type="tel" id="parentPhone2" placeholder="+996 700 000 000"></div>
+            <div class="form-group"><label>Телефон 1 <span class="req">*</span></label><input type="tel" id="parentPhone1" placeholder="+996 700 000 000" oninput="autoPhone(this)" onblur="finalizePhone(this)"></div>
+            <div class="form-group"><label>Телефон 2</label><input type="tel" id="parentPhone2" placeholder="+996 700 000 000" oninput="autoPhone(this)" onblur="finalizePhone(this)"></div>
           </div>
-          <div class="form-group"><label>Telegram <span class="req">*</span></label><input type="tel" id="parentTelegram" placeholder="+996 700 000 000"></div>
+          <div class="form-group"><label>Telegram <span class="req">*</span></label><input type="tel" id="parentTelegram" placeholder="+996 700 000 000" oninput="autoPhone(this)" onblur="finalizePhone(this)"></div>
         </div>
 
+        <!-- 5. EXTRA CONTACT -->
         <div class="form-section">
           <div class="form-section-title"><span class="step-num">5</span> Дополнительный контакт</div>
           <button class="add-ct-toggle" onclick="toggleExtraCt()"><span id="extraCtIcon">+</span> Добавить доп. контакт</button>
           <div class="extra-ct" id="extraCtForm">
             <div style="height:12px"></div>
-            <div class="form-group"><label>Имя</label><input type="text" id="extraName" placeholder="Имя"></div>
-            <div class="form-group">
-              <label>Родство</label>
+            <div class="form-group"><label>Имя</label><input type="text" id="extraName" placeholder="Имя" oninput="autoCapFIO(this)"></div>
+            <div class="form-group"><label>Родство</label>
               <select id="extraRelation"><option value="">Выберите</option><option>Мать</option><option>Отец</option><option>Бабушка</option><option>Дедушка</option><option>Няня</option><option>Другое</option></select>
             </div>
             <div class="form-row">
-              <div class="form-group"><label>Телефон 1</label><input type="tel" id="extraPhone1" placeholder="+996 700 000 000"></div>
-              <div class="form-group"><label>Телефон 2</label><input type="tel" id="extraPhone2" placeholder="+996 700 000 000"></div>
+              <div class="form-group"><label>Телефон 1</label><input type="tel" id="extraPhone1" placeholder="+996 700 000 000" oninput="autoPhone(this)" onblur="finalizePhone(this)"></div>
+              <div class="form-group"><label>Телефон 2</label><input type="tel" id="extraPhone2" placeholder="+996 700 000 000" oninput="autoPhone(this)" onblur="finalizePhone(this)"></div>
             </div>
           </div>
         </div>
 
+        <!-- 6. COMMENT -->
         <div class="form-section">
           <div class="form-section-title"><span class="step-num">6</span> Комментарий</div>
           <textarea id="comment" placeholder="Дополнительные пожелания..."></textarea>
@@ -351,10 +294,7 @@ textarea { resize: none; height: 72px; }
           <div class="ps-title">Итог</div>
           <div id="priceRows"></div>
           <div class="price-divider"></div>
-          <div class="price-total">
-            <span class="label">В месяц</span>
-            <div><span class="amount" id="priceTotal">—</span><span class="currency">сом</span></div>
-          </div>
+          <div class="price-total"><span class="label">В месяц</span><div><span class="amount" id="priceTotal">—</span><span class="currency">сом</span></div></div>
         </div>
 
         <button class="btn-submit" onclick="submitForm()">Отправить заявку</button>
@@ -385,18 +325,16 @@ textarea { resize: none; height: 72px; }
 </div>
 
 <script>
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyOLDrpvMa6kUTjM_PPyJxG1EetVSX-VBl3L3fcfHJ4Y7r4pVHTrl6vApxMRK2vevb7/exec';
-const YANDEX_SUGGEST_KEY = '1a2e737b-d538-4a3a-b319-ebad15855d47';
-const YANDEX_GEOCODER_KEY = 'cfbdce72-0cdf-45ea-91e4-1b6e5826a090';
+const APPS_SCRIPT_URL='https://script.google.com/macros/s/AKfycbyOLDrpvMa6kUTjM_PPyJxG1EetVSX-VBl3L3fcfHJ4Y7r4pVHTrl6vApxMRK2vevb7/exec';
+const YANDEX_SUGGEST_KEY='1a2e737b-d538-4a3a-b319-ebad15855d47';
+const YANDEX_GEOCODER_KEY='cfbdce72-0cdf-45ea-91e4-1b6e5826a090';
 
-const SCHOOL_KEYS = {
-  kings:'KNG2026',light:'LGT2026',aes:'AES2026',kas:'KAS2026',
-  tensay:'TNS2026',erudit:'ERD2026',indigo:'IND2026',genius:'GNS2026',
-  epsilon:'EPS2026',nova:'NOV2026',bilim:'BLM2026',edison:'EDS2026',
-  admin:'ADMIN2026'
-};
+// Bishkek bounding box for geocoder
+const BBOX='74.4,42.7,74.8,43.1';
 
-const SCHOOLS = [
+const SCHOOL_KEYS={kings:'KNG2026',light:'LGT2026',aes:'AES2026',kas:'KAS2026',tensay:'TNS2026',erudit:'ERD2026',indigo:'IND2026',genius:'GNS2026',epsilon:'EPS2026',nova:'NOV2026',bilim:'BLM2026',edison:'EDS2026',admin:'ADMIN2026'};
+
+const SCHOOLS=[
   {id:'edison', name:'Эдисон',                   lat:42.829238,lng:74.630159,addr:'ул. Сухэ-Батора, 7А/1',           manager:'996999260894',p1:6500,p2:7000,p3:0,   branches:null},
   {id:'erudit', name:'Эрудит-ISIT',               lat:42.818826,lng:74.636966,addr:'ул. Саякбая Каралаева, 21/1',     manager:'996550242924',p1:6000,p2:6500,p3:0,   branches:null},
   {id:'tensay', name:'Тенсай',                    lat:42.835932,lng:74.598230,addr:'ул. Малдыбаева, 87',              manager:'996506242924',p1:6400,p2:6800,p3:0,   branches:null},
@@ -409,7 +347,7 @@ const SCHOOLS = [
   {id:'kings',  name:'Kings International School',lat:42.870399,lng:74.508924,addr:'ул. Барпы Алыкулова, 3А',        manager:'996999260894',p1:5000,p2:5500,p3:6000,branches:null},
   {id:'indigo', name:'Индиго',                    lat:42.844550,lng:74.630410,addr:'ул. Кара-Дарыя',                 manager:'996555242924',p1:5500,p2:6000,p3:6500,
     branches:[
-      {id:'indigo_kids', name:'Индиго Kids',         lat:42.844550,lng:74.630410,addr:'Бишкек, ул. Кара-Дарыя'},
+      {id:'indigo_kids', name:'Индиго Kids',         lat:42.844550,lng:74.630410,addr:'ул. Кара-Дарыя'},
       {id:'indigo_prime',name:'Indigo Prime Academy', lat:42.825887,lng:74.619915,addr:'7-й микрорайон, 16/9'},
       {id:'indigo_west', name:'Indigo West',          lat:42.871562,lng:74.582797,addr:'Московская ул., 191А'},
       {id:'indigo_girls',name:'Asylkech Girls School',lat:42.844254,lng:74.630409,addr:'ул. Кара-Дарыя, 16/2'},
@@ -429,65 +367,66 @@ function checkAccess(){
   const p=new URLSearchParams(window.location.search);
   const school=p.get('school'),key=p.get('key');
   if(!school||!key||SCHOOL_KEYS[school]!==key){document.getElementById('accessDenied').classList.add('show');return;}
-  isAdmin=school==='admin'; allowedSchoolId=isAdmin?null:school;
+  isAdmin=school==='admin';allowedSchoolId=isAdmin?null:school;
   document.getElementById('app').style.display='block';
-  ymaps.ready(initYandexMap);
+  ymaps.ready(initMap);
 }
 
-// ── YANDEX MAP ───────────────────────────────────────────────
+// ── ICONS ────────────────────────────────────────────────────
 function schoolIconHref(){
-  const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="40" height="48" viewBox="0 0 40 48"><path d="M20 0C9 0 0 9 0 20c0 14 20 28 20 28s20-14 20-28C40 9 31 0 20 0z" fill="#FFFFFF" stroke="#111111" stroke-width="2"/><rect x="9" y="12" width="22" height="15" rx="1" fill="none" stroke="#111111" stroke-width="1.5"/><rect x="16" y="19" width="8" height="8" rx="1" fill="#111111" opacity="0.85"/><rect x="11" y="15" width="4" height="3.5" rx="0.5" fill="#111111" opacity="0.5"/><rect x="25" y="15" width="4" height="3.5" rx="0.5" fill="#111111" opacity="0.5"/><rect x="17" y="9" width="6" height="3" rx="1" fill="#111111" opacity="0.4"/></svg>`;
+  // Filled dark pin like screenshot 1
+  const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="44" height="54" viewBox="0 0 44 54"><path d="M22 0C10 0 0 10 0 22c0 16 22 32 22 32S44 38 44 22C44 10 34 0 22 0z" fill="#2B2B2B"/><rect x="9" y="13" width="26" height="18" rx="2" fill="white" opacity="0.15"/><rect x="9" y="13" width="26" height="18" rx="2" fill="none" stroke="white" stroke-width="1.5"/><rect x="17" y="21" width="10" height="10" rx="1" fill="white" opacity="0.9"/><rect x="11" y="16" width="6" height="5" rx="1" fill="white" opacity="0.7"/><rect x="27" y="16" width="6" height="5" rx="1" fill="white" opacity="0.7"/><rect x="19" y="9" width="6" height="4" rx="1" fill="white" opacity="0.6"/><line x1="22" y1="9" x2="22" y2="13" stroke="white" stroke-width="1.5"/></svg>`;
   return 'data:image/svg+xml;charset=UTF-8,'+encodeURIComponent(svg);
 }
 function homeIconHref(){
-  const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="40" height="48" viewBox="0 0 40 48"><path d="M20 0C9 0 0 9 0 20c0 14 20 28 20 28s20-14 20-28C40 9 31 0 20 0z" fill="#FFFFFF" stroke="#E8621A" stroke-width="2"/><polygon points="20,9 30,18 30,28 10,28 10,18" fill="none" stroke="#E8621A" stroke-width="1.6" stroke-linejoin="round"/><line x1="20" y1="9" x2="10" y2="18" stroke="#E8621A" stroke-width="1.6"/><line x1="20" y1="9" x2="30" y2="18" stroke="#E8621A" stroke-width="1.6"/><rect x="16" y="20" width="8" height="8" rx="1" fill="#E8621A" opacity="0.85"/></svg>`;
+  // White fill green border like screenshot 2
+  const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="44" height="54" viewBox="0 0 44 54"><path d="M22 0C10 0 0 10 0 22c0 16 22 32 22 32S44 38 44 22C44 10 34 0 22 0z" fill="white" stroke="#22C55E" stroke-width="2.5"/><polygon points="22,10 32,19 32,30 12,30 12,19" fill="none" stroke="#22C55E" stroke-width="2" stroke-linejoin="round"/><line x1="22" y1="10" x2="12" y2="19" stroke="#22C55E" stroke-width="2"/><line x1="22" y1="10" x2="32" y2="19" stroke="#22C55E" stroke-width="2"/><rect x="18" y="21" width="8" height="9" rx="1" fill="#22C55E" opacity="0.8"/></svg>`;
   return 'data:image/svg+xml;charset=UTF-8,'+encodeURIComponent(svg);
 }
 
-function initYandexMap(){
-  ymap=new ymaps.Map('map',{
-    center:[42.87,74.59], zoom:12, controls:['zoomControl']
-  },{ suppressMapOpenBlock:true });
+// ── MAP ──────────────────────────────────────────────────────
+function initMap(){
+  ymap=new ymaps.Map('map',{center:[42.87,74.59],zoom:12,controls:['zoomControl']},{suppressMapOpenBlock:true});
   renderFaq();
   autoSelectSchool();
 }
 
 function setSchoolMarker(lat,lng){
-  if(schoolMarker) ymap.geoObjects.remove(schoolMarker);
-  schoolMarker=new ymaps.Placemark([lat,lng],{},{
-    iconLayout:'default#image',
-    iconImageHref:schoolIconHref(),
-    iconImageSize:[40,48],
-    iconImageOffset:[-20,-48]
+  if(schoolMarker)ymap.geoObjects.remove(schoolMarker);
+  schoolMarker=new ymaps.Placemark([lat,lng],{hintContent:'Школа'},{
+    iconLayout:'default#image',iconImageHref:schoolIconHref(),
+    iconImageSize:[44,54],iconImageOffset:[-22,-54]
   });
   ymap.geoObjects.add(schoolMarker);
 }
+
 function setHomeMarker(lat,lng){
-  if(homeMarker) ymap.geoObjects.remove(homeMarker);
-  homeMarker=new ymaps.Placemark([lat,lng],{},{
-    iconLayout:'default#image',
-    iconImageHref:homeIconHref(),
-    iconImageSize:[40,48],
-    iconImageOffset:[-20,-48]
+  if(homeMarker)ymap.geoObjects.remove(homeMarker);
+  homeMarker=new ymaps.Placemark([lat,lng],{hintContent:'Дом'},{
+    iconLayout:'default#image',iconImageHref:homeIconHref(),
+    iconImageSize:[44,54],iconImageOffset:[-22,-54]
   });
   ymap.geoObjects.add(homeMarker);
-  if(S.schoolLat) drawRoute(lat,lng,S.schoolLat,S.schoolLng);
+  if(S.schoolLat)drawRoute(lat,lng,S.schoolLat,S.schoolLng);
 }
 
 async function drawRoute(lat1,lng1,lat2,lng2){
-  if(routeObj){ ymap.geoObjects.remove(routeObj); routeObj=null; }
+  if(routeObj){ymap.geoObjects.remove(routeObj);routeObj=null;}
   try{
-    const route=await ymaps.route([[lat1,lng1],[lat2,lng2]],{mapStateAutoApply:true});
-    route.getPaths().options.set({strokeColor:'#E8621A',strokeWidth:4,opacity:0.85});
-    // hide default route markers
-    route.getWayPoints().options.set('visible',false);
-    routeObj=route;
-    ymap.geoObjects.add(routeObj);
+    const multiRoute=new ymaps.multiRouter.MultiRoute(
+      {referencePoints:[[lat1,lng1],[lat2,lng2]],params:{routingMode:'auto'}},
+      {boundsAutoApply:true,wayPointVisible:false,pinVisible:false,
+       routeActiveStrokeColor:'#E8621A',routeActiveStrokeWidth:5,
+       routeStrokeColor:'#E8621A',routeStrokeWidth:3,
+       routeActiveStrokeStyle:'solid'}
+    );
+    ymap.geoObjects.add(multiRoute);
+    routeObj=multiRoute;
   }catch(e){
-    // fallback straight line
-    routeObj=new ymaps.Polyline([[lat1,lng1],[lat2,lng2]],{},{strokeColor:'#E8621A',strokeWidth:3,strokeStyle:'dash',opacity:0.7});
+    // fallback polyline
+    if(routeObj){ymap.geoObjects.remove(routeObj);routeObj=null;}
+    routeObj=new ymaps.Polyline([[lat1,lng1],[lat2,lng2]],{},{strokeColor:'#E8621A',strokeWidth:4,strokeStyle:'dash',opacity:0.8});
     ymap.geoObjects.add(routeObj);
-    ymap.setBounds(routeObj.geometry.getBounds(),{checkZoomRange:true,zoomMargin:50});
   }
 }
 
@@ -497,41 +436,40 @@ function setHome(lat,lng,text){
   calcDist(lat,lng);
 }
 
-// ── SEARCH: Yandex Suggest ───────────────────────────────────
+// ── ADDRESS SEARCH (Yandex Suggest) ──────────────────────────
 let searchTimer,lastQ='';
 function onAddrInput(val){
   clearTimeout(searchTimer);
   if(val.length<2){closeSug();return;}
   lastQ=val;
-  showLoading();
+  showLoadingS();
   searchTimer=setTimeout(()=>doSearch(val),350);
 }
-function showLoading(){
+function showLoadingS(){
   const el=document.getElementById('addrSug');
   el.innerHTML=`<div class="sug-loading"><div class="sug-spin"></div>Поиск...</div>`;
   el.classList.add('open');
 }
-
 async function doSearch(q){
-  if(q!==lastQ) return;
+  if(q!==lastQ)return;
   try{
-    const url=`https://suggest-maps.yandex.ru/v1/suggest?apikey=${YANDEX_SUGGEST_KEY}&text=${encodeURIComponent('Бишкек '+q)}&lang=ru_RU&results=7&types=geo,house&ll=74.59,42.87&spn=0.4,0.4`;
+    // Use Suggest API v1
+    const url=`https://suggest-maps.yandex.ru/v1/suggest?apikey=${YANDEX_SUGGEST_KEY}&text=${encodeURIComponent('Бишкек '+q)}&lang=ru_RU&results=7&types=geo,house&ll=74.59,42.87&spn=0.35,0.25&strict_bounds=1`;
     const r=await fetch(url);
     const d=await r.json();
     const items=(d.results||[]).map(item=>({
       main:item.title?.text||'',
-      sub:item.subtitle?.text||'Бишкек',
+      sub:item.subtitle?.text||'Бишкек, Кыргызстан',
       uri:item.uri||null
-    })).filter(x=>x.main);
-    if(items.length) renderSug(items);
-    else document.getElementById('addrSug').innerHTML=`<div class="sug-loading">Ничего не найдено</div>`;
+    })).filter(x=>x.main&&x.main.length>0);
+    if(items.length)renderSug(items);
+    else document.getElementById('addrSug').innerHTML=`<div class="sug-loading">Ничего не найдено — попробуйте другой запрос</div>`;
   }catch(e){
     document.getElementById('addrSug').innerHTML=`<div class="sug-loading">Ошибка поиска</div>`;
   }
 }
-
 function renderSug(items){
-  if(lastQ!==document.getElementById('addrSearch').value) return;
+  if(lastQ!==document.getElementById('addrSearch').value)return;
   const el=document.getElementById('addrSug');
   el.innerHTML=items.map((item,i)=>`
     <div class="sug-item" onmousedown="selectSug(${i})">
@@ -541,56 +479,77 @@ function renderSug(items){
   el.classList.add('open');
   window._sugItems=items;
 }
-
 async function selectSug(i){
-  const item=window._sugItems[i];
-  if(!item) return;
+  const item=window._sugItems[i];if(!item)return;
   closeSug();
   document.getElementById('addrSearch').value=item.main;
-  const fullText=(item.sub&&item.sub!==item.main)?item.main+', '+item.sub:item.main;
   fillAddrFields(item.main);
-  // Geocode via Yandex Geocoder to get coords
+  // Geocode strictly within Bishkek bbox
+  const fullText=item.main+(item.sub&&!item.sub.includes('Бишкек')?', Бишкек':'');
   const coords=await geocodeYandex(fullText);
   if(coords){
     setHome(coords[0],coords[1],fullText);
     ymap.setCenter([coords[0],coords[1]],16);
   } else {
     document.getElementById('addrFields').classList.add('show');
-    toast('Не удалось определить координаты, уточните адрес вручную','error');
+    toast('Уточните адрес в полях ниже','error');
   }
 }
-
 async function geocodeYandex(text){
   try{
-    const url=`https://geocode-maps.yandex.ru/1.x/?apikey=${YANDEX_GEOCODER_KEY}&geocode=${encodeURIComponent('Бишкек, '+text)}&format=json&results=1&lang=ru_RU`;
-    const r=await fetch(url);
-    const d=await r.json();
+    const url=`https://geocode-maps.yandex.ru/1.x/?apikey=${YANDEX_GEOCODER_KEY}&geocode=${encodeURIComponent('Бишкек, Кыргызстан, '+text)}&format=json&results=1&lang=ru_RU&bbox=${BBOX}&rspn=1`;
+    const r=await fetch(url);const d=await r.json();
     const member=d.response?.GeoObjectCollection?.featureMember?.[0];
     if(member){
       const pos=member.GeoObject.Point.pos.split(' ');
-      const lng=parseFloat(pos[0]), lat=parseFloat(pos[1]);
-      return [lat,lng];
+      const lng=parseFloat(pos[0]),lat=parseFloat(pos[1]);
+      // Validate within Bishkek bbox
+      if(lat>=42.7&&lat<=43.1&&lng>=74.4&&lng<=74.8)return[lat,lng];
     }
   }catch(e){}
   return null;
 }
-
 function fillAddrFields(text){
   document.getElementById('addrFields').classList.add('show');
   const parts=text.split(',');
   document.getElementById('addrStreet').value=(parts[0]||'').trim();
-  const housePart=(parts[1]||'').trim();
-  const m=housePart.match(/\d+[А-Яа-я]?(\/\d+)?/);
+  const hp=(parts[1]||'').trim();
+  const m=hp.match(/\d+[А-Яа-я]?(\/\d+)?/);
   document.getElementById('addrHouse').value=m?m[0]:'';
 }
-
 function closeSug(){document.getElementById('addrSug').classList.remove('open');}
+
+// ── AUTO FORMAT ───────────────────────────────────────────────
+function autoCapFIO(el){
+  const pos=el.selectionStart;
+  const val=el.value.replace(/(?:^|\s)\S/g,c=>c.toUpperCase());
+  el.value=val;
+  el.setSelectionRange(pos,pos);
+}
+function autoPhone(el){
+  let v=el.value.replace(/[^\d+]/g,'');
+  // if starts with 0 — local kg number
+  if(v.startsWith('0'))v='+996'+v.slice(1);
+  // if pure digits without + and starts with 996
+  else if(/^\d+$/.test(v)&&v.startsWith('996')&&v.length>=12)v='+'+v;
+  // if pure digits 9 digits — KG number
+  else if(/^\d{9,10}$/.test(v)&&!v.startsWith('9'))v='+996'+v;
+  el.value=v;
+}
+function finalizePhone(el){
+  let v=el.value.replace(/[^\d+]/g,'');
+  if(!v)return;
+  // if pure 9 digits (local without code)
+  if(/^\d{9}$/.test(v))v='+996'+v;
+  else if(/^\d{10}$/.test(v)&&v.startsWith('0'))v='+996'+v.slice(1);
+  else if(/^\d{12}$/.test(v)&&v.startsWith('996'))v='+'+v;
+  el.value=v;
+}
 
 // ── SCHOOL ───────────────────────────────────────────────────
 function autoSelectSchool(){
   if(!isAdmin&&allowedSchoolId){
-    const s=SCHOOLS.find(x=>x.id===allowedSchoolId);
-    if(!s) return;
+    const s=SCHOOLS.find(x=>x.id===allowedSchoolId);if(!s)return;
     document.getElementById('selectedSchoolLabel').textContent=s.name;
     document.getElementById('headerBadge').style.display='flex';
     document.getElementById('headerSchoolName').textContent=s.name;
@@ -600,13 +559,10 @@ function autoSelectSchool(){
     if(s.branches){
       const bp=document.getElementById('branchPicker');
       bp.innerHTML=s.branches.map(b=>`<button class="branch-btn" onclick="selectBranch('${s.id}','${b.id}')" id="bb_${b.id}">${b.name}</button>`).join('');
-      bp.classList.add('show');
-      selectBranch(s.id,s.branches[0].id);
-    } else {
+      bp.classList.add('show');selectBranch(s.id,s.branches[0].id);
+    }else{
       S.schoolLat=s.lat;S.schoolLng=s.lng;
-      setSchoolMarker(s.lat,s.lng);
-      ymap.setCenter([s.lat,s.lng],14);
-      showForm();
+      setSchoolMarker(s.lat,s.lng);ymap.setCenter([s.lat,s.lng],14);showForm();
     }
   }
 }
@@ -614,8 +570,7 @@ function openSchoolModal(){
   const list=isAdmin?SCHOOLS:SCHOOLS.filter(s=>s.id===allowedSchoolId);
   if(list.length===1&&!isAdmin){selectSchool(list[0].id);return;}
   document.getElementById('schoolModal').classList.add('show');
-  renderSchoolList(list);
-  setTimeout(()=>document.getElementById('schoolSearch').focus(),80);
+  renderSchoolList(list);setTimeout(()=>document.getElementById('schoolSearch').focus(),80);
 }
 function closeSchoolModal(){document.getElementById('schoolModal').classList.remove('show');}
 function filterSchools(q){renderSchoolList(SCHOOLS.filter(s=>s.name.toLowerCase().includes(q.toLowerCase())));}
@@ -629,22 +584,18 @@ function renderSchoolList(list){
 }
 function selectSchool(id){
   const s=SCHOOLS.find(x=>x.id===id);if(!s)return;
-  S.school=s;S.branch=null;
-  closeSchoolModal();
+  S.school=s;S.branch=null;closeSchoolModal();
   document.getElementById('selectedSchoolLabel').textContent=s.name;
   document.getElementById('headerBadge').style.display='flex';
   document.getElementById('headerSchoolName').textContent=s.name;
   const bp=document.getElementById('branchPicker');
   if(s.branches){
     bp.innerHTML=s.branches.map(b=>`<button class="branch-btn" onclick="selectBranch('${s.id}','${b.id}')" id="bb_${b.id}">${b.name}</button>`).join('');
-    bp.classList.add('show');
-    selectBranch(s.id,s.branches[0].id);
-  } else {
+    bp.classList.add('show');selectBranch(s.id,s.branches[0].id);
+  }else{
     bp.classList.remove('show');bp.innerHTML='';
     S.schoolLat=s.lat;S.schoolLng=s.lng;
-    setSchoolMarker(s.lat,s.lng);
-    ymap.setCenter([s.lat,s.lng],14);
-    showForm();
+    setSchoolMarker(s.lat,s.lng);ymap.setCenter([s.lat,s.lng],14);showForm();
   }
 }
 function selectBranch(sid,bid){
@@ -652,9 +603,7 @@ function selectBranch(sid,bid){
   S.branch=b;S.schoolLat=b.lat;S.schoolLng=b.lng;
   document.querySelectorAll('.branch-btn').forEach(el=>el.classList.remove('selected'));
   document.getElementById('bb_'+bid)?.classList.add('selected');
-  setSchoolMarker(b.lat,b.lng);
-  ymap.setCenter([b.lat,b.lng],14);
-  showForm();
+  setSchoolMarker(b.lat,b.lng);ymap.setCenter([b.lat,b.lng],14);showForm();
   if(S.homeLat){calcDist(S.homeLat,S.homeLng);setHomeMarker(S.homeLat,S.homeLng);}
 }
 function showForm(){document.getElementById('formWrap').style.display='block';renderTs();renderChildren();updatePrice();}
@@ -664,8 +613,7 @@ function haversine(a,b,c,d){const R=6371,dL=(c-a)*Math.PI/180,dN=(d-b)*Math.PI/1
 function calcDist(lat,lng){
   if(!S.schoolLat)return;
   const dist=haversine(lat,lng,S.schoolLat,S.schoolLng),eff=dist-0.3;
-  S.distKm=dist;
-  const s=S.school;
+  S.distKm=dist;const s=S.school;
   let zone,price;
   if(s.p3===0){zone=eff<=3?1:2;price=eff<=3?s.p1:s.p2;}
   else{zone=eff<=3?1:eff<=6?2:3;price=eff<=3?s.p1:eff<=6?s.p2:s.p3;}
@@ -676,7 +624,7 @@ function calcDist(lat,lng){
   renderTs();updatePrice();
 }
 
-// ── TRANSPORT ────────────────────────────────────────────────
+// ── TRANSPORT ─────────────────────────────────────────────────
 const TS_ICONS={
   bus:`<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="5" width="20" height="13" rx="2"/><path d="M2 10h20"/><circle cx="7" cy="18" r="1.5"/><circle cx="17" cy="18" r="1.5"/></svg>`,
   van:`<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 11V8a2 2 0 012-2h10l4 5"/><path d="M3 11h18v5a1 1 0 01-1 1H4a1 1 0 01-1-1v-5z"/><circle cx="7" cy="17" r="1.5"/><circle cx="17" cy="17" r="1.5"/></svg>`,
@@ -701,6 +649,13 @@ function selectTs(t){S.tsType=t;renderTs();updatePrice();}
 function getTsPrice(){return S.tsType==='bus'?S.zonePrice||0:S.tsType==='van'?9500:10500;}
 
 // ── CHILDREN ─────────────────────────────────────────────────
+const GRADES=['1','2','3','4','5','6','7','8','9','10','11'];
+function gradeSelect(selected,idx){
+  return `<select onchange="S.children[${idx}].grade=this.value;updatePrice()" style="width:100%">
+    <option value="">Класс</option>
+    ${GRADES.map(g=>`<option value="${g}" ${selected===g?'selected':''}>${g}</option>`).join('')}
+  </select>`;
+}
 function renderChildren(){
   document.getElementById('childrenList').innerHTML=S.children.map((c,i)=>`
     <div class="child-card">
@@ -710,11 +665,14 @@ function renderChildren(){
       </div>
       <div class="form-row">
         <div class="form-group"><label>ФИО <span class="req">*</span></label>
-          <input type="text" placeholder="Иванов Арслан" value="${c.name}" oninput="S.children[${i}].name=this.value"></div>
-        <div class="form-group" style="max-width:80px"><label>Класс <span class="req">*</span></label>
-          <input type="text" placeholder="3Б" value="${c.grade}" oninput="S.children[${i}].grade=this.value;updatePrice()"></div>
+          <input type="text" placeholder="Иванов Арслан" value="${c.name}" oninput="S.children[${i}].name=this.value" onblur="autoCapFIOIdx(${i},this)"></div>
+        <div class="form-group" style="max-width:90px"><label>Класс <span class="req">*</span></label>
+          ${gradeSelect(c.grade,i)}</div>
       </div>
     </div>`).join('');
+}
+function autoCapFIOIdx(i,el){
+  autoCapFIO(el);S.children[i].name=el.value;
 }
 function addChild(){S.children.push({name:'',grade:''});renderChildren();updatePrice();}
 function rmChild(i){S.children.splice(i,1);renderChildren();updatePrice();}
@@ -737,35 +695,44 @@ function toggleExtraCt(){
   document.getElementById('extraCtForm').classList.toggle('show',S.extraOpen);
   document.getElementById('extraCtIcon').textContent=S.extraOpen?'−':'+';
 }
-
 function showSection(sec){
   document.querySelectorAll('.sidebar-section').forEach(s=>s.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('section'+sec.charAt(0).toUpperCase()+sec.slice(1)).classList.add('active');
-  document.querySelectorAll('.nav-btn').forEach(b=>{
-    if((sec==='form'&&b.textContent==='Заявка')||(sec==='faq'&&b.textContent==='Вопросы'))b.classList.add('active');
-  });
+  document.querySelectorAll('.nav-btn').forEach(b=>{if((sec==='form'&&b.textContent==='Заявка')||(sec==='faq'&&b.textContent==='Вопросы'))b.classList.add('active');});
 }
 
+// ── VALIDATION ────────────────────────────────────────────────
+function validateForm(){
+  const errs=[];
+  if(!S.school)errs.push('Выберите школу');
+  if(!S.homeLat)errs.push('Укажите адрес из поиска');
+  if(!v('addrStreet'))errs.push('Укажите улицу или микрорайон');
+  if(!v('addrHouse'))errs.push('Укажите номер дома');
+  for(let i=0;i<S.children.length;i++){
+    if(!S.children[i].name.trim())errs.push(`ФИО ребёнка ${i+1}`);
+    if(!S.children[i].grade)errs.push(`Класс ребёнка ${i+1}`);
+  }
+  if(!v('parentName'))errs.push('ФИО родителя');
+  if(!v('parentRelation'))errs.push('Родство');
+  if(!v('parentPhone1'))errs.push('Телефон 1');
+  if(!v('parentTelegram'))errs.push('Telegram');
+  return errs;
+}
+
+// ── SUBMIT ────────────────────────────────────────────────────
 function getFullAddr(){
   const street=v('addrStreet'),house=v('addrHouse'),flat=v('addrFlat'),note=v('addrNote');
   let addr=street;
-  if(house) addr+=', д.'+house;
-  if(flat) addr+=', кв.'+flat;
-  if(note) addr+=' ('+note+')';
+  if(house)addr+=', д.'+house;
+  if(flat)addr+=', кв.'+flat;
+  if(note)addr+=' ('+note+')';
   return addr||S.homeText||v('addrSearch');
 }
 
 async function submitForm(){
-  if(!S.school){toast('Выберите школу','error');return;}
-  if(!S.homeLat){toast('Укажите адрес','error');return;}
-  if(!v('addrStreet')){toast('Укажите улицу или микрорайон','error');return;}
-  if(!v('addrHouse')){toast('Укажите номер дома','error');return;}
-  if(!S.children.every(c=>c.name.trim()&&c.grade.trim())){toast('Заполните данные всех детей','error');return;}
-  if(!v('parentName')){toast('Укажите ФИО родителя','error');return;}
-  if(!v('parentRelation')){toast('Укажите родство','error');return;}
-  if(!v('parentPhone1')){toast('Укажите телефон','error');return;}
-  if(!v('parentTelegram')){toast('Укажите Telegram','error');return;}
+  const errs=validateForm();
+  if(errs.length){toast('Заполните: '+errs.join('; '),'error');return;}
 
   const base=getTsPrice(),schoolName=S.branch?S.branch.name:S.school.name;
   const tsMap={bus:'Микроавтобус',van:'Минивэн',sedan:'Седан'};
@@ -778,26 +745,51 @@ async function submitForm(){
     const promises=S.children.map((child,i)=>{
       const price=Math.round(base*(i>0?.95:1));
       const payload={
-        timestamp,familyCode,school:schoolName,branch:S.branch?S.branch.name:'',
-        address:fullAddr,lat:S.homeLat,lng:S.homeLng,
-        schoolLat:S.schoolLat,schoolLng:S.schoolLng,
-        distanceKm:S.distKm?S.distKm.toFixed(2):'',zone:S.zone||'',
-        transport:tsMap[S.tsType],zonePrice:base,
-        childName:child.name,childGrade:child.grade,
-        childNum:i+1,childPrice:price,discount:i>0?'5%':'',
+        // ── ИДЕНТИФИКАЦИЯ ──
+        timestamp,
+        familyCode,
+        // ── ШКОЛА ──
+        school:schoolName,
+        branch:S.branch?S.branch.name:'',
+        // ── АДРЕС ──
+        address:fullAddr,
+        homeLat:S.homeLat,
+        homeLng:S.homeLng,
+        schoolLat:S.schoolLat,
+        schoolLng:S.schoolLng,
+        distanceKm:S.distKm?S.distKm.toFixed(2):'',
+        zone:S.zone||'',
+        // ── ТРАНСПОРТ ──
+        transport:tsMap[S.tsType],
+        zonePrice:base,
+        // ── РЕБЁНОК ──
+        childNum:i+1,
+        childName:child.name,
+        childGrade:child.grade,
+        childPrice:price,
+        discount:i>0?'5%':'',
         totalChildren:S.children.length,
-        parentName:v('parentName'),parentRelation:v('parentRelation'),
-        parentPhone1:v('parentPhone1'),parentPhone2:v('parentPhone2'),parentTelegram:v('parentTelegram'),
-        extraName:v('extraName'),extraRelation:v('extraRelation'),
-        extraPhone1:v('extraPhone1'),extraPhone2:v('extraPhone2'),
-        comment:v('comment'),manager:S.school.manager,
+        // ── РОДИТЕЛЬ ──
+        parentName:v('parentName'),
+        parentRelation:v('parentRelation'),
+        parentPhone1:v('parentPhone1'),
+        parentPhone2:v('parentPhone2'),
+        parentTelegram:v('parentTelegram'),
+        // ── ДОП КОНТАКТ ──
+        extraName:v('extraName'),
+        extraRelation:v('extraRelation'),
+        extraPhone1:v('extraPhone1'),
+        extraPhone2:v('extraPhone2'),
+        // ── ПРОЧЕЕ ──
+        comment:v('comment'),
+        manager:S.school.manager,
       };
       return fetch(APPS_SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
     });
     await Promise.all(promises);
     let total=0;S.children.forEach((_,i)=>total+=Math.round(base*(i>0?.95:1)));
     showSuccess(schoolName,total,familyCode,fullAddr);
-  }catch(e){toast('Ошибка. Попробуйте ещё раз.','error');}
+  }catch(e){toast('Ошибка отправки. Попробуйте ещё раз.','error');}
   finally{document.getElementById('loadingOverlay').classList.remove('show');}
 }
 
@@ -805,20 +797,24 @@ function v(id){return(document.getElementById(id)||{}).value?.trim()||'';}
 
 function showSuccess(schoolName,total,familyCode,addr){
   document.getElementById('formWrap').style.display='none';
+  const childRows=S.children.map((c,i)=>{
+    const p=Math.round(getTsPrice()*(i>0?.95:1));
+    return `<div class="s-row"><span class="k">${c.name}${c.grade?' ('+c.grade+' кл.)':''}</span><span class="v">${p.toLocaleString()} сом${i>0?' −5%':''}</span></div>`;
+  }).join('');
   document.getElementById('successCard').innerHTML=`
-    <div class="s-row"><span class="k">Код семьи</span><span class="v" style="font-family:monospace">${familyCode}</span></div>
+    <div class="s-row"><span class="k">Код семьи</span><span class="v" style="font-family:monospace;font-size:12px">${familyCode}</span></div>
     <div class="s-row"><span class="k">Школа</span><span class="v">${schoolName}</span></div>
     <div class="s-row"><span class="k">Адрес</span><span class="v">${addr.split(',').slice(0,2).join(',')}</span></div>
     <div class="s-row"><span class="k">Зона</span><span class="v">Зона ${S.zone||'—'} · ${S.distKm?S.distKm.toFixed(2)+' км':'—'}</span></div>
-    <div class="s-row"><span class="k">Детей</span><span class="v">${S.children.length}</span></div>
-    <div class="s-row"><span class="k">Итого / мес</span><span class="v" style="font-size:16px;font-weight:700">${total.toLocaleString()} сом</span></div>`;
+    ${childRows}
+    <div class="s-row" style="border-top:2px solid var(--border);margin-top:4px;padding-top:8px"><span class="k" style="font-weight:600">Итого / мес</span><span class="v" style="font-size:16px;font-weight:700">${total.toLocaleString()} сом</span></div>`;
   const ph='+'+S.school.manager;
   document.getElementById('mgrPhone').textContent=ph;
   document.getElementById('mgrCallLink').href='tel:'+ph;
   document.getElementById('successScreen').classList.add('show');
 }
 
-// ── FAQ ──────────────────────────────────────────────────────
+// ── FAQ ───────────────────────────────────────────────────────
 const FAQ=[
   {cat:'Цены и оплата',items:[
     {q:'Почему цена не меняется на каникулах?',a:'Стоимость рассчитана за весь учебный год (162 рабочих дня) и равномерно распределена на 9 месяцев. Пропуски, болезни и каникулы учтены через резервные дни.'},
@@ -866,7 +862,7 @@ function renderFaq(){
 }
 function toggleFaqCat(ci){const o=document.getElementById('fq'+ci).classList.toggle('open');document.getElementById('fcb'+ci).classList.toggle('open',o);document.getElementById('fci'+ci).textContent=o?'▴':'▾';}
 function toggleFaqQ(ci,qi){document.getElementById(`fa${ci}_${qi}`).classList.toggle('open');}
-function toast(msg,type=''){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show '+type;setTimeout(()=>t.className='toast',3200);}
+function toast(msg,type=''){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show '+type;setTimeout(()=>t.className='toast',4000);}
 
 checkAccess();
 </script>
