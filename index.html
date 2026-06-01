@@ -53,6 +53,7 @@ body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--tex
 .form-section-title { font-size: 10px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
 .step-num { width: 18px; height: 18px; background: var(--text); color: white; border-radius: 50%; font-size: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-weight: 600; }
 .form-row { display: flex; gap: 10px; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .form-group { flex: 1; margin-bottom: 12px; }
 .form-group:last-child { margin-bottom: 0; }
 label { display: block; font-size: 11px; font-weight: 500; color: var(--text-soft); margin-bottom: 5px; }
@@ -182,7 +183,7 @@ textarea { resize: none; height: 72px; }
 
 .loading-overlay { display: none; position: fixed; inset: 0; background: rgba(245,244,240,0.9); z-index: 999; align-items: center; justify-content: center; flex-direction: column; gap: 14px; backdrop-filter: blur(4px); }
 .loading-overlay.show { display: flex; }
-.spin { width: 32px; height: 32px; border: 2px solid var(--border); border-top-color: var(--text); border-radius: 50%; animation: spin .7s linear infinite; }
+.spin { width: 32px; height: 32px; border: 2px solid var(--border); border-top-color: var(--text); border-radius: 50%; animation: spin .7s linear infinite; flex-shrink: 0; }
 @keyframes spin { to { transform: rotate(360deg); } }
 .loading-text { font-size: 12px; color: var(--text-soft); }
 
@@ -194,9 +195,6 @@ textarea { resize: none; height: 72px; }
 .access-denied.show { display: flex; }
 .access-denied h2 { font-size: 20px; font-weight: 700; }
 .access-denied p { color: var(--text-soft); font-size: 14px; line-height: 1.6; }
-
-/* Hide Google autocomplete dropdown */
-.pac-container { display: none !important; }
 
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
@@ -279,17 +277,17 @@ textarea { resize: none; height: 72px; }
           <!-- Auto-filled fields -->
           <div class="addr-fields" id="addrFields">
             <div class="addr-fields-title">Уточните адрес</div>
-            <div class="form-row">
+            <div class="form-grid">
               <div class="form-group">
                 <label>Улица / Микрорайон <span class="req">*</span></label>
                 <input type="text" id="addrStreet" placeholder="ул. Горького / мкр 7">
               </div>
-              <div class="form-group" style="max-width:90px">
+              <div class="form-group">
                 <label>Дом <span class="req">*</span></label>
                 <input type="text" id="addrHouse" placeholder="21">
               </div>
             </div>
-            <div class="form-row">
+            <div class="form-grid">
               <div class="form-group">
                 <label>Квартира</label>
                 <input type="text" id="addrFlat" placeholder="45">
@@ -334,7 +332,7 @@ textarea { resize: none; height: 72px; }
               <option>Мать</option><option>Отец</option><option>Опекун</option><option>Другое</option>
             </select>
           </div>
-          <div class="form-row">
+          <div class="form-grid">
             <div class="form-group"><label>Телефон 1 <span class="req">*</span></label><input type="tel" id="parentPhone1" placeholder="+996 700 000 000"></div>
             <div class="form-group"><label>Телефон 2</label><input type="tel" id="parentPhone2" placeholder="+996 700 000 000"></div>
           </div>
@@ -352,7 +350,7 @@ textarea { resize: none; height: 72px; }
               <label>Родство</label>
               <select id="extraRelation"><option value="">Выберите</option><option>Мать</option><option>Отец</option><option>Бабушка</option><option>Дедушка</option><option>Няня</option><option>Другое</option></select>
             </div>
-            <div class="form-row">
+            <div class="form-grid">
               <div class="form-group"><label>Телефон 1</label><input type="tel" id="extraPhone1" placeholder="+996 700 000 000"></div>
               <div class="form-group"><label>Телефон 2</label><input type="tel" id="extraPhone2" placeholder="+996 700 000 000"></div>
             </div>
@@ -404,7 +402,6 @@ textarea { resize: none; height: 72px; }
 
 <script>
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyOLDrpvMa6kUTjM_PPyJxG1EetVSX-VBl3L3fcfHJ4Y7r4pVHTrl6vApxMRK2vevb7/exec';
-const GOOGLE_KEY = 'AIzaSyCgh5hCCGGDGfPY2Ph9gBB6yKZa4HQ3bDg';
 const YANDEX_KEY = 'f3c503f1-db1b-4b84-907c-b85cacd1af85';
 
 const SCHOOL_KEYS = {
@@ -441,7 +438,7 @@ const SCHOOLS = [
 
 let allowedSchoolId=null,isAdmin=false;
 const S={school:null,branch:null,schoolLat:null,schoolLng:null,homeLat:null,homeLng:null,homeText:'',distKm:null,zone:null,zonePrice:null,tsType:'bus',children:[{name:'',grade:''}],extraOpen:false};
-let gmap,homeMarker,schoolMarker,directionsRenderer,placesService;
+let gmap, homeMarker, schoolMarker, currentRoute;
 
 // ── ACCESS ───────────────────────────────────────────────────
 function checkAccess(){
@@ -452,46 +449,75 @@ function checkAccess(){
   document.getElementById('app').style.display='block';
 }
 
-// ── MAP ──────────────────────────────────────────────────────
+// ── MAP (YANDEX) ─────────────────────────────────────────────
 function makeSchoolIcon(){
   const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="36" height="44" viewBox="0 0 36 44"><rect x="0" y="0" width="36" height="36" rx="6" fill="#111"/><polygon points="18,36 27,44 9,44" fill="#111"/><rect x="7" y="7" width="22" height="16" rx="1" fill="none" stroke="white" stroke-width="1.5"/><rect x="14" y="15" width="8" height="8" rx="1" fill="white" opacity="0.9"/><rect x="9" y="10" width="5" height="4" rx="1" fill="white" opacity="0.6"/><rect x="22" y="10" width="5" height="4" rx="1" fill="white" opacity="0.6"/><rect x="15" y="4" width="6" height="3" rx="1" fill="white" opacity="0.5"/></svg>`;
-  return {url:'data:image/svg+xml;charset=UTF-8,'+encodeURIComponent(svg),scaledSize:new google.maps.Size(36,44),anchor:new google.maps.Point(18,44)};
+  return 'data:image/svg+xml;charset=UTF-8,'+encodeURIComponent(svg);
 }
 function makeHomeIcon(){
   const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="36" height="44" viewBox="0 0 36 44"><rect x="0" y="0" width="36" height="36" rx="6" fill="#E8621A"/><polygon points="18,36 27,44 9,44" fill="#E8621A"/><polygon points="18,8 28,17 28,28 8,28 8,17" fill="none" stroke="white" stroke-width="1.5" stroke-linejoin="round"/><rect x="14" y="19" width="8" height="9" rx="1" fill="white" opacity="0.9"/><line x1="18" y1="8" x2="8" y2="17" stroke="white" stroke-width="1.5"/><line x1="18" y1="8" x2="28" y2="17" stroke="white" stroke-width="1.5"/></svg>`;
-  return {url:'data:image/svg+xml;charset=UTF-8,'+encodeURIComponent(svg),scaledSize:new google.maps.Size(36,44),anchor:new google.maps.Point(18,44)};
+  return 'data:image/svg+xml;charset=UTF-8,'+encodeURIComponent(svg);
 }
 
-function initGoogleMap(){
-  gmap=new google.maps.Map(document.getElementById('map'),{
-    center:{lat:42.87,lng:74.59},zoom:12,
-    mapTypeControl:false,streetViewControl:false,fullscreenControl:false,
-    gestureHandling:'greedy',
-    styles:[{featureType:'poi',stylers:[{visibility:'off'}]},{featureType:'transit',stylers:[{visibility:'off'}]}]
+function initYandexMap(){
+  gmap = new ymaps.Map("map", {
+    center: [42.87, 74.59],
+    zoom: 12,
+    controls: ['zoomControl']
+  }, {
+    suppressMapOpenBlock: true
   });
-  directionsRenderer=new google.maps.DirectionsRenderer({suppressMarkers:true,polylineOptions:{strokeColor:'#E8621A',strokeWeight:4,strokeOpacity:0.8}});
-  directionsRenderer.setMap(gmap);
-  placesService=new google.maps.places.PlacesService(gmap);
+
   renderFaq();
   autoSelectSchool();
 }
 
-function setSchoolMarker(lat,lng){if(schoolMarker)schoolMarker.setMap(null);schoolMarker=new google.maps.Marker({position:{lat,lng},map:gmap,icon:makeSchoolIcon(),zIndex:1});}
+function setSchoolMarker(lat,lng){
+  if(schoolMarker) gmap.geoObjects.remove(schoolMarker);
+  schoolMarker = new ymaps.Placemark([lat, lng], {}, {
+    iconLayout: 'default#image',
+    iconImageHref: makeSchoolIcon(),
+    iconImageSize: [36, 44],
+    iconImageOffset: [-18, -44]
+  });
+  gmap.geoObjects.add(schoolMarker);
+}
+
 function setHomeMarker(lat,lng){
-  if(homeMarker)homeMarker.setMap(null);
-  homeMarker=new google.maps.Marker({position:{lat,lng},map:gmap,icon:makeHomeIcon(),zIndex:2,draggable:false});
+  if(homeMarker) gmap.geoObjects.remove(homeMarker);
+  homeMarker = new ymaps.Placemark([lat, lng], {}, {
+    iconLayout: 'default#image',
+    iconImageHref: makeHomeIcon(),
+    iconImageSize: [36, 44],
+    iconImageOffset: [-18, -44]
+  });
+  gmap.geoObjects.add(homeMarker);
   if(S.schoolLat) drawRoute(lat,lng,S.schoolLat,S.schoolLng);
 }
+
 function drawRoute(lat1,lng1,lat2,lng2){
-  new google.maps.DirectionsService().route({origin:{lat:lat1,lng:lng1},destination:{lat:lat2,lng:lng2},travelMode:google.maps.TravelMode.DRIVING},(res,status)=>{if(status==='OK')directionsRenderer.setDirections(res);});
+  if(currentRoute) gmap.geoObjects.remove(currentRoute);
+  ymaps.route([[lat1, lng1], [lat2, lng2]], {
+    mapStateAutoApply: false
+  }).then(function (route) {
+    currentRoute = route;
+    route.getPaths().options.set({
+      strokeColor: '#E8621A',
+      strokeWidth: 4,
+      strokeOpacity: 0.8
+    });
+    route.getMarkers().removeAll();
+    gmap.geoObjects.add(currentRoute);
+  });
 }
+
 function setHome(lat,lng,text){
   S.homeLat=lat;S.homeLng=lng;S.homeText=text||'';
   setHomeMarker(lat,lng);
   calcDist(lat,lng);
 }
 
-// ── SEARCH: Google + Yandex fallback ─────────────────────────
+// ── SEARCH (YANDEX SUGGEST & GEOCODER) ───────────────────────
 let searchTimer,lastQ='';
 
 function onAddrInput(val){
@@ -510,60 +536,26 @@ function showLoading(){
 
 async function doSearch(q){
   if(q!==lastQ) return;
-
-  // 1. Google Places Autocomplete programmatically
-  const googleResults=await searchGoogle(q);
-
-  if(googleResults.length>=2){
-    renderSug(googleResults);
-    return;
+  try {
+    const items = await ymaps.suggest(q + ", Бишкек");
+    if(items && items.length > 0){
+      const formatted = items.slice(0, 5).map(item => {
+        const parts = item.value.split(', ');
+        const mainText = parts.slice(2).join(', ') || parts[1] || parts[0];
+        const subText = parts.slice(0, 2).join(', ');
+        return {
+          main: mainText,
+          sub: subText,
+          value: item.value
+        };
+      });
+      renderSug(formatted);
+    } else {
+      document.getElementById('addrSug').innerHTML=`<div class="sug-loading">Ничего не найдено. Попробуйте другой запрос.</div>`;
+    }
+  } catch(e) {
+    document.getElementById('addrSug').innerHTML=`<div class="sug-loading">Ошибка поиска. Попробуйте снова.</div>`;
   }
-
-  // 2. Fallback to Yandex if Google gave < 2 results
-  const yandexResults=await searchYandex(q);
-  const combined=[...googleResults,...yandexResults];
-
-  if(combined.length>0){
-    renderSug(combined);
-  } else {
-    document.getElementById('addrSug').innerHTML=`<div class="sug-loading">Ничего не найдено. Попробуйте другой запрос.</div>`;
-  }
-}
-
-function searchGoogle(q){
-  return new Promise(resolve=>{
-    const svc=new google.maps.places.AutocompleteService();
-    svc.getPlacePredictions({
-      input:q+' Бишкек',
-      componentRestrictions:{country:'kg'},
-      language:'ru',
-      types:['address','geocode']
-    },(predictions,status)=>{
-      if(status!==google.maps.places.PlacesServiceStatus.OK||!predictions){resolve([]);return;}
-      const results=predictions.slice(0,4).map(p=>({
-        main:p.structured_formatting.main_text,
-        sub:p.structured_formatting.secondary_text||'Бишкек',
-        placeId:p.place_id,
-        source:'google'
-      }));
-      resolve(results);
-    });
-  });
-}
-
-async function searchYandex(q){
-  try{
-    const url=`https://suggest-maps.yandex.ru/suggest-geo?text=${encodeURIComponent(q+' Бишкек')}&v=9&lang=ru_RU&ll=74.59,42.87&spn=0.3,0.3&results=5&highlight=0&apikey=${YANDEX_KEY}`;
-    const r=await fetch(url);
-    const d=await r.json();
-    if(!d.results) return [];
-    return d.results.slice(0,4).map(item=>({
-      main:item.title?.text||item.subtitle?.text||'',
-      sub:item.subtitle?.text||'Бишкек',
-      pos:item.pos||null,
-      source:'yandex'
-    })).filter(x=>x.main);
-  } catch(e){ return []; }
 }
 
 function renderSug(items){
@@ -578,7 +570,6 @@ function renderSug(items){
       </div>
     </div>`).join('');
   el.classList.add('open');
-  // Store items for selection
   window._sugItems=items;
 }
 
@@ -588,60 +579,42 @@ async function selectSug(i){
   closeSug();
   document.getElementById('addrSearch').value=item.main;
 
-  if(item.source==='google'&&item.placeId){
-    // Get coords via Places Details
-    placesService.getDetails({placeId:item.placeId,fields:['geometry','formatted_address','address_components']},(place,status)=>{
-      if(status===google.maps.places.PlacesServiceStatus.OK&&place.geometry){
-        const lat=place.geometry.location.lat(),lng=place.geometry.location.lng();
-        fillAddrFields(place.address_components,item.main);
-        setHome(lat,lng,place.formatted_address||item.main);
-        gmap.setCenter({lat,lng}); gmap.setZoom(16);
-      }
-    });
-  } else if(item.source==='yandex'&&item.pos){
-    const parts=item.pos.toString().split(',');
-    if(parts.length>=2){
-      const lng=parseFloat(parts[0]),lat=parseFloat(parts[1]);
-      if(!isNaN(lat)&&!isNaN(lng)){
-        fillAddrFieldsFromText(item.main);
-        setHome(lat,lng,item.main+', Бишкек');
-        gmap.setCenter({lat,lng}); gmap.setZoom(16);
-        return;
-      }
+  ymaps.geocode(item.value, {results: 1}).then(function(res){
+    const firstGeoObject = res.geoObjects.get(0);
+    if(firstGeoObject) {
+      const coords = firstGeoObject.geometry.getCoordinates();
+      const lat = coords[0];
+      const lng = coords[1];
+      
+      const components = firstGeoObject.properties.get('metaDataProperty').GeocoderMetaData.Address.Components;
+      fillAddrFieldsYandex(components, item.main);
+      
+      setHome(lat, lng, item.value);
+      gmap.setCenter([lat, lng]);
+      gmap.setZoom(16);
     }
-    // No coords from Yandex — geocode via Google
-    new google.maps.Geocoder().geocode({address:item.main+', Бишкек, Кыргызстан',language:'ru'},(results,status)=>{
-      if(status==='OK'&&results[0]){
-        const loc=results[0].geometry.location;
-        fillAddrFields(results[0].address_components,item.main);
-        setHome(loc.lat(),loc.lng(),results[0].formatted_address);
-        gmap.setCenter({lat:loc.lat(),lng:loc.lng()}); gmap.setZoom(16);
-      }
-    });
-  }
+  });
 }
 
-function fillAddrFields(components,fallbackText){
+function fillAddrFieldsYandex(components, fallbackText){
   document.getElementById('addrFields').classList.add('show');
-  // Extract street/neighborhood and house number from Google components
-  let street='',house='';
-  for(const c of (components||[])){
-    if(c.types.includes('route')||c.types.includes('neighborhood')||c.types.includes('sublocality')) street=c.long_name;
-    if(c.types.includes('street_number')) house=c.long_name;
+  let street = '';
+  let house = '';
+  
+  for(const c of (components || [])){
+    if(c.kind === 'street' || c.kind === 'district' || c.kind === 'dependent_locality') {
+      street = c.name;
+    }
+    if(c.kind === 'house') {
+      house = c.name;
+    }
   }
-  if(!street) street=fallbackText.split(',')[0].trim();
-  document.getElementById('addrStreet').value=street;
-  document.getElementById('addrHouse').value=house;
-}
-
-function fillAddrFieldsFromText(text){
-  document.getElementById('addrFields').classList.add('show');
-  // Parse "7-й микрорайон, 21" or "ул. Горького, 45"
-  const parts=text.split(',');
-  document.getElementById('addrStreet').value=(parts[0]||'').trim();
-  const housePart=(parts[1]||'').trim();
-  const houseMatch=housePart.match(/\d+/);
-  document.getElementById('addrHouse').value=houseMatch?houseMatch[0]:'';
+  
+  if(!street) {
+    street = fallbackText.split(',')[0].trim();
+  }
+  document.getElementById('addrStreet').value = street;
+  document.getElementById('addrHouse').value = house;
 }
 
 function closeSug(){document.getElementById('addrSug').classList.remove('open');}
@@ -665,7 +638,7 @@ function autoSelectSchool(){
     } else {
       S.schoolLat=s.lat;S.schoolLng=s.lng;
       setSchoolMarker(s.lat,s.lng);
-      gmap.setCenter({lat:s.lat,lng:s.lng});gmap.setZoom(14);
+      gmap.setCenter([s.lat, s.lng]);gmap.setZoom(14);
       showForm();
     }
   }
@@ -703,7 +676,7 @@ function selectSchool(id){
     bp.classList.remove('show');bp.innerHTML='';
     S.schoolLat=s.lat;S.schoolLng=s.lng;
     setSchoolMarker(s.lat,s.lng);
-    gmap.setCenter({lat:s.lat,lng:s.lng});gmap.setZoom(14);
+    gmap.setCenter([s.lat, s.lng]);gmap.setZoom(14);
     showForm();
   }
 }
@@ -713,7 +686,7 @@ function selectBranch(sid,bid){
   document.querySelectorAll('.branch-btn').forEach(el=>el.classList.remove('selected'));
   document.getElementById('bb_'+bid)?.classList.add('selected');
   setSchoolMarker(b.lat,b.lng);
-  gmap.setCenter({lat:b.lat,lng:b.lng});gmap.setZoom(14);
+  gmap.setCenter([b.lat, b.lng]);gmap.setZoom(14);
   showForm();
   if(S.homeLat){calcDist(S.homeLat,S.homeLng);setHomeMarker(S.homeLat,S.homeLng);}
 }
@@ -768,7 +741,7 @@ function renderChildren(){
         <div class="child-title">Ребёнок ${i+1}${i>0?' <span class="disc-tag">−5%</span>':''}</div>
         ${i>0?`<button class="btn-rm" onclick="rmChild(${i})">✕</button>`:''}
       </div>
-      <div class="form-row">
+      <div class="form-grid">
         <div class="form-group"><label>ФИО <span class="req">*</span></label>
           <input type="text" placeholder="Иванов Арслан" value="${c.name}" oninput="S.children[${i}].name=this.value"></div>
         <div class="form-group" style="max-width:80px"><label>Класс <span class="req">*</span></label>
@@ -934,6 +907,10 @@ function toast(msg,type=''){const t=document.getElementById('toast');t.textConte
 
 checkAccess();
 </script>
-<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCgh5hCCGGDGfPY2Ph9gBB6yKZa4HQ3bDg&libraries=places&language=ru&region=KG&callback=initGoogleMap"></script>
+
+<script src="https://api-maps.yandex.ru/2.1/?apikey=f3c503f1-db1b-4b84-907c-b85cacd1af85&lang=ru_RU" type="text/javascript"></script>
+<script type="text/javascript">
+  ymaps.ready(initYandexMap);
+</script>
 </body>
 </html>
