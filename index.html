@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OutWay — Запись на школьный трансфер</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+:root {
+  --orange: #E8621A;
+  --orange-light: #F5834A;
+  --orange-faint: #FEF3EC;
+  --bg: #F7F6F2;
+  --white: #FFFFFF;
+  --text: #1A1A1A;
+  --text-soft: #6B6B6B;
+  --text-muted: #A0A0A0;
+  --border: #E4E2DC;
+  --card: #FFFFFF;
+  --success: #2D9E6A;
+  --error: #D94040;
+  --shadow: 0 2px 12px rgba(0,0,0,0.06);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.12);
+  --radius: 14px;
+  --radius-sm: 8px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 14px; line-height: 1.5; }
+
+/* HEADER */
+.header {
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  height: 58px;
+  position: sticky;
+  top: 0;
+  z-index: 400;
+  box-shadow: 0 1px 8px rgba(0,0,0,0.05);
+}
+.logo { font-family: 'Unbounded', sans-serif; font-size: 17px; font-weight: 700; color: var(--text); letter-spacing: -0.5px; }
+.logo span { color: var(--orange); }
+.logo-sub { font-size: 9px; color: var(--text-muted); font-weight: 400; letter-spacing: 0.6px; text-transform: uppercase; }
+.hd { width: 1px; height: 26px; background: var(--border); }
+.school-badge { display: none; align-items: center; gap: 6px; background: var(--orange-faint); border: 1px solid rgba(232,98,26,0.2); border-radius: 20px; padding: 4px 12px; font-size: 12px; font-weight: 600; color: var(--orange); }
+.header-right { margin-left: auto; display: flex; gap: 4px; }
+.nav-btn { background: none; border: none; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 13px; color: var(--text-soft); padding: 6px 12px; border-radius: 6px; transition: all .2s; font-weight: 500; }
+.nav-btn:hover, .nav-btn.active { background: var(--bg); color: var(--text); }
+
+/* LAYOUT */
+.layout { display: flex; min-height: calc(100vh - 58px); }
+
+/* SIDEBAR */
+.sidebar { width: 390px; min-width: 340px; background: var(--white); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow-y: auto; position: sticky; top: 58px; height: calc(100vh - 58px); }
+.sidebar-section { display: none; flex-direction: column; min-height: 100%; }
+.sidebar-section.active { display: flex; }
+
+/* SCHOOL SELECTOR */
+.school-select-wrap { padding: 16px; border-bottom: 1px solid var(--border); }
+.ss-label { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 7px; }
+.ss-btn { width: 100%; background: var(--bg); border: 1.5px solid var(--border); border-radius: var(--radius-sm); padding: 11px 13px; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 500; color: var(--text); cursor: pointer; text-align: left; display: flex; align-items: center; justify-content: space-between; transition: all .2s; }
+.ss-btn:hover { border-color: var(--orange); background: var(--white); }
+.branch-picker { display: none; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.branch-picker.show { display: flex; }
+.branch-btn { background: var(--bg); border: 1.5px solid var(--border); border-radius: 20px; padding: 5px 13px; font-size: 12px; font-weight: 500; cursor: pointer; transition: all .2s; font-family: 'Inter', sans-serif; }
+.branch-btn:hover, .branch-btn.selected { background: var(--orange); border-color: var(--orange); color: white; }
+
+/* FORM */
+.form-wrap { padding: 16px; flex: 1; overflow-y: auto; }
+.form-card { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; margin-bottom: 12px; }
+.fc-title { font-family: 'Unbounded', sans-serif; font-size: 10px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 12px; display: flex; align-items: center; gap: 7px; }
+.fc-title .num { width: 19px; height: 19px; background: var(--orange); color: white; border-radius: 50%; font-size: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.form-row { display: flex; gap: 8px; }
+.form-group { flex: 1; margin-bottom: 10px; }
+.form-group:last-child { margin-bottom: 0; }
+label { display: block; font-size: 11px; font-weight: 500; color: var(--text-soft); margin-bottom: 4px; }
+label .req { color: var(--orange); }
+input[type=text], input[type=tel], select, textarea { width: 100%; background: var(--white); border: 1.5px solid var(--border); border-radius: var(--radius-sm); padding: 9px 11px; font-family: 'Inter', sans-serif; font-size: 13px; color: var(--text); transition: border-color .2s, box-shadow .2s; outline: none; -webkit-appearance: none; }
+input:focus, select:focus, textarea:focus { border-color: var(--orange); box-shadow: 0 0 0 3px rgba(232,98,26,0.08); }
+input::placeholder { color: var(--text-muted); }
+textarea { resize: none; height: 72px; }
+
+/* ADDRESS */
+.addr-wrap { position: relative; margin-bottom: 12px; }
+.addr-input { padding-left: 34px !important; background: var(--white) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='15' height='15' viewBox='0 0 24 24' fill='none' stroke='%23A0A0A0' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E") no-repeat 10px center !important; }
+.addr-suggestions { position: absolute; top: calc(100% + 3px); left: 0; right: 0; background: var(--white); border: 1.5px solid var(--border); border-radius: var(--radius-sm); box-shadow: var(--shadow-lg); z-index: 500; max-height: 240px; overflow-y: auto; display: none; }
+.addr-suggestions.open { display: block; }
+.sug-item { padding: 9px 13px; cursor: pointer; font-size: 13px; border-bottom: 1px solid var(--bg); transition: background .12s; display: flex; align-items: flex-start; gap: 8px; }
+.sug-item:last-child { border-bottom: none; }
+.sug-item:hover { background: var(--orange-faint); }
+.sug-main { font-weight: 500; font-size: 13px; }
+.sug-sub { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+.sug-loading { padding: 12px 14px; font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 8px; }
+
+/* DISTANCE BADGE */
+.dist-badge { display: none; align-items: center; gap: 10px; background: var(--white); border: 1.5px solid var(--border); border-radius: var(--radius-sm); padding: 9px 13px; margin-bottom: 12px; }
+.dist-badge.show { display: flex; }
+.dist-val { font-family: 'Unbounded', sans-serif; font-size: 14px; font-weight: 700; color: var(--orange); }
+.dist-lbl { font-size: 11px; color: var(--text-soft); }
+.zone-chip { margin-left: auto; background: var(--orange); color: white; border-radius: 20px; padding: 3px 10px; font-size: 11px; font-weight: 600; }
+
+/* TS */
+.ts-options { display: flex; flex-direction: column; gap: 7px; }
+.ts-opt { display: flex; align-items: center; gap: 11px; background: var(--white); border: 1.5px solid var(--border); border-radius: var(--radius-sm); padding: 11px 13px; cursor: pointer; transition: all .2s; }
+.ts-opt:hover { border-color: var(--orange-light); background: var(--orange-faint); }
+.ts-opt.selected { border-color: var(--orange); background: var(--orange-faint); }
+.ts-opt input { display: none; }
+.ts-icon { font-size: 21px; }
+.ts-info { flex: 1; }
+.ts-name { font-weight: 600; font-size: 13px; }
+.ts-desc { font-size: 11px; color: var(--text-soft); }
+.ts-price { font-family: 'Unbounded', sans-serif; font-size: 13px; font-weight: 700; color: var(--orange); text-align: right; }
+.ts-price .per { font-size: 9px; font-weight: 400; color: var(--text-muted); display: block; }
+
+/* CHILDREN */
+.child-card { background: var(--white); border: 1.5px solid var(--border); border-radius: var(--radius-sm); padding: 12px; margin-bottom: 9px; }
+.child-hd { display: flex; align-items: center; justify-content: space-between; margin-bottom: 9px; }
+.child-title { font-size: 12px; font-weight: 600; color: var(--orange); display: flex; align-items: center; gap: 6px; }
+.disc-chip { font-size: 10px; background: #E8F5EC; color: var(--success); border-radius: 20px; padding: 2px 8px; font-weight: 600; }
+.btn-rm { background: none; border: none; cursor: pointer; color: var(--text-muted); font-size: 15px; padding: 2px; transition: color .2s; }
+.btn-rm:hover { color: var(--error); }
+.btn-add { width: 100%; background: none; border: 1.5px dashed var(--border); border-radius: var(--radius-sm); padding: 9px; font-family: 'Inter', sans-serif; font-size: 12px; color: var(--orange); cursor: pointer; transition: all .2s; font-weight: 500; display: flex; align-items: center; justify-content: center; gap: 5px; }
+.btn-add:hover { border-color: var(--orange); background: var(--orange-faint); }
+
+/* EXTRA CONTACT */
+.add-ct-toggle { width: 100%; background: none; border: none; text-align: left; font-family: 'Inter', sans-serif; font-size: 12px; color: var(--orange); cursor: pointer; padding: 5px 0; font-weight: 500; display: flex; align-items: center; gap: 5px; }
+.extra-ct { display: none; }
+.extra-ct.show { display: block; margin-top: 8px; }
+
+/* PRICE SUMMARY */
+.price-summary { background: var(--white); border: 1.5px solid var(--orange); border-radius: var(--radius); padding: 14px; margin-top: 12px; display: none; }
+.ps-title { font-family: 'Unbounded', sans-serif; font-size: 10px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 10px; }
+.price-row { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; font-size: 13px; }
+.price-row.total { border-top: 1px solid var(--border); margin-top: 7px; padding-top: 9px; font-weight: 600; font-size: 15px; }
+.price-row.total .val { color: var(--orange); font-family: 'Unbounded', sans-serif; font-size: 15px; }
+
+/* SUBMIT */
+.btn-submit { width: 100%; background: var(--orange); border: none; border-radius: var(--radius-sm); padding: 13px; font-family: 'Unbounded', sans-serif; font-size: 12px; font-weight: 600; color: white; cursor: pointer; transition: all .2s; margin-top: 12px; letter-spacing: 0.3px; }
+.btn-submit:hover { background: var(--orange-light); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(232,98,26,0.3); }
+.btn-submit:disabled { background: var(--border); color: var(--text-muted); cursor: not-allowed; transform: none; box-shadow: none; }
+
+/* SUCCESS */
+.success-screen { display: none; padding: 24px 18px; text-align: center; flex-direction: column; align-items: center; gap: 12px; }
+.success-screen.show { display: flex; }
+.s-icon { font-size: 44px; }
+.s-title { font-family: 'Unbounded', sans-serif; font-size: 15px; font-weight: 700; }
+.s-sub { font-size: 13px; color: var(--text-soft); line-height: 1.6; }
+.s-card { width: 100%; background: var(--orange-faint); border: 1.5px solid rgba(232,98,26,0.2); border-radius: var(--radius-sm); padding: 13px 15px; text-align: left; }
+.s-card .row { display: flex; justify-content: space-between; padding: 4px 0; font-size: 13px; }
+.s-card .row .k { color: var(--text-soft); }
+.s-card .row .v { font-weight: 600; }
+.mgr-call { display: flex; align-items: center; gap: 10px; background: var(--white); border: 1.5px solid var(--border); border-radius: var(--radius-sm); padding: 11px 13px; width: 100%; text-decoration: none; transition: all .2s; }
+.mgr-call:hover { border-color: var(--orange); background: var(--orange-faint); }
+.mgr-num { font-size: 15px; font-weight: 700; color: var(--orange); font-family: 'Unbounded', sans-serif; }
+.mgr-lbl { font-size: 10px; color: var(--text-muted); }
+
+/* MAP */
+.map-area { flex: 1; position: sticky; top: 58px; height: calc(100vh - 58px); }
+#map { width: 100%; height: 100%; }
+
+/* FAQ */
+.faq-sidebar { padding: 0; flex: 1; overflow-y: auto; }
+.faq-header { padding: 14px 18px; border-bottom: 1px solid var(--border); font-family: 'Unbounded', sans-serif; font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+.faq-cat { border-bottom: 1px solid var(--border); }
+.faq-cat-btn { width: 100%; background: none; border: none; padding: 14px 18px; text-align: left; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; color: var(--text); display: flex; align-items: center; justify-content: space-between; transition: background .15s; }
+.faq-cat-btn:hover { background: var(--bg); }
+.faq-cat-btn.open { color: var(--orange); background: var(--orange-faint); }
+.faq-questions { display: none; }
+.faq-questions.open { display: block; }
+.faq-q-btn { width: 100%; background: none; border: none; border-top: 1px solid var(--border); padding: 11px 18px 11px 34px; text-align: left; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 500; color: var(--text-soft); display: flex; align-items: center; justify-content: space-between; gap: 8px; transition: all .15s; line-height: 1.4; }
+.faq-q-btn:hover { color: var(--orange); background: var(--bg); }
+.faq-q-btn.open { color: var(--orange); background: var(--orange-faint); }
+.faq-answer { display: none; padding: 11px 18px 13px 34px; font-size: 12px; color: var(--text-soft); line-height: 1.7; background: var(--bg); border-top: 1px solid var(--border); }
+.faq-answer.open { display: block; }
+
+/* MODAL */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 600; display: none; align-items: center; justify-content: center; }
+.modal-overlay.show { display: flex; }
+.modal { background: var(--white); border-radius: var(--radius); width: 460px; max-width: 95vw; max-height: 80vh; display: flex; flex-direction: column; box-shadow: var(--shadow-lg); overflow: hidden; }
+.modal-hd { padding: 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+.modal-title { font-family: 'Unbounded', sans-serif; font-size: 13px; font-weight: 700; }
+.modal-close { background: none; border: none; cursor: pointer; font-size: 18px; color: var(--text-muted); }
+.modal-search { padding: 12px 18px; border-bottom: 1px solid var(--border); }
+.modal-search input { background: var(--bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='15' height='15' viewBox='0 0 24 24' fill='none' stroke='%23A0A0A0' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E") no-repeat 10px center; padding-left: 34px; }
+.modal-list { overflow-y: auto; flex: 1; }
+.school-item { padding: 13px 18px; border-bottom: 1px solid var(--bg); cursor: pointer; transition: background .12s; display: flex; align-items: center; gap: 11px; }
+.school-item:hover { background: var(--orange-faint); }
+.s-name { font-weight: 600; font-size: 13px; }
+.s-addr { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+.s-price { margin-left: auto; font-size: 12px; font-weight: 600; color: var(--orange); white-space: nowrap; }
+
+/* LOADING */
+.loading-overlay { display: none; position: fixed; inset: 0; background: rgba(247,246,242,0.88); z-index: 999; align-items: center; justify-content: center; flex-direction: column; gap: 14px; }
+.loading-overlay.show { display: flex; }
+.spin { width: 38px; height: 38px; border: 3px solid var(--border); border-top-color: var(--orange); border-radius: 50%; animation: spin .8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-text { font-size: 13px; color: var(--text-soft); }
+
+/* TOAST */
+.toast { position: fixed; bottom: 22px; right: 22px; background: var(--text); color: white; border-radius: var(--radius-sm); padding: 11px 16px; font-size: 13px; font-weight: 500; z-index: 9999; transform: translateY(60px); opacity: 0; transition: all .3s; max-width: 290px; }
+.toast.show { transform: translateY(0); opacity: 1; }
+.toast.error { background: var(--error); }
+.toast.success { background: var(--success); }
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+@media (max-width: 768px) {
+  .layout { flex-direction: column; }
+  .sidebar { width: 100%; min-width: unset; height: auto; position: static; border-right: none; border-bottom: 1px solid var(--border); }
+  .map-area { height: 280px; position: static; }
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div>
+    <div class="logo">OUT<span>WAY</span></div>
+    <div class="logo-sub">Организатор школьного трансфера</div>
+  </div>
+  <div class="hd"></div>
+  <div class="school-badge" id="headerBadge">🏫 <span id="headerSchoolName"></span></div>
+  <div class="header-right">
+    <button class="nav-btn active" onclick="showSection('form')">📋 Заявка</button>
+    <button class="nav-btn" onclick="showSection('faq')">❓ Вопросы</button>
+  </div>
+</header>
+
+<!-- SCHOOL MODAL -->
+<div class="modal-overlay" id="schoolModal">
+  <div class="modal">
+    <div class="modal-hd">
+      <div class="modal-title">Выберите школу</div>
+      <button class="modal-close" onclick="closeSchoolModal()">✕</button>
+    </div>
+    <div class="modal-search">
+      <input type="text" id="schoolSearch" placeholder="Поиск школы..." oninput="filterSchools(this.value)">
+    </div>
+    <div class="modal-list" id="schoolList"></div>
+  </div>
+</div>
+
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="spin"></div>
+  <div class="loading-text">Отправляем заявку...</div>
+</div>
+<div class="toast" id="toast"></div>
+
+<div class="layout">
+  <div class="sidebar">
+
+    <!-- FORM SECTION -->
+    <div class="sidebar-section active" id="sectionForm">
+      <div class="school-select-wrap">
+        <div class="ss-label">Школа</div>
+        <button class="ss-btn" onclick="openSchoolModal()">
+          <span id="selectedSchoolLabel">Выберите школу →</span>
+          <span style="color:var(--orange-light)">▾</span>
+        </button>
+        <div class="branch-picker" id="branchPicker"></div>
+      </div>
+
+      <div class="form-wrap" id="formWrap" style="display:none">
+
+        <!-- 1. ADDRESS -->
+        <div class="form-card">
+          <div class="fc-title"><span class="num">1</span> Адрес ребёнка</div>
+          <div class="addr-wrap">
+            <input type="text" id="addressInput" class="addr-input" placeholder="Начните вводить адрес в Бишкеке..." autocomplete="off"
+              oninput="onAddrInput(this.value)" onblur="setTimeout(closeAddrSug, 180)">
+            <div class="addr-suggestions" id="addrSug"></div>
+          </div>
+          <div class="dist-badge" id="distBadge">
+            <div>
+              <div class="dist-val" id="distVal">—</div>
+              <div class="dist-lbl">от школы</div>
+            </div>
+            <div class="zone-chip" id="zoneChip">Зона 1</div>
+          </div>
+        </div>
+
+        <!-- 2. TRANSPORT -->
+        <div class="form-card">
+          <div class="fc-title"><span class="num">2</span> Тип транспорта</div>
+          <div class="ts-options" id="tsOptions"></div>
+        </div>
+
+        <!-- 3. CHILDREN -->
+        <div class="form-card">
+          <div class="fc-title"><span class="num">3</span> Дети</div>
+          <div id="childrenList"></div>
+          <button class="btn-add" onclick="addChild()">＋ Добавить ребёнка</button>
+        </div>
+
+        <!-- 4. PARENT -->
+        <div class="form-card">
+          <div class="fc-title"><span class="num">4</span> Законный представитель</div>
+          <div class="form-group">
+            <label>ФИО <span class="req">*</span></label>
+            <input type="text" id="parentName" placeholder="Иванова Айгерим Асановна">
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Родство <span class="req">*</span></label>
+              <select id="parentRelation">
+                <option value="">Выберите</option>
+                <option>Мать</option><option>Отец</option><option>Опекун</option><option>Другое</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Телефон 1 <span class="req">*</span></label>
+              <input type="tel" id="parentPhone1" placeholder="+996 700 000 000">
+            </div>
+            <div class="form-group">
+              <label>Телефон 2</label>
+              <input type="tel" id="parentPhone2" placeholder="+996 700 000 000">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Telegram <span class="req">*</span></label>
+            <input type="tel" id="parentTelegram" placeholder="+996 700 000 000">
+          </div>
+        </div>
+
+        <!-- 5. EXTRA CONTACT -->
+        <div class="form-card">
+          <div class="fc-title"><span class="num">5</span> Дополнительный контакт</div>
+          <button class="add-ct-toggle" onclick="toggleExtraCt()">
+            <span id="extraCtIcon">＋</span> Добавить доп. контакт
+          </button>
+          <div class="extra-ct" id="extraCtForm">
+            <div style="height:8px"></div>
+            <div class="form-group"><label>Имя</label><input type="text" id="extraName" placeholder="Имя"></div>
+            <div class="form-group">
+              <label>Родство</label>
+              <select id="extraRelation">
+                <option value="">Выберите</option>
+                <option>Мать</option><option>Отец</option><option>Бабушка</option><option>Дедушка</option><option>Няня</option><option>Другое</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label>Телефон 1</label><input type="tel" id="extraPhone1" placeholder="+996 700 000 000"></div>
+              <div class="form-group"><label>Телефон 2</label><input type="tel" id="extraPhone2" placeholder="+996 700 000 000"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 6. COMMENT -->
+        <div class="form-card">
+          <div class="fc-title"><span class="num">6</span> Комментарий</div>
+          <textarea id="comment" placeholder="Дополнительные пожелания..."></textarea>
+        </div>
+
+        <!-- PRICE -->
+        <div class="price-summary" id="priceSummary">
+          <div class="ps-title">Итог заявки</div>
+          <div id="priceRows"></div>
+          <div class="price-row total">
+            <span>Итого в месяц</span>
+            <span class="val" id="priceTotal">—</span>
+          </div>
+        </div>
+
+        <button class="btn-submit" id="submitBtn" onclick="submitForm()">Отправить заявку</button>
+        <div style="height:20px"></div>
+      </div>
+
+      <!-- SUCCESS -->
+      <div class="success-screen" id="successScreen">
+        <div class="s-icon">✅</div>
+        <div class="s-title">Заявка отправлена!</div>
+        <div class="s-sub">Менеджер свяжется с вами в течение рабочего дня для подтверждения места</div>
+        <div class="s-card" id="successCard"></div>
+        <a class="mgr-call" id="mgrCallLink" href="#">
+          <span style="font-size:20px">📞</span>
+          <div>
+            <div class="mgr-lbl">Позвонить менеджеру</div>
+            <div class="mgr-num" id="mgrPhone">—</div>
+          </div>
+        </a>
+        <button class="btn-submit" onclick="location.reload()" style="margin-top:0">Новая заявка</button>
+      </div>
+    </div>
+
+    <!-- FAQ SECTION -->
+    <div class="sidebar-section" id="sectionFaq">
+      <div class="faq-header">Частые вопросы</div>
+      <div class="faq-sidebar">
+        <div id="faqCategories"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="map-area">
+    <div id="map"></div>
+  </div>
+</div>
+
+<script>
+// ── CONFIG ──────────────────────────────────────────────────
+const DGIS_KEY = '79a2eaa2-bd14-4644-acff-17122d100174';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzWJwT3kDO1HL8MILw7ZKy5SocFZn8nOixscMer9O2g2jkc3c4r-5quo4_f3TEIFC4c/exec';
+
+// ── SCHOOLS ─────────────────────────────────────────────────
+const SCHOOLS = [
+  { id:'edison',  name:'Эдисон',                   lat:42.829238, lng:74.630159, addr:'ул. Сухэ-Батора, 7А/1',                           manager:'996999260894', p1:6500,p2:7000,p3:0,    branches:null },
+  { id:'erudit',  name:'Эрудит-ISIT',               lat:42.818826, lng:74.636966, addr:'ул. Саякбая Каралаева, 21/1',                     manager:'996550242924', p1:6000,p2:6500,p3:0,    branches:null },
+  { id:'tensay',  name:'Тенсай',                    lat:42.835932, lng:74.598230, addr:'ул. Малдыбаева, 87',                              manager:'996506242924', p1:6400,p2:6800,p3:0,    branches:null },
+  { id:'aes',     name:'American-European School',  lat:42.856173, lng:74.655412, addr:'ул. Дордой, 2/2, Кара-Жыгач',                    manager:'996506242924', p1:5600,p2:6100,p3:6600, branches:null },
+  { id:'kas',     name:'Kyrgyz-American School',    lat:42.808224, lng:74.630489, addr:'Ин-т Сейсмостойкого Строительства 2, 8',          manager:'996550242924', p1:5600,p2:6100,p3:6600, branches:null },
+  { id:'bilim',   name:'Билим Бишкек KG',           lat:42.840230, lng:74.642759, addr:'ул. Жени-Жока, 7',                               manager:'996550242924', p1:5500,p2:6000,p3:6500, branches:null },
+  { id:'nova',    name:'Nova International School', lat:42.884921, lng:74.587871, addr:'ул. Манаса, 102',                                 manager:'996999260894', p1:5500,p2:6000,p3:6500, branches:null },
+  { id:'epsilon', name:'Эпсилон',                   lat:42.833737, lng:74.565765, addr:'мкр. Джал-29, 45А',                              manager:'996550242924', p1:5500,p2:6000,p3:6500, branches:null },
+  { id:'light',   name:'Light Academy',             lat:42.863693, lng:74.558794, addr:'ул. Дооронбека Садырбаева, 2/14',                 manager:'996506242924', p1:5000,p2:5500,p3:6000, branches:null },
+  { id:'kings',   name:'Kings International School',lat:42.870399, lng:74.508924, addr:'ул. Барпы Алыкулова, 3А',                        manager:'996999260894', p1:5000,p2:5500,p3:6000, branches:null },
+  { id:'indigo',  name:'Индиго',                    lat:42.844550, lng:74.630410, addr:'ул. Кара-Дарыя',                                 manager:'996555242924', p1:5500,p2:6000,p3:6500,
+    branches:[
+      { id:'indigo_kids',  name:'Индиго Kids',          lat:42.844550, lng:74.630410, addr:'Бишкек, ул. Кара-Дарыя' },
+      { id:'indigo_prime', name:'Indigo Prime Academy',  lat:42.825887, lng:74.619915, addr:'7-й микрорайон, 16/9' },
+      { id:'indigo_west',  name:'Indigo West',           lat:42.871562, lng:74.582797, addr:'Московская ул., 191А' },
+      { id:'indigo_girls', name:'Asylkech Girls School', lat:42.844254, lng:74.630409, addr:'ул. Кара-Дарыя, 16/2' },
+    ]},
+  { id:'genius',  name:'Гениум',                    lat:42.866027, lng:74.593115, addr:'ул. Чуйкова, 132А',                              manager:'996555242924', p1:5500,p2:6000,p3:6500,
+    branches:[
+      { id:'genius_1', name:'Гениум — Чуйкова',  lat:42.866027, lng:74.593115, addr:'ул. Чуйкова, 132А' },
+      { id:'genius_2', name:'Гениум — Авангард', lat:42.817712, lng:74.606059, addr:'ЖК Авангард Сити' },
+    ]},
+];
+
+// ── STATE ────────────────────────────────────────────────────
+const S = {
+  school:null, branch:null,
+  schoolLat:null, schoolLng:null,
+  homeLat:null, homeLng:null, homeText:'',
+  distKm:null, zone:null, zonePrice:null,
+  tsType:'bus',
+  children:[{name:'',grade:''}],
+  extraOpen:false,
+};
+
+// ── MAP ──────────────────────────────────────────────────────
+let map, homeMarker, schoolMarker, routeLine;
+
+function initMap(){
+  map = L.map('map',{zoomControl:true}).setView([42.87,74.59],12);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+    attribution:'© OpenStreetMap',maxZoom:19
+  }).addTo(map);
+}
+
+const schoolIcon = (name) => L.divIcon({
+  className:'',
+  html:`<div style="background:#E8621A;color:#fff;border-radius:8px;padding:5px 10px;font-size:11px;font-weight:700;font-family:Inter,sans-serif;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,0.18)">🏫 ${name}</div>`,
+  iconAnchor:[0,0]
+});
+const homeIcon = () => L.divIcon({
+  className:'',
+  html:`<div style="background:#1A1A1A;color:#fff;border-radius:8px;padding:5px 10px;font-size:11px;font-weight:700;font-family:Inter,sans-serif;box-shadow:0 2px 8px rgba(0,0,0,0.18)">🏠 Дом</div>`,
+  iconAnchor:[0,0]
+});
+
+function setSchoolMarker(lat,lng,name){
+  if(schoolMarker) map.removeLayer(schoolMarker);
+  schoolMarker = L.marker([lat,lng],{icon:schoolIcon(name)}).addTo(map);
+}
+function setHomeMarker(lat,lng){
+  if(homeMarker) map.removeLayer(homeMarker);
+  homeMarker = L.marker([lat,lng],{icon:homeIcon()}).addTo(map);
+  fetchRoute(lat,lng,S.schoolLat,S.schoolLng);
+}
+
+async function fetchRoute(lat1,lng1,lat2,lng2){
+  if(!lat2) return;
+  if(routeLine){ map.removeLayer(routeLine); routeLine=null; }
+  try{
+    const url = `https://router.project-osrm.org/route/v1/driving/${lng1},${lat1};${lng2},${lat2}?overview=full&geometries=geojson`;
+    const r = await fetch(url);
+    const d = await r.json();
+    if(d.routes&&d.routes[0]){
+      const coords = d.routes[0].geometry.coordinates.map(c=>[c[1],c[0]]);
+      routeLine = L.polyline(coords,{color:'#E8621A',weight:4,opacity:0.75}).addTo(map);
+      map.fitBounds(routeLine.getBounds(),{padding:[50,50]});
+    }
+  } catch(e){
+    // fallback straight line
+    const pts = [[lat1,lng1],[lat2,lng2]];
+    routeLine = L.polyline(pts,{color:'#E8621A',weight:3,dashArray:'6 6',opacity:0.7}).addTo(map);
+    map.fitBounds(L.latLngBounds(pts),{padding:[50,50]});
+  }
+}
+
+// ── SCHOOL MODAL ─────────────────────────────────────────────
+function openSchoolModal(){
+  document.getElementById('schoolModal').classList.add('show');
+  renderSchoolList(SCHOOLS);
+  setTimeout(()=>document.getElementById('schoolSearch').focus(),80);
+}
+function closeSchoolModal(){
+  document.getElementById('schoolModal').classList.remove('show');
+}
+function filterSchools(q){
+  const f = SCHOOLS.filter(s=>s.name.toLowerCase().includes(q.toLowerCase())||s.addr.toLowerCase().includes(q.toLowerCase()));
+  renderSchoolList(f);
+}
+function renderSchoolList(list){
+  document.getElementById('schoolList').innerHTML = list.map(s=>`
+    <div class="school-item" onclick="selectSchool('${s.id}')">
+      <span style="font-size:22px">🏫</span>
+      <div><div class="s-name">${s.name}</div><div class="s-addr">${s.addr}</div></div>
+      <div class="s-price">от ${s.p1.toLocaleString()} с</div>
+    </div>`).join('');
+}
+
+function selectSchool(id){
+  const s = SCHOOLS.find(x=>x.id===id);
+  if(!s) return;
+  S.school=s; S.branch=null;
+  closeSchoolModal();
+  document.getElementById('selectedSchoolLabel').textContent = s.name;
+  document.getElementById('headerBadge').style.display='flex';
+  document.getElementById('headerSchoolName').textContent = s.name;
+
+  const bp = document.getElementById('branchPicker');
+  if(s.branches){
+    bp.innerHTML = s.branches.map(b=>`<button class="branch-btn" onclick="selectBranch('${s.id}','${b.id}')" id="bb_${b.id}">${b.name}</button>`).join('');
+    bp.classList.add('show');
+    selectBranch(s.id, s.branches[0].id);
+  } else {
+    bp.classList.remove('show'); bp.innerHTML='';
+    S.schoolLat=s.lat; S.schoolLng=s.lng;
+    setSchoolMarker(s.lat,s.lng,s.name);
+    map.setView([s.lat,s.lng],14);
+    showForm();
+  }
+}
+
+function selectBranch(sid,bid){
+  const s=SCHOOLS.find(x=>x.id===sid);
+  const b=s.branches.find(x=>x.id===bid);
+  S.branch=b; S.schoolLat=b.lat; S.schoolLng=b.lng;
+  document.querySelectorAll('.branch-btn').forEach(el=>el.classList.remove('selected'));
+  document.getElementById('bb_'+bid)?.classList.add('selected');
+  setSchoolMarker(b.lat,b.lng,b.name);
+  map.setView([b.lat,b.lng],14);
+  showForm();
+  if(S.homeLat) calcDist(S.homeLat,S.homeLng);
+}
+
+function showForm(){
+  document.getElementById('formWrap').style.display='block';
+  renderTs(); renderChildren(); updatePrice();
+}
+
+// ── 2GIS ADDRESS SEARCH ──────────────────────────────────────
+let addrTimer;
+function onAddrInput(val){
+  clearTimeout(addrTimer);
+  if(val.length<2){ closeAddrSug(); return; }
+  // Show loading
+  const sug = document.getElementById('addrSug');
+  sug.innerHTML = `<div class="sug-loading"><div class="spin" style="width:14px;height:14px;border-width:2px"></div> Поиск...</div>`;
+  sug.classList.add('open');
+  addrTimer = setTimeout(()=>search2GIS(val), 350);
+}
+
+async function search2GIS(q){
+  try{
+    const url = `https://catalog.api.2gis.com/3.0/suggests?q=${encodeURIComponent(q)}&key=${DGIS_KEY}&location=${74.59},${42.87}&type=building,street,crossroads&fields=items.point,items.address_name,items.full_name&page_size=7`;
+    const r = await fetch(url);
+    const d = await r.json();
+    renderAddrSug(d.result?.items||[]);
+  } catch(e){
+    closeAddrSug();
+  }
+}
+
+function renderAddrSug(items){
+  const el = document.getElementById('addrSug');
+  if(!items.length){ el.innerHTML=`<div class="sug-loading">Ничего не найдено</div>`; return; }
+  el.innerHTML = items.map(item=>{
+    const main = item.name || item.address_name || item.full_name || '';
+    const sub  = item.full_name && item.full_name!==main ? item.full_name : '';
+    const lat  = item.point?.lat || '';
+    const lng  = item.point?.lon || '';
+    return `<div class="sug-item" onmousedown="selectAddr(${lat||0},${lng||0},'${esc(item.full_name||main)}','${esc(main)}')">
+      <span style="color:var(--orange);font-size:14px;flex-shrink:0;margin-top:1px">📍</span>
+      <div><div class="sug-main">${main}</div>${sub?`<div class="sug-sub">${sub}</div>`:''}</div>
+    </div>`;
+  }).join('');
+  el.classList.add('open');
+}
+
+function esc(s){ return (s||'').replace(/'/g,"\\'").replace(/"/g,'\\"'); }
+function closeAddrSug(){ document.getElementById('addrSug').classList.remove('open'); }
+
+async function selectAddr(lat,lng,fullName,shortName){
+  closeAddrSug();
+  // If 2GIS didn't give coords — geocode via Nominatim
+  if(!lat || !lng){
+    try{
+      const r = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(fullName+' Бишкек')}&format=json&limit=1&accept-language=ru`);
+      const d = await r.json();
+      if(d[0]){ lat=parseFloat(d[0].lat); lng=parseFloat(d[0].lon); }
+    } catch(e){}
+  }
+  S.homeLat=parseFloat(lat); S.homeLng=parseFloat(lng); S.homeText=fullName;
+  document.getElementById('addressInput').value = shortName || fullName.split(',').slice(0,2).join(',');
+  if(S.schoolLat){ calcDist(S.homeLat,S.homeLng); setHomeMarker(S.homeLat,S.homeLng); }
+}
+
+// ── DISTANCE ─────────────────────────────────────────────────
+function haversine(a,b,c,d){
+  const R=6371, dL=(c-a)*Math.PI/180, dN=(d-b)*Math.PI/180;
+  const x=Math.sin(dL/2)**2+Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.sin(dN/2)**2;
+  return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));
+}
+
+function calcDist(lat,lng){
+  const dist = haversine(lat,lng,S.schoolLat,S.schoolLng);
+  const eff  = dist - 0.3; // +300m buffer
+  S.distKm   = dist;
+  const s    = S.school;
+  let zone, price;
+  if(s.p3===0){ zone=eff<=3?1:2; price=eff<=3?s.p1:s.p2; }
+  else { zone=eff<=3?1:eff<=6?2:3; price=eff<=3?s.p1:eff<=6?s.p2:s.p3; }
+  S.zone=zone; S.zonePrice=price;
+  document.getElementById('distBadge').classList.add('show');
+  document.getElementById('distVal').textContent=dist.toFixed(2)+' км';
+  document.getElementById('zoneChip').textContent='Зона '+zone;
+  renderTs(); updatePrice();
+}
+
+// ── TRANSPORT ────────────────────────────────────────────────
+function renderTs(){
+  const zp=S.zonePrice||0;
+  const opts=[
+    {id:'bus',  icon:'🚌',name:'Микроавтобус',desc:'До 20 мест', price:zp,   per:S.zone?'Зона '+S.zone:'выберите адрес'},
+    {id:'van',  icon:'🚐',name:'Минивэн',      desc:'До 8 мест',  price:9500, per:'фиксированная'},
+    {id:'sedan',icon:'🚗',name:'Седан',         desc:'До 4 мест',  price:10500,per:'фиксированная'},
+  ];
+  document.getElementById('tsOptions').innerHTML = opts.map(o=>`
+    <label class="ts-opt ${S.tsType===o.id?'selected':''}" onclick="selectTs('${o.id}')">
+      <input type="radio" name="ts" value="${o.id}">
+      <span class="ts-icon">${o.icon}</span>
+      <div class="ts-info"><div class="ts-name">${o.name}</div><div class="ts-desc">${o.desc}</div></div>
+      <div class="ts-price">${o.price?o.price.toLocaleString()+' с':'—'}<span class="per">${o.per}</span></div>
+    </label>`).join('');
+}
+function selectTs(t){ S.tsType=t; renderTs(); updatePrice(); }
+function getTsPrice(){ return S.tsType==='bus'?S.zonePrice||0:S.tsType==='van'?9500:10500; }
+
+// ── CHILDREN ─────────────────────────────────────────────────
+function renderChildren(){
+  document.getElementById('childrenList').innerHTML = S.children.map((c,i)=>`
+    <div class="child-card">
+      <div class="child-hd">
+        <div class="child-title">👦 Ребёнок ${i+1}${i>0?' <span class="disc-chip">−5%</span>':''}</div>
+        ${i>0?`<button class="btn-rm" onclick="rmChild(${i})">✕</button>`:''}
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>ФИО <span class="req">*</span></label>
+          <input type="text" placeholder="Иванов Арслан" value="${c.name}" oninput="S.children[${i}].name=this.value"></div>
+        <div class="form-group" style="max-width:84px"><label>Класс <span class="req">*</span></label>
+          <input type="text" placeholder="3Б" value="${c.grade}" oninput="S.children[${i}].grade=this.value;updatePrice()"></div>
+      </div>
+    </div>`).join('');
+}
+function addChild(){ S.children.push({name:'',grade:''}); renderChildren(); updatePrice(); }
+function rmChild(i){ S.children.splice(i,1); renderChildren(); updatePrice(); }
+
+// ── PRICE ────────────────────────────────────────────────────
+function updatePrice(){
+  const base=getTsPrice();
+  const ps=document.getElementById('priceSummary');
+  if(!base||!S.children.length){ ps.style.display='none'; return; }
+  ps.style.display='block';
+  let total=0;
+  document.getElementById('priceRows').innerHTML = S.children.map((c,i)=>{
+    const p=Math.round(base*(i>0?.95:1)); total+=p;
+    return `<div class="price-row"><span>${c.name||'Ребёнок '+(i+1)}${i>0?' (−5%)':''}</span><span style="font-weight:600">${p.toLocaleString()} сом</span></div>`;
+  }).join('');
+  document.getElementById('priceTotal').textContent=total.toLocaleString()+' сом';
+}
+
+// ── EXTRA CONTACT ────────────────────────────────────────────
+function toggleExtraCt(){
+  S.extraOpen=!S.extraOpen;
+  document.getElementById('extraCtForm').classList.toggle('show',S.extraOpen);
+  document.getElementById('extraCtIcon').textContent=S.extraOpen?'−':'＋';
+}
+
+// ── SECTION SWITCH ───────────────────────────────────────────
+function showSection(sec){
+  document.querySelectorAll('.sidebar-section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('sectionForm').classList.toggle('active',sec==='form');
+  document.getElementById('sectionFaq').classList.toggle('active',sec==='faq');
+  document.querySelectorAll('.nav-btn').forEach(b=>{
+    if((sec==='form'&&b.textContent.includes('Заявка'))||(sec==='faq'&&b.textContent.includes('Вопрос'))) b.classList.add('active');
+  });
+}
+
+// ── SUBMIT ───────────────────────────────────────────────────
+async function submitForm(){
+  if(!S.school){ toast('Выберите школу','error'); return; }
+  if(!S.homeLat){ toast('Укажите адрес','error'); return; }
+  if(!S.children.every(c=>c.name.trim()&&c.grade.trim())){ toast('Заполните данные всех детей','error'); return; }
+  if(!v('parentName')){ toast('Укажите ФИО родителя','error'); return; }
+  if(!v('parentRelation')){ toast('Укажите родство','error'); return; }
+  if(!v('parentPhone1')){ toast('Укажите телефон','error'); return; }
+  if(!v('parentTelegram')){ toast('Укажите Telegram','error'); return; }
+
+  const base=getTsPrice();
+  const schoolName=S.branch?S.branch.name:S.school.name;
+  const tsMap={bus:'Микроавтобус',van:'Минивэн',sedan:'Седан'};
+  let total=0;
+  const childStr=S.children.map((c,i)=>{const p=Math.round(base*(i>0?.95:1));total+=p;return `${c.name} (${c.grade}) — ${p.toLocaleString()} сом${i>0?' −5%':''}`;}).join(' | ');
+
+  const payload={
+    timestamp: new Date().toLocaleString('ru-RU'),
+    school: schoolName,
+    branch: S.branch?S.branch.name:'',
+    address: S.homeText,
+    lat: S.homeLat,
+    lng: S.homeLng,
+    schoolLat: S.schoolLat,
+    schoolLng: S.schoolLng,
+    distanceKm: S.distKm?S.distKm.toFixed(2):'',
+    zone: S.zone||'',
+    transport: tsMap[S.tsType],
+    zonePrice: base,
+    children: childStr,
+    childrenCount: S.children.length,
+    totalPerMonth: total,
+    parentName: v('parentName'),
+    parentRelation: v('parentRelation'),
+    parentPhone1: v('parentPhone1'),
+    parentPhone2: v('parentPhone2'),
+    parentTelegram: v('parentTelegram'),
+    extraName: v('extraName'),
+    extraRelation: v('extraRelation'),
+    extraPhone1: v('extraPhone1'),
+    extraPhone2: v('extraPhone2'),
+    comment: v('comment'),
+    manager: S.school.manager,
+  };
+
+  document.getElementById('loadingOverlay').classList.add('show');
+  try{
+    await fetch(APPS_SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    showSuccess(payload,schoolName,total);
+  } catch(e){ toast('Ошибка отправки. Попробуйте ещё раз.','error'); }
+  finally{ document.getElementById('loadingOverlay').classList.remove('show'); }
+}
+
+function v(id){ return (document.getElementById(id)||{}).value?.trim()||''; }
+
+function showSuccess(p,schoolName,total){
+  document.getElementById('formWrap').style.display='none';
+  document.getElementById('successCard').innerHTML=`
+    <div class="row"><span class="k">Школа</span><span class="v">${schoolName}</span></div>
+    <div class="row"><span class="k">Адрес</span><span class="v">${p.address.split(',').slice(0,2).join(',')}</span></div>
+    <div class="row"><span class="k">Расстояние</span><span class="v">${p.distanceKm} км · Зона ${p.zone}</span></div>
+    <div class="row"><span class="k">Транспорт</span><span class="v">${p.transport}</span></div>
+    <div class="row"><span class="k">Детей</span><span class="v">${p.childrenCount}</span></div>
+    <div class="row"><span class="k">Итого/мес</span><span class="v" style="color:var(--orange);font-family:Unbounded,sans-serif">${total.toLocaleString()} сом</span></div>`;
+  const ph='+'+p.manager;
+  document.getElementById('mgrPhone').textContent=ph;
+  document.getElementById('mgrCallLink').href='tel:'+ph;
+  document.getElementById('successScreen').classList.add('show');
+}
+
+// ── FAQ ──────────────────────────────────────────────────────
+const FAQ=[
+  {cat:'💰 Цены и оплата',items:[
+    {q:'Почему цена не меняется на каникулах?',a:'Стоимость рассчитана за весь учебный год (162 рабочих дня) и равномерно распределена на 9 месяцев. Это фиксированный абонемент. Пропуски, болезни и каникулы уже учтены в расчёте через резервные дни.'},
+    {q:'Что будет если опоздать с оплатой?',a:'Пеня 100 сом за каждый день просрочки начиная с 6-го числа, но не более 15% от суммы месячного долга. При просрочке 10+ дней — приостановка услуг.'},
+    {q:'Есть ли скидки?',a:'Да — 5% на второго и каждого последующего ребёнка из одной семьи. Индивидуальные условия — только по согласованию с администрацией.'},
+    {q:'Что такое депозит?',a:'При подписании договора оплачивается первый месяц + депозит (= 1 месячный платёж). Депозит засчитывается за май. При расторжении по инициативе родителя — не возвращается.'},
+    {q:'Может ли цена вырасти из-за топлива?',a:'Базовая цена действует при топливе до 95 сом/л. При росте — надбавка: каждые +5 сом/л = +200 сом/мес (максимум +1 200 сом при >120 сом/л). Уведомляем за 5 рабочих дней.'},
+    {q:'Можно подключиться не с 1 сентября?',a:'Да. Первый месяц оплачивается пропорционально: месячная цена ÷ рабочих дней в месяце × оставшихся рабочих дней.'},
+  ]},
+  {cat:'🗺️ Маршрут и остановки',items:[
+    {q:'Где будет остановка?',a:'Остановку устанавливает отдел логистики OutWay — ближайший безопасный перекрёсток, не далее 200 метров от дома. Точку определяет Организатор исходя из дорожной обстановки.'},
+    {q:'Могу ли я выбрать остановку сам?',a:'Место определяет логистика. Пожелания рассматриваются, но не гарантируются — приоритет маршрута и безопасности всей группы.'},
+    {q:'Можно следить за машиной онлайн?',a:'Да — геолокация водителя передаётся в мессенджере трансфера в реальном времени.'},
+    {q:'Могут поменять маршрут или водителя?',a:'Организатор гарантирует место в трансфере, но не гарантирует конкретного водителя или маршрут. При изменениях уведомляем за 3 рабочих дня. Это не нарушение договора.'},
+  ]},
+  {cat:'⏰ Ожидание и расписание',items:[
+    {q:'Сколько ждёт водитель утром?',a:'2 минуты — только если родитель заранее уведомил об опоздании. Без уведомления водитель не обязан ждать.'},
+    {q:'Что если ребёнок утром не поехал?',a:'Если утром не было уведомления — вечерний трансфер не производится. Родитель обязан сообщить, что ребёнок в школе и нуждается в вечернем трансфере.'},
+    {q:'Что если никто не забрал ребёнка вечером?',a:'Менеджер звонит родителю → если недоступен, звонит в школу → ребёнок доставляется в офис (ул. Аалы Токомбаева, 21/2, круглосуточно). Доп. расходы — за счёт родителя.'},
+  ]},
+  {cat:'🔒 Безопасность и передача',items:[
+    {q:'Как передаётся ребёнок вечером?',a:'Только из рук в руки родителю или уполномоченному лицу. Оставить ребёнка без взрослого — недопустимо.'},
+    {q:'Можно разрешить ребёнку выходить самому?',a:'Да — через подписанное доп. соглашение или сообщение в мессенджере. После этого ответственность Организатора снимается с момента высадки.'},
+    {q:'Кто отвечает за поведение детей в салоне?',a:'Ответственность за поведение ребёнка — на родителях. При нарушениях: 1-е предупреждение → 2-е → расторжение без возврата депозита.'},
+    {q:'Требования к водителю?',a:'Стаж не менее 4 лет, лицензия, ОСГОП-страхование. Данные водителя (ФИО, телефон, госномер) сообщаются за 1 день до первой поездки.'},
+  ]},
+  {cat:'📋 Договор и расторжение',items:[
+    {q:'Как расторгнуть договор?',a:'Уведомить за 30 календарных дней. Депозит не возвращается. Без уведомления — штраф 2 000 сом + депозит не возвращается.'},
+    {q:'Производится ли перерасчёт?',a:'Нет. Каникулы, болезни, пропуски до 7 дней вне каникул, форс-мажор — перерасчёт не производится. Все случаи учтены в резервных днях.'},
+    {q:'Кто такой Организатор?',a:'OutWay (ООО АйКай Груп) — Организатор школьного трансфера, не перевозчик. Перевозку осуществляют независимые лицензированные водители. OutWay отвечает за логистику, маршруты и качество сервиса.'},
+  ]},
+];
+
+function renderFaq(){
+  document.getElementById('faqCategories').innerHTML = FAQ.map((cat,ci)=>`
+    <div class="faq-cat">
+      <button class="faq-cat-btn" onclick="toggleFaqCat(${ci})" id="fcb${ci}">
+        <span>${cat.cat}</span><span id="fci${ci}">▾</span>
+      </button>
+      <div class="faq-questions" id="fq${ci}">
+        ${cat.items.map((item,qi)=>`
+          <button class="faq-q-btn" onclick="toggleFaqQ(${ci},${qi})" id="fqb${ci}_${qi}">
+            <span>${item.q}</span><span style="flex-shrink:0">▾</span>
+          </button>
+          <div class="faq-answer" id="fa${ci}_${qi}">${item.a}</div>
+        `).join('')}
+      </div>
+    </div>`).join('');
+}
+function toggleFaqCat(ci){
+  const open=document.getElementById('fq'+ci).classList.toggle('open');
+  document.getElementById('fcb'+ci).classList.toggle('open',open);
+  document.getElementById('fci'+ci).textContent=open?'▴':'▾';
+}
+function toggleFaqQ(ci,qi){
+  const open=document.getElementById(`fa${ci}_${qi}`).classList.toggle('open');
+  document.getElementById(`fqb${ci}_${qi}`).classList.toggle('open',open);
+}
+
+// ── TOAST ────────────────────────────────────────────────────
+function toast(msg,type=''){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.className='toast show '+type;
+  setTimeout(()=>t.className='toast',3200);
+}
+
+// ── INIT ─────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded',()=>{ initMap(); renderFaq(); openSchoolModal(); });
+</script>
+</body>
+</html>
