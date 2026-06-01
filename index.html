@@ -325,7 +325,7 @@ textarea{resize:none;height:72px;}
 </div>
 
 <script>
-const APPS_SCRIPT_URL='https://script.google.com/macros/s/AKfycbyOLDrpvMa6kUTjM_PPyJxG1EetVSX-VBl3L3fcfHJ4Y7r4pVHTrl6vApxMRK2vevb7/exec';
+const APPS_SCRIPT_URL='https://script.google.com/macros/s/AKfycbzSJPyfyCZsQgBHeE7CG4dfaBdYpiVYrzOSXDkw2Byc_DtXmHTxvieQUvcZXs_Pa4wt/exec';
 const YANDEX_SUGGEST_KEY='1a2e737b-d538-4a3a-b319-ebad15855d47';
 const YANDEX_GEOCODER_KEY='cfbdce72-0cdf-45ea-91e4-1b6e5826a090';
 
@@ -413,20 +413,27 @@ function setHomeMarker(lat,lng){
 async function drawRoute(lat1,lng1,lat2,lng2){
   if(routeObj){ymap.geoObjects.remove(routeObj);routeObj=null;}
   try{
-    const multiRoute=new ymaps.multiRouter.MultiRoute(
-      {referencePoints:[[lat1,lng1],[lat2,lng2]],params:{routingMode:'auto'}},
-      {boundsAutoApply:true,wayPointVisible:false,pinVisible:false,
-       routeActiveStrokeColor:'#E8621A',routeActiveStrokeWidth:5,
-       routeStrokeColor:'#E8621A',routeStrokeWidth:3,
-       routeActiveStrokeStyle:'solid'}
-    );
-    ymap.geoObjects.add(multiRoute);
-    routeObj=multiRoute;
+    const route = await ymaps.route([[lat1,lng1],[lat2,lng2]],{mapStateAutoApply:false});
+    // Style the route
+    route.getPaths().options.set({
+      strokeColor:'#E8621A',
+      strokeWidth:5,
+      opacity:0.85
+    });
+    // Hide default waypoint markers
+    route.getWayPoints().options.set('visible',false);
+    ymap.geoObjects.add(route);
+    routeObj=route;
+    // Fit map to show both points
+    const bounds=route.getBounds();
+    if(bounds) ymap.setBounds(bounds,{checkZoomRange:true,zoomMargin:60});
   }catch(e){
-    // fallback polyline
-    if(routeObj){ymap.geoObjects.remove(routeObj);routeObj=null;}
-    routeObj=new ymaps.Polyline([[lat1,lng1],[lat2,lng2]],{},{strokeColor:'#E8621A',strokeWidth:4,strokeStyle:'dash',opacity:0.8});
+    // Fallback: straight dashed line
+    routeObj=new ymaps.Polyline([[lat1,lng1],[lat2,lng2]],{},{
+      strokeColor:'#E8621A',strokeWidth:4,strokeStyle:'dash',opacity:0.75
+    });
     ymap.geoObjects.add(routeObj);
+    ymap.setBounds(routeObj.geometry.getBounds(),{checkZoomRange:true,zoomMargin:60});
   }
 }
 
