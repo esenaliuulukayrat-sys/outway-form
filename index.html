@@ -325,7 +325,7 @@ textarea{resize:none;height:72px;}
 </div>
 
 <script>
-const APPS_SCRIPT_URL='https://script.google.com/macros/s/AKfycbzSJPyfyCZsQgBHeE7CG4dfaBdYpiVYrzOSXDkw2Byc_DtXmHTxvieQUvcZXs_Pa4wt/exec';
+const APPS_SCRIPT_URL='https://script.google.com/macros/s/AKfycbz6JUZVRd7qIgGsCCvdReIzcTRKNo65T6l12qA5cSO7K3CRSkUHh0-oia52nj-CT3VP/exec';
 const YANDEX_SUGGEST_KEY='1a2e737b-d538-4a3a-b319-ebad15855d47';
 const YANDEX_GEOCODER_KEY='cfbdce72-0cdf-45ea-91e4-1b6e5826a090';
 
@@ -333,6 +333,63 @@ const YANDEX_GEOCODER_KEY='cfbdce72-0cdf-45ea-91e4-1b6e5826a090';
 const BBOX='74.4,42.7,74.8,43.1';
 
 const SCHOOL_KEYS={kings:'KNG2026',light:'LGT2026',aes:'AES2026',kas:'KAS2026',tensay:'TNS2026',erudit:'ERD2026',indigo:'IND2026',genius:'GNS2026',epsilon:'EPS2026',nova:'NOV2026',bilim:'BLM2026',edison:'EDS2026',admin:'ADMIN2026'};
+
+// Школы загружаются из Google Sheets через Apps Script
+let SCHOOLS_LOADED = false;
+
+async function loadSchools() {
+  if (SCHOOLS_LOADED) return;
+  try {
+    const r = await fetch(APPS_SCRIPT_URL + '?action=schools');
+    if (r.ok) {
+      const d = await r.json();
+      if (d.ok && d.schools && d.schools.length) {
+        // Преобразуем формат из Apps Script в формат формы
+        SCHOOLS.length = 0;
+        d.schools.forEach(s => {
+          const school = {
+            id: s.code.toLowerCase(),
+            code: s.code,
+            name: s.name,
+            lat: s.lat,
+            lng: s.lng,
+            addr: s.address,
+            manager: s.manager,
+            p1: s.zone1_price,
+            p2: s.zone2_price,
+            p3: s.zone3_price || 0,
+            branches: null,
+            access_key: s.access_key
+          };
+          // Добавляем филиалы для Индиго и Гениум
+          if (s.code === 'INDIGO') {
+            school.branches = [
+              {id:'indigo_kids', name:'Индиго Kids',          lat:42.844550,lng:74.630410,addr:'ул. Кара-Дарыя'},
+              {id:'indigo_prime',name:'Indigo Prime Academy',  lat:42.825887,lng:74.619915,addr:'7-й микрорайон, 16/9'},
+              {id:'indigo_west', name:'Indigo West',           lat:42.871562,lng:74.582797,addr:'Московская ул., 191А'},
+              {id:'indigo_girls',name:'Asylkech Girls School', lat:42.844254,lng:74.630409,addr:'ул. Кара-Дарыя, 16/2'},
+            ];
+          }
+          if (s.code === 'GENIUS') {
+            school.branches = [
+              {id:'genius_1',name:'Гениум — Чуйкова', lat:42.866027,lng:74.593115,addr:'ул. Чуйкова, 132А'},
+              {id:'genius_2',name:'Гениум — Авангард',lat:42.817712,lng:74.606059,addr:'ЖК Авангард Сити'},
+            ];
+          }
+          // Обновляем ключ доступа
+          if (s.access_key) {
+            const keyName = s.code.toLowerCase();
+            SCHOOL_KEYS[keyName] = s.access_key;
+          }
+          SCHOOLS.push(school);
+        });
+        SCHOOLS_LOADED = true;
+      }
+    }
+  } catch(e) {
+    console.log('loadSchools fallback to static:', e);
+  }
+}
 
 const SCHOOLS=[
   {id:'edison', name:'Эдисон',                   lat:42.829238,lng:74.630159,addr:'ул. Сухэ-Батора, 7А/1',           manager:'996999260894',p1:6500,p2:7000,p3:0,   branches:null},
@@ -396,7 +453,7 @@ function homeIconHref(){
 function initMap(){
   ymap=new ymaps.Map('map',{center:[42.87,74.59],zoom:12,controls:['zoomControl']},{suppressMapOpenBlock:true});
   renderFaq();
-  autoSelectSchool();
+  loadSchools().then(() => autoSelectSchool());
 }
 
 function setSchoolMarker(lat,lng){
@@ -827,68 +884,60 @@ async function submitForm(){
   const errs=validateForm();
   if(errs.length){toast('Заполните: '+errs.join('; '),'error');return;}
 
-  const base=getTsPrice(),schoolName=S.branch?S.branch.name:S.school.name;
-  const tsMap={bus:'Микроавтобус',van:'Минивэн',sedan:'Седан'};
-  const familyCode='FAM-'+Date.now().toString(36).toUpperCase();
-  const timestamp=new Date().toLocaleString('ru-RU');
+  const base=getTsPrice();
+  const schoolName=S.branch?S.branch.name:S.school.name;
+  const schoolCode=S.school.code||S.school.id.toUpperCase();
+  const tsMap={bus:'microbus',van:'minivan',sedan:'sedan'};
+  const tsLabelMap={bus:'Микроавтобус',van:'Минивэн',sedan:'Седан'};
   const fullAddr=getFullAddr();
+  let total=0;
+
+  const children=S.children.map((child,i)=>{
+    const price=Math.round(base*(i>0?.95:1));
+    total+=price;
+    return {name:child.name, className:child.grade, selfExitAllowed:'Нет', price, discount:i>0?5:0};
+  });
+
+  const payload={
+    schoolCode,
+    schoolName,
+    branchName:   S.branch?S.branch.name:'',
+    schoolAddress:S.school.addr||'',
+    managerPhone: S.school.manager||'',
+    parentName:   v('parentName'),
+    phone:        v('parentPhone1'),
+    phoneTelegram:v('parentTelegram')!==''&&v('parentTelegram')===v('parentPhone1'),
+    secondPhone:  v('parentPhone2'),
+    secondPhoneTelegram: false,
+    contactName:  v('extraName'),
+    contactPhone: v('extraPhone1'),
+    contactPhoneTelegram: false,
+    fullAddress:  fullAddr,
+    latitude:     S.homeLat||0,
+    longitude:    S.homeLng||0,
+    distanceKm:   S.distKm?parseFloat(S.distKm.toFixed(2)):0,
+    routeSource:  'OSRM',
+    zone:         S.zone||1,
+    vehicleType:  tsMap[S.tsType],
+    vehicleLabel: tsLabelMap[S.tsType],
+    monthlyPrice: total,
+    comment:      v('comment'),
+    createdAt:    new Date().toISOString(),
+    children
+  };
 
   document.getElementById('loadingOverlay').classList.add('show');
   try{
-    const promises=S.children.map((child,i)=>{
-      const price=Math.round(base*(i>0?.95:1));
-      const payload={
-        // ── ИДЕНТИФИКАЦИЯ ──
-        timestamp,
-        familyCode,
-        // ── ШКОЛА ──
-        school:schoolName,
-        branch:S.branch?S.branch.name:'',
-        // ── АДРЕС ──
-        address:fullAddr,
-        homeLat:S.homeLat,
-        homeLng:S.homeLng,
-        schoolLat:S.schoolLat,
-        schoolLng:S.schoolLng,
-        distanceKm:S.distKm?S.distKm.toFixed(2):'',
-        zone:S.zone||'',
-        // ── ТРАНСПОРТ ──
-        transport:tsMap[S.tsType],
-        zonePrice:base,
-        // ── РЕБЁНОК ──
-        childNum:i+1,
-        childName:child.name,
-        childGrade:child.grade,
-        childPrice:price,
-        discount:i>0?'5%':'',
-        totalChildren:S.children.length,
-        // ── РОДИТЕЛЬ ──
-        parentName:v('parentName'),
-        parentRelation:v('parentRelation'),
-        parentPhone1:v('parentPhone1'),
-        parentPhone2:v('parentPhone2'),
-        parentTelegram:v('parentTelegram'),
-        // ── ДОП КОНТАКТ ──
-        extraName:v('extraName'),
-        extraRelation:v('extraRelation'),
-        extraPhone1:v('extraPhone1'),
-        extraPhone2:v('extraPhone2'),
-        // ── ПРОЧЕЕ ──
-        comment:v('comment'),
-        manager:S.school.manager,
-      };
-      return fetch(APPS_SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
-    });
-    await Promise.all(promises);
-    let total=0;S.children.forEach((_,i)=>total+=Math.round(base*(i>0?.95:1)));
-    showSuccess(schoolName,total,familyCode,fullAddr);
+    await fetch(APPS_SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    showSuccess(schoolName,total,fullAddr);
   }catch(e){toast('Ошибка отправки. Попробуйте ещё раз.','error');}
   finally{document.getElementById('loadingOverlay').classList.remove('show');}
 }
 
 function v(id){return(document.getElementById(id)||{}).value?.trim()||'';}
 
-function showSuccess(schoolName,total,familyCode,addr){
+function showSuccess(schoolName,total,addr){
+  const familyCode='';
   document.getElementById('formWrap').style.display='none';
   const childRows=S.children.map((c,i)=>{
     const p=Math.round(getTsPrice()*(i>0?.95:1));
